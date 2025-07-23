@@ -1,0 +1,137 @@
+# Activate recommended lints for Flutter apps and Dart best practices.
+include: package:flutter_lints/flutter.yaml
+# include: package:lints/recommended.yaml
+
+analyzer:
+  errors:
+    constant_identifier_names: ignore
+  # Exclude generated files and directories from analysis
+  exclude:
+    - build/**
+    - .dart_tool/**
+
+  # Enable strict language rules for type safety and inference
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+
+linter:
+  rules:
+    #----------- Common Best Practices -----------
+    avoid_print: true  # Disallow print statements; use logging instead
+    avoid_empty_else: true  # Avoid empty else statements
+    prefer_const_constructors: true  # Use const constructors when possible
+    prefer_final_fields: true  # Use final for fields that are not reassigned
+    prefer_final_locals: true  # Use final for local variables when possible
+    always_declare_return_types: true  # Always declare function return types
+    annotate_overrides: true  # Mark overridden methods with @override
+    avoid_positional_boolean_parameters: true  # Use named parameters for booleans
+    always_require_non_null_named_parameters: true  # Named params should be required or nullable
+    avoid_renaming_method_parameters: true  # Keep parameter names consistent
+    # prefer_typing_uninitialized_variables: true  # Explicitly type uninitialized variables
+    prefer_const_constructors_in_immutables: true  # Const in immutables
+    prefer_const_declarations: true  # Use const for declarations wherever possible
+
+    # ----------- Error Prevention & Safety -----------
+    # avoid_dynamic_calls: true  # Avoid calling dynamic methods
+    avoid_returning_null_for_void: true  # Do not return null from void functions
+    avoid_types_on_closure_parameters: false  # Allow types on closure parameters
+    avoid_equals_and_hash_code_on_mutable_classes: true  # Ensure immutability for equality
+    invariant_booleans: true  # Conditions should not always evaluate to the same value
+    no_logic_in_create_state: true  # Keep logic out of createState in StatefulWidgets
+    avoid_private_typedef_functions: true  # Avoid private typedefs
+
+
+    # ----------- Code Consistency & Formatting -----------
+    prefer_single_quotes: true  # Use single quotes for strings
+    curly_braces_in_flow_control_structures: true  # Always use curly braces
+    sort_constructors_first: true  # Place constructors before other members
+    sort_unnamed_constructors_first: true  # Sort unnamed constructors before named ones
+    use_is_even_rather_than_modulo: true  # Use isEven/isOdd instead of % operator
+    use_raw_strings: true  # Use raw strings for regex patterns
+    prefer_is_empty: true  # Use isEmpty for collections
+    prefer_is_not_empty: true  # Use isNotEmpty for collections
+    use_function_type_syntax_for_parameters: true  # Use function type syntax
+    unnecessary_lambdas: true  # Avoid unnecessary lambda expressions
+    avoid_multiple_declarations_per_line: true  # One declaration per line
+    prefer_for_elements_to_map_fromIterable: true  # Use for elements in collection literals
+
+    # ----------- Flutter-specific Best Practices -----------
+    avoid_unnecessary_containers: true  # Avoid using Containers without properties
+    prefer_const_literals_to_create_immutables: true  # Use const for immutable collections
+    use_key_in_widget_constructors: true  # Include keys in widgets
+    prefer_spread_collections: true  # Use spread operator for combining collections
+    # avoid_redundant_argument_values: true  # Don't specify default values explicitly
+    prefer_mixin: true  # Use mixins instead of abstract classes when appropriate
+    require_trailing_commas: true  # Require trailing commas for multiline collections
+
+    # ----------- Performance Optimizations -----------
+    avoid_unnecessary_setstate: true  # Do not call setState unnecessarily
+    avoid_classes_with_only_static_members: true  # Use top-level functions instead
+    avoid_slow_async_io: true  # Avoid slow I/O operations in async functions
+    avoid_redundant_async: true  # Avoid async when not necessary
+    prefer_iterable_whereType: true  # Use whereType for type filtering
+    use_build_context_synchronously: true  # Ensure context is used synchronously
+
+    # ----------- Null Safety & Type Safety -----------
+    avoid_null_checks_in_equality_operators: true  # Avoid null checks in == overrides
+    null_closures: true  # Avoid null in closures
+    no_leading_underscores_for_library_prefixes: true  # Public library prefixes
+    avoid_returning_null: true  # Avoid returning null
+    prefer_null_aware_method_calls: true  # Use null-aware calls when possible
+    prefer_null_aware_operators: true  # Use null-aware operators
+    strict_raw_types: true  # Avoid raw types in generics
+
+    # ----------- Readability & Maintainability -----------
+    unnecessary_null_in_if_null_operators: true  # Avoid unnecessary null checks
+    unnecessary_string_escapes: true  # Avoid unnecessary string escapes
+    unnecessary_this: true  # Do not use 'this' unless necessary
+    avoid_nested_conditional_expressions: true  # Flatten nested conditionals
+    unnecessary_parenthesis: true  # Remove unnecessary parentheses
+    prefer_asserts_in_initializer_lists: true  # Use asserts in initializer lists
+    prefer_expression_function_bodies: true  # Use => for simple functions
+    use_decorated_box: true  # Use DecoratedBox instead of Container when possible
+    avoid_relative_lib_imports: true  # Use package imports instead of relative imports
+
+    # ----------- Documentation -----------
+    # public_member_api_docs: true  # Document all public APIsz
+    comment_references: true  # Use proper references in comments
+    slash_for_doc_comments: true  # Use /// for doc comments
+    always_put_required_named_parameters_first: true  # Required params first
+
+    # ----------- Testing Best Practices -----------
+    avoid_print_in_tests: true  # Avoid print statements in tests
+    test_types_in_equals: true  # Test types in equality overrides
+    use_equals_instead_of_double_equals: true  # Use 'equals' matcher in tests
+
+    # ----------- Security Best Practices -----------
+    secure_pubspec_urls: true  # Ensure HTTPS in pubspec.yaml URLs
+    use_http_packages: true  # Use HTTP packages appropriately
+    use_string_buffers: true  # Use StringBuffer for concatenations in loops
+
+    # ----------- Pedantic Rules (Google Style) -----------
+    library_names: true  # Follow naming conventions for libraries
+    package_names: true  # Follow naming conventions for packages
+    prefer_adjacent_string_concatenation: true  # Concatenate adjacent strings
+    avoid_escaping_inner_quotes: true  # Use correct quotes to avoid escaping
+    empty_statements: true  # Avoid empty statements (e.g., empty if blocks)
+    avoid_shadowing_type_parameters: true  # Avoid shadowing type parameters
+
+
+    # ----------- Flutter-Specific Optimizations -----------
+    sized_box_for_whitespace: true  # Use SizedBox for space instead of Containers
+    prefer_const_constructors_in_stateless_widgets: true  # Use const in stateless widgets
+    avoid_single_cascade_in_expression_statements: true  # Avoid single cascades
+    prefer_final_in_for_each: true  # Use final in forEach loops
+    use_full_hex_values_for_flutter_colors: true  # Use full 8-character hex values for colors
+    avoid_annotating_with_dynamic: true  # Avoid 'dynamic' type annotations
+    use_rethrow_when_possible: true  # Use 'rethrow' to preserve stack traces
+    use_setters_to_change_properties: true  # Use setters instead of methods
+    unnecessary_overrides: true  # Avoid overriding methods without changes
+    avoid_returning_this: true  # Avoid methods that return 'this'
+    avoid_field_initializers_in_const_classes: true  # Avoid field initializers in const classes
+    avoid_web_libraries_in_flutter: true  # Do not import 'dart:html' or 'dart:js' in Flutter apps
+    cast_nullable_to_non_nullable: true  # Avoid casting nullable to non-nullable types
+    prefer_is_not_operator: true  # Use 'is!' instead of '!(x is ...)'
