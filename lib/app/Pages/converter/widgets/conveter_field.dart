@@ -77,11 +77,17 @@ class ConverterField<T> extends StatelessWidget {
               ],
             ),
             if (showUnits)
-              Row(
-                children: [
-                  Obx(() {
-                    Get.find<ConverterController>();
-                    return Row(
+              Obx(() {
+                Get.find<ConverterController>();
+                final screenWidth = MediaQuery.of(context).size.width;
+                return ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        screenWidth * 0.55, // Adjust to balance with dropdown
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: [
                         TabButton(
                           label: 'kg'.tr,
@@ -99,7 +105,7 @@ class ConverterField<T> extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         TabButton(
-                          label: 'Quintal'.tr,
+                          label: 'Qt'.tr,
                           isSelected: selectedUnitIndex!.value == 1,
                           onTap: () => onUnitSelected!(1),
                           height: 29.h,
@@ -127,11 +133,26 @@ class ConverterField<T> extends StatelessWidget {
                                   ),
                           borderRadius: 4,
                         ),
+                        const SizedBox(width: 4),
+                        TabButton(
+                          label: 'Mt'.tr,
+                          isSelected: selectedUnitIndex!.value == 3,
+                          onTap: () => onUnitSelected!(3),
+                          height: 29.h,
+                          textStyle:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: selectedUnitIndex!.value == 3
+                                        ? AppColors.textWhite100
+                                        : AppColors.textBlack60,
+                                  ),
+                          borderRadius: 4,
+                        ),
                       ],
-                    );
-                  }),
-                ],
-              ),
+                    ),
+                  ),
+                );
+              }),
           ],
         ),
         const SizedBox(

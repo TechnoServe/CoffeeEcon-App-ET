@@ -30,6 +30,8 @@ class BasicCalculatorController extends GetxController {
   final selectedTCoffeesellingType = RxnString();
   final selectedUnit = 'KG'.obs;
 
+  final Map<String, double> overriddenPercentages = {};
+
   //used for continue anyway
   final Map<String, bool> overriddenFieldAlerts = {
     'seasonalPrice': false,
@@ -81,6 +83,9 @@ class BasicCalculatorController extends GetxController {
   }
 
   //to validate the percentage of the 7 cost list
+
+  //to validate the percentage of the 7 cost list
+
   void validateFieldPercentages() {
     final values = {
       'seasonalPrice': double.tryParse(seasonalCoffeePriceController.text) ?? 0,
@@ -141,10 +146,8 @@ class BasicCalculatorController extends GetxController {
         ),
         builder: (_) => BestPracticeModal(
           title: 'Value Outside Best Practices'.tr,
-          message: 'The'.tr +
-              camelCaseToSpacedWords(field).tr +
-              'you entered is outside the recommended range. This may affect your cost calculations and profit estimates.'
-                  .tr,
+          message:
+              "${'The'.tr} ${camelCaseToSpacedWords(field).tr}${' you entered is outside the recommended range. This may affect your cost calculations and profit estimates.'.tr}",
           recommendedRanges: [
             Builder(
               builder: (context) => Padding(
@@ -166,7 +169,9 @@ class BasicCalculatorController extends GetxController {
                     alignment: PlaceholderAlignment.middle,
                   ),
                   TextSpan(
-                    text: '  ${camelCaseToSpacedWords(field)}: ',
+                    text: field == 'seasonalPrice'
+                        ? ' Lumpsum Seasonal Cherry Price: '
+                        : '  ${camelCaseToSpacedWords(field)}: ',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
@@ -181,17 +186,77 @@ class BasicCalculatorController extends GetxController {
                       color: Color(0xFF252B37),
                     ),
                   ),
-                  TextSpan(
-                    text: ' per ${selectedUnit.value}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Color(0xFF717680),
-                    ),
-                  ),
+                  // if (field != 'seasonalPrice')
+                  //   TextSpan(
+                  //     text: ' per ${selectedUnit.value}',
+                  //     style: const TextStyle(
+                  //       fontWeight: FontWeight.w400,
+                  //       fontSize: 12,
+                  //       color: Color(0xFF717680),
+                  //     ),
+                  //   ),
                 ],
               ),
             ),
+            if (field == 'seasonalPrice')
+              const SizedBox(
+                height: 4,
+              ),
+            if (field == 'seasonalPrice')
+              Text.rich(
+                TextSpan(
+                  children: [
+                    const WidgetSpan(
+                      child: Icon(Icons.circle, size: 4, color: Colors.black54),
+                      alignment: PlaceholderAlignment.middle,
+                    ),
+                    const TextSpan(
+                      text: ' Seasonal Cherry Price: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: Color(0xFF717680),
+                      ),
+                    ),
+                    TextSpan(
+                      text: () {
+                        // Parse the values
+                        final minValueNum = double.tryParse(minValue);
+                        final maxValueNum = double.tryParse(maxValue);
+                        final volumeNum =
+                            double.tryParse(purchaseVolumeController.text);
+
+                        // Check if all values are valid and divisor is not zero
+                        if (minValueNum != null &&
+                            maxValueNum != null &&
+                            volumeNum != null &&
+                            volumeNum != 0) {
+                          final minResult = minValueNum / volumeNum;
+                          final maxResult = maxValueNum / volumeNum;
+
+                          // Format to 2 decimal places (or use 0 if whole numbers)
+                          return 'ETB ${minResult.toStringAsFixed(2)} to ETB ${maxResult.toStringAsFixed(2)}';
+                        } else {
+                          return 'ETB ? to ETB ?'; // Fallback for invalid input
+                        }
+                      }(), // <-- Note: this is an immediately executed function
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: Color(0xFF252B37),
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' per ${selectedUnit.value}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: Color(0xFF717680),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
           tip:
               'Double-check your input and ensure it aligns with industry best practices for better results.'

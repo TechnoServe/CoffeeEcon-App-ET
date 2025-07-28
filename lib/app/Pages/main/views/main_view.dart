@@ -7,6 +7,7 @@ import 'package:flutter_template/app/Pages/converter/controllers/converter_contr
 import 'package:flutter_template/app/Pages/converter/controllers/history_controller.dart';
 import 'package:flutter_template/app/Pages/converter/view/converter_view.dart';
 import 'package:flutter_template/app/Pages/main/controllers/nav_controller.dart';
+import 'package:flutter_template/app/Pages/plan/controllers/plan_controller.dart';
 import 'package:flutter_template/app/data/models/advanced_calculation_model.dart';
 import 'package:flutter_template/app/data/models/basic_calculation_entry_model.dart';
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
@@ -67,17 +68,47 @@ class MainView extends GetView<NavController> {
       controller.currentIndex.value = index;
     }
 
-    return Obx(
-      () => AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-        child: Scaffold(
-          body: pages[controller.currentIndex.value],
-          bottomNavigationBar: AppBottomNav(
-            selectedIndex: controller.currentIndex.value,
-            onTap: handleTabChange,
+    return WillPopScope(
+      onWillPop: () async {
+        print(
+            'Back button pressed, currentIndex: ${controller.currentIndex.value}');
+        if (controller.currentIndex.value != 0) {
+          controller.currentIndex.value = 0;
+          return false; // Prevent app exit
+        } else {
+          // Show confirmation dialog on home page
+          final bool? shouldExit = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Confirm Exit'.tr),
+              content: Text('Are you sure you want to exit the app?'.tr),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('Cancel'.tr),
+                ),
+                TextButton(
+                  onPressed: SystemNavigator.pop,
+                  child: Text('Exit'.tr),
+                ),
+              ],
+            ),
+          );
+          return shouldExit ?? false; // Return false if dialog is dismissed
+        }
+      },
+      child: Obx(
+        () => AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+          ),
+          child: Scaffold(
+            body: pages[controller.currentIndex.value],
+            bottomNavigationBar: AppBottomNav(
+              selectedIndex: controller.currentIndex.value,
+              onTap: handleTabChange,
+            ),
           ),
         ),
       ),

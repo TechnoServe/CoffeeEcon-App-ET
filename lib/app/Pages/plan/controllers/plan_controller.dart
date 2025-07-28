@@ -111,7 +111,9 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
   // Second conversion (Dried pod <-> Green Coffee)
   // final selectedOutPutValueForNatural = 'Dried pod'.obs;
   final naturalOutputValue = ''.obs;
-
+  PlanController({int initialStep = 0}) {
+    currentStep.value = initialStep; // Initialize here
+  }
 /* 
 There are two coffee processing methods: natural (dry) and fully washed (wet).
 
@@ -660,35 +662,35 @@ Natural Process (dry method):
 
   @override
   void onClose() {
-    seasonalCoffeeController.dispose();
-    seasonalCoffeeController.dispose();
-    secondPaymentController.dispose();
-    lowGradeHullingController.dispose();
-    juteBagPriceController.dispose();
-    juteBagVolumeController.dispose();
-    ratioController.dispose();
-    startDateController.dispose();
-    endDateController.dispose();
-    machineTypeController.dispose();
-    numMachinesController.dispose();
-    numDisksController.dispose();
-    operatingHoursController.dispose();
-    startDateController.dispose();
-    endDateController.dispose();
+    // seasonalCoffeeController.dispose();
+    // seasonalCoffeeController.dispose();
+    // secondPaymentController.dispose();
+    // lowGradeHullingController.dispose();
+    // juteBagPriceController.dispose();
+    // juteBagVolumeController.dispose();
+    // ratioController.dispose();
+    // startDateController.dispose();
+    // endDateController.dispose();
+    // machineTypeController.dispose();
+    // numMachinesController.dispose();
+    // numDisksController.dispose();
+    // operatingHoursController.dispose();
+    // startDateController.dispose();
+    // endDateController.dispose();
 
-    //washed process controllers
-    fermentationLengthController.dispose();
-    fermentationWidthController.dispose();
-    fermentationDepthController.dispose();
-    fermentationHoursController.dispose();
-    soakingLengthController.dispose();
-    soakingWidthController.dispose();
-    soakingDepthController.dispose();
-    soakingDurationController.dispose();
-    dryingLengthController.dispose();
-    dryingWidthController.dispose();
-    dryingTimeWashedController.dispose();
-    dryingTimeSunDriedController.dispose();
+    // //washed process controllers
+    // fermentationLengthController.dispose();
+    // fermentationWidthController.dispose();
+    // fermentationDepthController.dispose();
+    // fermentationHoursController.dispose();
+    // soakingLengthController.dispose();
+    // soakingWidthController.dispose();
+    // soakingDepthController.dispose();
+    // soakingDurationController.dispose();
+    // dryingLengthController.dispose();
+    // dryingWidthController.dispose();
+    // dryingTimeWashedController.dispose();
+    // dryingTimeSunDriedController.dispose();
 
     controller.selectedSite = [];
 

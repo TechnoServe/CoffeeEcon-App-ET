@@ -19,7 +19,8 @@ class DropdownData {
     'Grams'.tr,
     'Kilograms'.tr,
     'Feresula'.tr,
-    'Quintal'.tr,
+    'Qt'.tr,
+    'Mt'.tr
   ];
 
   /// List of location options.
@@ -36,9 +37,10 @@ class DropdownData {
     'Grams': 0.001,
     'Kilograms': 1.0,
     'Feresula': 17.0,
-    'Quintal': 100.0,
-    'Pound': 0.453592,
+    'Qt': 100.0,
+    'Pound': 0.45359237,
     'Metric Ton': 1000.0, // Added metric ton (1 ton = 1000 kg)
+    "Mt": 1000.0, // Added metric ton (1 ton = 1000 kg)
   };
 
   /// List of business model options.

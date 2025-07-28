@@ -71,7 +71,8 @@ class _ResultsOverviewViewState extends State<ResultsOverviewView> {
           onBack: () {
             Get.to<void>(
               () => MainView(
-                initialIndex: 1,
+                initialIndex:
+                    widget.type == ResultsOverviewType.forecast ? 4 : 1,
                 basicCalcData: widget.basicCalcData,
                 advancedCalcData: widget.advancedCalcData,
                 type: widget.type,

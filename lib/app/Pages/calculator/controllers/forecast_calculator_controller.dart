@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/core/config/constants/calcuation_constants.dart';
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:flutter_template/app/routes/app_routes.dart';
 import 'package:get/get.dart';
@@ -49,7 +50,7 @@ Dried pod → Green coffee          1.25 : 1
 
   // Outputs
   // The calculated cost of cherries per kg (intermediate value)
-  double? costOfCherriesPerKg;
+  double? volumeOfCherry;
   // The final calculated total market price
   double? totalMarketPrice;
 
@@ -93,18 +94,25 @@ Dried pod → Green coffee          1.25 : 1
 
     // Step 4: Calculate the total equivalent cherry volume
     // (How many kg of cherry are needed for the given coffee volume)
-    costOfCherriesPerKg = coffeeVolumeInput * conversionFactor;
+    volumeOfCherry = coffeeVolumeInput * conversionFactor;
 
-    // Step 5: Calculate total revenue
-    final totalRevenue = priceInput * coffeeVolumeInput;
+    // Step 5: convert the input
 
-    // Step 6: Subtract other expenses to get net revenue
+    final convertedPriceInput =
+        priceInput / CalcuationConstants.unitToKg[selectedUnit.value]!;
+    final convertedCoffeeVolumeInput =
+        coffeeVolumeInput * CalcuationConstants.unitToKg[selectedUnit.value]!;
+
+    // Step 6: Calculate total revenue
+    final totalRevenue = convertedPriceInput * convertedCoffeeVolumeInput;
+
+    // Step 7: Subtract other expenses to get net revenue
     final totalOtherExpenseOutput = totalRevenue - otherExpensesInput;
 
-    // Step 7: Calculate the total market price per kg cherry
-    totalMarketPrice = totalOtherExpenseOutput / (costOfCherriesPerKg ?? 0);
+    // Step 8: Calculate the total market price per kg cherry
+    totalMarketPrice = totalOtherExpenseOutput / (volumeOfCherry ?? 0);
 
-    // Step 8: Navigate to the results overview page, passing the calculated values
+    // Step 9: Navigate to the results overview page, passing the calculated values
     Get.toNamed<void>(
       AppRoutes.RESULTSOVERVIEWVIEW,
       arguments: {

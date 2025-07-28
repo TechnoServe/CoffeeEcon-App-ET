@@ -498,12 +498,19 @@ class SummeryBodyState extends State<SummeryBody>
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                Get.delete<PlanController>();
-                Get.off<void>(
-                  () => MainView(
-                    initialIndex: 3,
-                  ),
+                // Delete existing PlanController
+                // Safely delete if exists
+                if (Get.isRegistered<PlanController>()) {
+                  Get.delete<PlanController>(force: true);
+                }
+
+                // Put new instance
+                Get.put<PlanController>(
+                  PlanController(initialStep: 0),
+                  permanent: false,
                 );
+                // Navigate to MainView
+                Get.off<void>(() => MainView(initialIndex: 3));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,

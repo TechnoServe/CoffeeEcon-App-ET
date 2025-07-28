@@ -23,14 +23,17 @@ class CalcuationConstants {
     'Dried pod/Jenfel': 0.2,
   };
 
-  /// Mapping of units to their kilogram equivalents.
+  /// Mapping of units to their kilogram equivalents.\
+  /// eg. 1 quintal is 100 kg, 1 metric ton is 1000 kg.
   static const Map<String, double> unitToKg = {
     'Grams': 0.001,
     'Kilograms': 1.0,
     'Feresula': 17.0,
     'Quintal': 100.0,
-    'Pound': 0.453592,
+    'Qt': 100.0,
+    'Pound': 0.45359237,
     'Metric Ton': 1000.0, // Added metric ton (1 ton = 1000 kg)
+    "Mt": 1000.0, // Added metric ton (1 ton = 1000 kg)
   };
 }
 

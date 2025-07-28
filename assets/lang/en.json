@@ -28,6 +28,8 @@
     "Feresula": "Feresula",
     "Metric Ton":"Metric Ton",
     "Quintal": "Quintal",
+    "Qt": "Qt",
+    "Mt": "Mt",
     "FROM": "FROM",
     "TO": "TO",
     "Results":"Results",
@@ -176,7 +178,7 @@
 "Conversion Ratio is required" : "Conversion Ratio is required",
 "Profit margin is required" : "Profit margin is required",
 
-"Procurement Expenses": "Procurement Expenses",
+"Procurement Expenses": "Cherry or Raw Material Expenses",
 "Transport and Commission": "Transport and Commission",
 "Labour Cost": "Labour Cost",
 "Maintenance & Equipment Cost": "Maintenance & Equipment Cost",

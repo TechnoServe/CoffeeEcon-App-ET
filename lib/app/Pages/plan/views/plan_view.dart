@@ -72,7 +72,9 @@ class PlanView extends GetView<PlanController> {
 
 class PlanBody extends StatefulWidget {
   PlanBody({super.key, this.initialStep = 0, this.totalSteps = 3}) {
-    controller = Get.put(PlanController());
+    controller = Get.put(
+      PlanController(initialStep: initialStep),
+    );
   }
 
   late final PlanController controller;
@@ -157,7 +159,7 @@ class PlanBodyState extends State<PlanBody>
   void initState() {
     super.initState();
 
-    widget.controller.currentStep.value = widget.initialStep;
+    // widget.controller.currentStep.value = widget.initialStep;
   }
 
   void _goNext() {

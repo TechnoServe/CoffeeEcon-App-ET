@@ -360,9 +360,9 @@ Dried pod → Green coffee          1.25 : 1
         fromUnit: _fromUnitValue ?? '',
         toUnit: _toUnitValue ?? '',
         inputValue:
-            "${_lastInputValue!} ${selectedFromUnitIndex.value == 0 ? 'kg'.tr : selectedFromUnitIndex.value == 1 ? 'Quintal'.tr : 'Feresula'.tr}",
+            "${_lastInputValue!} ${selectedFromUnitIndex.value == 0 ? 'kg'.tr : selectedFromUnitIndex.value == 1 ? 'Qt'.tr : selectedFromUnitIndex.value == 2 ? 'Feresula'.tr : 'Mt'.tr}",
         result:
-            '${_lastResult!.toStringAsFixed(2)} ${selectedToUnitIndex.value == 0 ? 'kg'.tr : selectedToUnitIndex.value == 1 ? 'Quintal'.tr : 'Feresula'.tr}',
+            '${_lastResult!.toStringAsFixed(2)} ${selectedToUnitIndex.value == 0 ? 'kg'.tr : selectedToUnitIndex.value == 1 ? 'Qt'.tr : selectedToUnitIndex.value == 2 ? 'Feresula'.tr : 'Mt'.tr}',
         isFromUnitConversion: isFromUnitConversion,
       );
     }
@@ -373,9 +373,11 @@ Dried pod → Green coffee          1.25 : 1
       case 0:
         return 'Kg';
       case 1:
-        return 'Quintal';
+        return 'Qt';
       case 2:
         return 'Feresula';
+      case 3:
+        return 'Mt';
       default:
         return 'Kg';
     }
