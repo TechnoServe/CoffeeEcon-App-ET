@@ -7,8 +7,7 @@ import 'package:flutter_template/app/Pages/converter/controllers/converter_contr
 import 'package:flutter_template/app/Pages/converter/controllers/history_controller.dart';
 import 'package:flutter_template/app/Pages/converter/view/converter_view.dart';
 import 'package:flutter_template/app/Pages/main/controllers/nav_controller.dart';
-import 'package:flutter_template/app/Pages/plan/controllers/plan_controller.dart';
-import 'package:flutter_template/app/data/models/advanced_calculation_model.dart';
+ import 'package:flutter_template/app/data/models/advanced_calculation_model.dart';
 import 'package:flutter_template/app/data/models/basic_calculation_entry_model.dart';
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:flutter_template/app/Pages/plan/views/plan_view.dart';

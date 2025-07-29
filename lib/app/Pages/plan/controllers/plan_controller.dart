@@ -39,7 +39,7 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
   double sunDriedPercent = 0.2;
   //pulping machine
   final TextEditingController machineTypeController =
-      TextEditingController(text: 'Disk Pulper');
+      TextEditingController(text: 'Disk Pulper'.tr);
   final TextEditingController numMachinesController = TextEditingController();
   final TextEditingController numDisksController = TextEditingController();
   final TextEditingController operatingHoursController =

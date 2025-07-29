@@ -17,107 +17,118 @@ class SiteListView extends StatelessWidget {
   final planController = Get.put(PlanController(), tag: UniqueKey().toString());
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: SharableAppBar(
-          title: 'Sites',
-          onBack: () => {
+  Widget build(BuildContext context) => PopScope(
+        canPop: false, // Prevent default back navigation
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            // Custom back button behavior
             Get.toNamed<void>(
               AppRoutes.MAINVIEW,
-            ),
-          },
-          trailing: SizedBox(
-            child: AppButton(
-              text: 'Add Site',
-              prefix: const Icon(
-                Icons.add,
-                color: AppColors.textWhite100,
+            );
+          }
+        },
+    child: Scaffold(
+          appBar: SharableAppBar(
+            title: 'Sites',
+            onBack: () => {
+              Get.toNamed<void>(
+                AppRoutes.MAINVIEW,
               ),
-              onPressed: () {
-                {
-                  Get.toNamed<void>(
-                    AppRoutes.SITEREGISTRATION,
-                    arguments: {'site': null},
-                  );
-                }
-              },
-              width: 116,
-              verticalPadding: 8,
-              height: 40,
+            },
+            trailing: SizedBox(
+              child: AppButton(
+                text: 'Add Site From List'.tr,
+                prefix: const Icon(
+                  Icons.add,
+                  color: AppColors.textWhite100,
+                ),
+                onPressed: () {
+                  {
+                    Get.toNamed<void>(
+                      AppRoutes.SITEREGISTRATION,
+                      arguments: {'site': null},
+                    );
+                  }
+                },
+                width: 116,
+                verticalPadding: 8,
+                height: 40,
+              ),
             ),
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.pageHorizontalPadding,
-            ),
-            child: Obx(
-              () => Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Manage your coffee processing sites in one place.',
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ),
-                      Container(
-                        height: 36,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.pageHorizontalPadding,
+              ),
+              child: Obx(
+                () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
                           child: Text(
-                            '${controller.sites.length}/10 Sites',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall
-                                ?.copyWith(
-                                  color: AppColors.textBlack60,
-                                ),
+                            'Manage your coffee processing sites in one place.',
+                            style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  ...controller.sites.map(
-                    (site) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: GestureDetector(
-                        onTap: () => {
-                          calcController.loadCalculationsBySite(
-                            siteId: site.id,
+                        Container(
+                          height: 36,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
                           ),
-                          planController.loadPlansBySite(
-                            siteId: site.id,
+                          decoration: BoxDecoration(
+                            color: AppColors.secondary,
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          Get.toNamed<void>(
-                            AppRoutes.SITEDETAIL,
-                            arguments: {'site': site},
+                          child: Center(
+                            child: Text(
+                              '${controller.sites.length}/10 Sites',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: AppColors.textBlack60,
+                                  ),
+                            ),
                           ),
-                        },
-                        child: SiteCard(
-                          site: site,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    ...controller.sites.map(
+                      (site) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: GestureDetector(
+                          onTap: () => {
+                            calcController.loadCalculationsBySite(
+                              siteId: site.id,
+                            ),
+                            planController.loadPlansBySite(
+                              siteId: site.id,
+                            ),
+                            Get.toNamed<void>(
+                              AppRoutes.SITEDETAIL,
+                              arguments: {'site': site},
+                            ),
+                          },
+                          child: SiteCard(
+                            site: site,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      );
+  );
 }

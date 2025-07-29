@@ -101,7 +101,7 @@ class _LabeledDropdownState<T> extends State<LabeledDropdown<T>> {
                         children: [
                           Expanded(
                             child: Text(
-                              widget.value?.toString() ?? widget.hintText.tr,
+                              widget.value?.toString().tr ?? widget.hintText.tr,
                               style: widget.value == null
                                   ? const TextStyle(
                                       color: Color(0xFFB0B7C3),

@@ -27,9 +27,9 @@ class BasicTab extends StatefulWidget {
 class _BasicTabState extends State<BasicTab> {
   @override
   Widget build(BuildContext context) {
-    if (!Get.isRegistered<BasicCalculatorController>()) {
-      Get.put(BasicCalculatorController(), tag: UniqueKey().toString());
-    }
+    // if (!Get.isRegistered<BasicCalculatorController>()) {
+    //   Get.put(BasicCalculatorController(), tag: 'basic-tag');
+    // }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.entry != null) {
         widget.controller.patchPreviousData(data: widget.entry);

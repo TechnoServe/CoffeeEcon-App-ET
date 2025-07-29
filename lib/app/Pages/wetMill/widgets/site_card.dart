@@ -131,16 +131,16 @@ class SiteCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TagCard(
-                        label: '📍 ${site.location}',
+                        label: '📍 ${site.location.tr}',
                       ),
                     ),
                     const SizedBox(width: 4),
                     TagCard(
-                      label: '🏭 ${site.businessModel}',
+                      label: '🏭 ${site.businessModel.tr}',
                     ),
                     const SizedBox(width: 4),
                     TagCard(
-                      label: '👷🏽‍♂️ ${site.workers} workers',
+                      label: '👷🏽‍♂️ ${site.workers} ${'workers'.tr}',
                     ),
                   ],
                 ),

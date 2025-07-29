@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/advanced_calculator_controller.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/basic_calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/general_app_bar.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/tab/advanced_tab.dart';
@@ -27,7 +29,8 @@ class CalculatorView extends GetView<CalculatorController> {
   @override
   Widget build(BuildContext context) {
     Get.put(CalculatorController());
-
+Get.put(BasicCalculatorController(), permanent: true); // Register BasicCalculatorController
+    Get.put(AdvancedCalculatorController(), permanent: true); // Register AdvancedCalculatorController
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: GeneralAppBar(
@@ -50,7 +53,14 @@ class CalculatorView extends GetView<CalculatorController> {
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(20)),
                   ),
-                  builder: (context) => const UploadCalculationBottomSheet(),
+                  builder: (context) => UploadCalculationBottomSheet(
+                    onUploadComplete: () {
+                      // Trigger UI refresh if needed
+                      controller.loadSavedCalcuations(); // Update CalculatorController
+                      Get.find<BasicCalculatorController>().update(); // Notify GetX to rebuild
+                    },
+                  ),
+                
                 );
               },
             ),

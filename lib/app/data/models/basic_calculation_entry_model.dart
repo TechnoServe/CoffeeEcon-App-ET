@@ -1,10 +1,11 @@
+import 'package:flutter_template/app/data/models/calculation_model.dart';
 import 'package:hive/hive.dart';
 
 part 'basic_calculation_entry_model.g.dart';
 
 /// Model representing a basic calculation entry for coffee processing.
 @HiveType(typeId: 11)
-class BasicCalculationEntryModel extends HiveObject {
+class BasicCalculationEntryModel extends HiveObject implements CalculationModel {
   /// Creates a [BasicCalculationEntryModel] entry.
   BasicCalculationEntryModel({
     required this.totalSellingPrice,

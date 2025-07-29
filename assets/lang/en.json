@@ -78,6 +78,7 @@
 
     "Edit Site":"Edit Site",
     "Add Site":"Add Site",
+    "Add Site From List":"Add Site",
     "Basic Information":"Basic Information",
     "Back":"Back",
     "Name":"Name",
@@ -105,6 +106,8 @@
     "Workers & Overhead Managers":"'Workers & Overhead Managers",
     "Number of employees":"Number of employees",
     "Workers & Overhead Managers is required":"Workers & Overhead Managers is required",
+    "workers":"workers",
+    
     " Outgrower Farmers":" Outgrower Farmers",
     "Number of suplliers":"Number of suplliers",
     " Outgrower Farmers is required":" Outgrower Farmers is required",

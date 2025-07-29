@@ -93,12 +93,15 @@
     "Managers":"አስተዳዳሪዎች",
     "Farmers": "አርሶ አደሮች",
     "Total Workers":"ጠቅላላ ሠራተኞች",
+    "workers":"ሠራተኞች",
+
     "Annually":"በየዓመቱ",
     "Created on":"የተመዘገበት ቀን",
 
 
     "Edit Site":"የቡና ማጠቢያ ጣቢያውን አስተካክል",
     "Add Site":"የቡና ማጠቢያ ጣቢያ መዝግብ",
+    "Add Site From List":"ጣቢያ መዝግብ",
     "Basic Information":"መሰረታዊ መረጃ",
     "Back":"ተመለስ",
     "Name":"ስም",

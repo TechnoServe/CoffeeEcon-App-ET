@@ -16,6 +16,8 @@ class AppButton extends StatelessWidget {
     this.borderRadius = AppSizes.buttonRadius,
     this.width = double.infinity,
     this.height = AppSizes.buttonHeight,
+    this.textStyle
+
   });
 
   final String text;
@@ -28,6 +30,7 @@ class AppButton extends StatelessWidget {
   final double? width;
   final double height;
   final Widget? prefix; // Define the optional prefix widget
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -51,10 +54,11 @@ class AppButton extends StatelessWidget {
               ],
               Text(
                 text.tr,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                style: textStyle ??  Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: textColor,
                       fontWeight: FontWeight.w600,
                     ),
+                overflow: TextOverflow.ellipsis,    
               ),
             ],
           ),

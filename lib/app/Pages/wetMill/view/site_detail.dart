@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/Pages/auth/controllers/home_controllers.dart';
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
 import 'package:flutter_template/app/Pages/converter/widgets/shared_bottom_sheet.dart';
 import 'package:flutter_template/app/Pages/converter/widgets/tab_button.dart';
@@ -28,6 +29,8 @@ class SiteDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SiteController>();
+    final homeController = Get.find<HomeControllers>();
+
     final calcController = Get.find<CalculatorController>();
     final planController = Get.find<PlanController>();
 
@@ -101,6 +104,7 @@ class SiteDetailView extends StatelessWidget {
                             },
                             onConfirm: () async {
                               await controller.deleteSite(site.id);
+                              homeController.loadSites();
                               Get.toNamed<void>(
                                 AppRoutes.SITELIST,
                               );

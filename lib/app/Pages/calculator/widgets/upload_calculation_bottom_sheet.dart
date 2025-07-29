@@ -1,17 +1,22 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/advanced_calculator_controller.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/basic_calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/file_upload_box.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/labeled_dropdown.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/save_cost_breakdown_sheet.dart';
 import 'package:flutter_template/app/core/config/app_color.dart';
 import 'package:flutter_template/app/core/services/export_service.dart';
+import 'package:flutter_template/app/data/models/advanced_calculation_model.dart';
+import 'package:flutter_template/app/data/models/basic_calculation_entry_model.dart';
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class UploadCalculationBottomSheet extends StatefulWidget {
-  const UploadCalculationBottomSheet({super.key});
+final VoidCallback? onUploadComplete;
+
+  const UploadCalculationBottomSheet({super.key, this.onUploadComplete});
 
   @override
   State<UploadCalculationBottomSheet> createState() =>
@@ -102,7 +107,7 @@ class _UploadCalculationBottomSheetState
             ),
             Text(
               'Upload Calculation Data'.tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
                 color: Color(0xFF23262F),
@@ -114,7 +119,7 @@ class _UploadCalculationBottomSheetState
               alignment: Alignment.centerLeft,
               child: Text(
                 'Calculation Type'.tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 12,
                   color: Color(0xFF23262F),
@@ -153,7 +158,7 @@ class _UploadCalculationBottomSheetState
               alignment: Alignment.centerLeft,
               child: Text(
                 'Save as'.tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 12,
                   color: Color(0xFF23262F),
@@ -240,7 +245,7 @@ class _UploadCalculationBottomSheetState
                       ),
                       child: Text(
                         'Cancel'.tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color(0xFF6B7280),
                           fontWeight: FontWeight.w600,
                         ),
@@ -261,18 +266,33 @@ class _UploadCalculationBottomSheetState
                               } else if (slectedCalculationType == null) {
                                 setState(() => showCalculationTypeError = true);
                               } else {
-                                try {
-                                  await importExcelAndSaveToHive(
-                                    filePath: pickedFile!.path!,
-                                    title: titleController.text,
-                                    type: slectedCalculationType ==
-                                            'Basic Calculator'
-                                        ? ResultsOverviewType.basic
-                                        : ResultsOverviewType.advanced,
-                                    context: context,
-                                  );
-                                  calcController.loadSavedCalcuations();
-                                } catch (e) {
+                             try {
+  final importedModel = await importExcelAndSaveToHive(
+    filePath: pickedFile!.path!,
+    title: titleController.text,
+    type: slectedCalculationType == 'Basic Calculator'
+        ? ResultsOverviewType.basic
+        : ResultsOverviewType.advanced,
+    context: context,
+  );
+
+  // Reload saved calculations
+  calcController.loadSavedCalcuations();
+if (importedModel != null) {
+  setState(() {
+    if (importedModel is BasicCalculationEntryModel) {
+      final basicController = Get.find<BasicCalculatorController>(); // Retrieve the existing instance
+      basicController.patchPreviousData(data: importedModel);
+    } else if (importedModel is AdvancedCalculationModel) {
+      final advancedController = Get.find<AdvancedCalculatorController>(); // Retrieve the existing instance
+      advancedController.patchAdvancedCalcData(data: importedModel);
+    }
+  });
+}
+widget.onUploadComplete?.call();
+  // Now use the returned model
+
+} catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Error: ${e.toString()}'),
@@ -297,7 +317,7 @@ class _UploadCalculationBottomSheetState
                       ),
                       child: Text(
                         'Upload'.tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),

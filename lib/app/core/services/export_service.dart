@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/advanced_calculator_controller.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/basic_calculator_controller.dart';
 import 'package:flutter_template/app/core/config/app_assets.dart';
 import 'package:flutter_template/app/core/services/calculation_service.dart';
 import 'package:flutter_template/app/core/services/wet_mill_service.dart';
 import 'package:flutter_template/app/data/models/advanced_calculation_model.dart';
 import 'package:flutter_template/app/data/models/basic_calculation_entry_model.dart';
+import 'package:flutter_template/app/data/models/calculation_model.dart';
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:flutter_template/app/data/models/save_breakdown_model.dart';
 import 'package:flutter_template/app/data/models/site_info_model.dart';
@@ -549,7 +552,7 @@ Future<bool> _requestStoragePermission() async {
 }
 
 /// Imports an Excel file and saves its data to Hive.
-Future<void> importExcelAndSaveToHive({
+Future<CalculationModel?> importExcelAndSaveToHive({
   required String title,
   required ResultsOverviewType type,
   required String filePath,
@@ -559,6 +562,7 @@ Future<void> importExcelAndSaveToHive({
   final CalculationService calculationService = CalculationService();
   BasicCalculationEntryModel? basicCalcData;
   AdvancedCalculationModel? advancedCalcData;
+
   final extrasMap = {
     'procurement': <Map<String, String>>[],
     'transport': <Map<String, String>>[],
@@ -567,197 +571,224 @@ Future<void> importExcelAndSaveToHive({
     'other': <Map<String, String>>[],
   };
 
-  final fileBytes = File(filePath).readAsBytesSync();
-  final excel = Excel.decodeBytes(fileBytes);
-  final sheet = excel['Breakdowns'];
-  if (sheet.rows.length < 2) return;
-  final headerRow = sheet.rows[0];
-  final breakdownRow = sheet.rows[1];
+  try {
+    final fileBytes = File(filePath).readAsBytesSync();
+    final excel = Excel.decodeBytes(fileBytes);
+    final sheet = excel['Breakdowns'];
 
-  // Parse extras from headers and data
-  for (int i = 0; i < headerRow.length; i++) {
-    final header = headerRow[i]?.value.toString() ?? '';
-    if (header.contains(':')) {
-      final parts = header.split(':');
-      if (parts.length == 2) {
-        final prefix = parts[0];
-        final key = parts[1];
-        final value = breakdownRow[i]?.value.toString() ?? '';
+    if (sheet.rows.length < 2) {
+      return null; // No data
+    }
 
-        if (extrasMap.containsKey(prefix)) {
-          extrasMap[prefix]!.add({key: value});
+    final headerRow = sheet.rows[0];
+    final breakdownRow = sheet.rows[1];
+
+    // Parse extras
+    for (int i = 0; i < headerRow.length; i++) {
+      final header = headerRow[i]?.value.toString() ?? '';
+      if (header.contains(':')) {
+        final parts = header.split(':');
+        if (parts.length == 2) {
+          final prefix = parts[0].trim();
+          final key = parts[1].trim();
+          final value = breakdownRow[i]?.value.toString() ?? '';
+
+          if (extrasMap.containsKey(prefix)) {
+            extrasMap[prefix]!.add({key: value});
+          }
         }
       }
     }
-  }
-  final String excelCalcType =
-      breakdownRow[sheet.rows[0].length - 1]?.value.toString() ?? '';
 
-  //check if the given excel calcualtaion type is matched with the selected calaculation type
-  if (excelCalcType.trim().toLowerCase() != type.name.trim().toLowerCase()) {
-    final bottomSheetContext = Navigator.of(context).overlay!.context;
-    await Helpers().showBottomSheet(
-        key: Key('bottom'),
-        // ignore: use_build_context_synchronously
+    final String excelCalcType =
+        breakdownRow[sheet.rows[0].length - 1]?.value.toString() ?? '';
+
+    // Validate type match
+    if (excelCalcType.trim().toLowerCase() != type.name.trim().toLowerCase()) {
+      final bottomSheetContext = Navigator.of(context).overlay!.context;
+      await Helpers().showBottomSheet(
+        key: const Key('bottom'),
         bottomSheetContext,
         title: 'Invalid Type',
         subTitle:
             'Please upload the correct excel format or check the calculation type!',
         buttonText: 'OK',
         imagePath: AppAssets.warningIcon,
-        isCenteredSubtitle: true, onButtonPressed: () {
-      Navigator.of(context).pop(); // Pops only the top sheet
-    });
-
-    return;
-  }
-  if (type == ResultsOverviewType.basic) {
-    basicCalcData = BasicCalculationEntryModel(
-      totalSellingPrice:
-          double.tryParse(breakdownRow[12]?.value.toString() ?? '') ?? 0,
-      sellingType: breakdownRow[1]?.value.toString() ?? '',
-      expectedProfit: breakdownRow[2]?.value.toString() ?? '',
-      purchaseVolume: breakdownRow[3]?.value.toString() ?? '',
-      seasonalPrice: breakdownRow[4]?.value.toString() ?? '',
-      fuelAndOils: breakdownRow[5]?.value.toString() ?? '',
-      cherryTransport: breakdownRow[6]?.value.toString() ?? '',
-      laborFullTime: breakdownRow[7]?.value.toString() ?? '',
-      laborCasual: breakdownRow[8]?.value.toString() ?? '',
-      repairsAndMaintenance: breakdownRow[9]?.value.toString() ?? '',
-      otherExpenses: breakdownRow[10]?.value.toString() ?? '',
-      ratio: breakdownRow[11]?.value.toString() ?? '',
-    );
-  } else if (type == ResultsOverviewType.advanced) {
-    advancedCalcData = AdvancedCalculationModel(
-      sellingType: breakdownRow[1]?.value.toString() ?? '',
-      cherryPurchase: breakdownRow[2]?.value.toString() ?? '',
-      seasonalCoffee: breakdownRow[3]?.value.toString() ?? '',
-      secondPayment: breakdownRow[4]?.value.toString() ?? '',
-      lowGradeHulling: breakdownRow[5]?.value.toString() ?? '',
-      juteBagPrice: breakdownRow[6]?.value.toString() ?? '',
-      juteBagVolume: breakdownRow[7]?.value.toString() ?? '',
-      ratio: breakdownRow[8]?.value.toString() ?? '',
-      procurementTotal:
-          double.tryParse(breakdownRow[9]?.value.toString() ?? '') ?? 0,
-      transportCost: breakdownRow[10]?.value.toString() ?? '',
-      commission: breakdownRow[11]?.value.toString() ?? '',
-      transportTotal:
-          double.tryParse(breakdownRow[12]?.value.toString() ?? '') ?? 0,
-      casualLabour: breakdownRow[13]?.value.toString() ?? '',
-      permanentLabour: breakdownRow[14]?.value.toString() ?? '',
-      overhead: breakdownRow[15]?.value.toString() ?? '',
-      otherLabour: breakdownRow[16]?.value.toString() ?? '',
-      permanentTotal:
-          double.tryParse(breakdownRow[17]?.value.toString() ?? '') ?? 0,
-      casualTotal:
-          double.tryParse(breakdownRow[18]?.value.toString() ?? '') ?? 0,
-      fuelCost: breakdownRow[19]?.value.toString() ?? '',
-      fuelTotal: double.tryParse(breakdownRow[20]?.value.toString() ?? '') ?? 0,
-      utilities: breakdownRow[21]?.value.toString() ?? '',
-      annualMaintenance: breakdownRow[22]?.value.toString() ?? '',
-      dryingBed: breakdownRow[23]?.value.toString() ?? '',
-      sparePart: breakdownRow[24]?.value.toString() ?? '',
-      maintenanceTotal:
-          double.tryParse(breakdownRow[25]?.value.toString() ?? '') ?? 0,
-      otherExpenses: breakdownRow[26]?.value.toString() ?? '',
-      otherTotal:
-          double.tryParse(breakdownRow[27]?.value.toString() ?? '') ?? 0,
-      jutBagTotal:
-          double.tryParse(breakdownRow[28]?.value.toString() ?? '') ?? 0,
-      variableCostTotal:
-          double.tryParse(breakdownRow[29]?.value.toString() ?? '') ?? 0,
-      procurementExtras: extrasMap['procurement']!,
-      transportExtras: extrasMap['transport']!,
-      fuelExtras: extrasMap['fuel']!,
-      maintenanceExtras: extrasMap['maintenance']!,
-      otherExtras: extrasMap['other']!,
-    );
-  }
-
-  final breakEvenPrice =
-      double.tryParse(breakdownRow[0]?.value.toString() ?? '') ?? 0;
-
-  // Locate the Site Info Section
-  final List<Map<String, String>> selectedSites = [];
-
-  final siteHeaderIndex = sheet.rows.indexWhere(
-    (row) => row.any((cell) => cell?.value.toString().trim() == 'Site Info'),
-  );
-
-  if (siteHeaderIndex != -1 && siteHeaderIndex + 2 <= sheet.rows.length) {
-    for (int i = siteHeaderIndex + 2; i < sheet.rows.length; i++) {
-      final row = sheet.rows[i];
-      if (row.isEmpty || row[0] == null) continue;
-
-      final site = SiteInfo(
-        siteName: row[0]?.value.toString() ?? '',
-        location: row[1]?.value.toString() ?? '',
-        businessModel: row[2]?.value.toString() ?? '',
-        processingCapacity: int.tryParse(row[3]?.value.toString() ?? '') ?? 0,
-        storageSpace: int.tryParse(row[4]?.value.toString() ?? '') ?? 0,
-        dryingBeds: int.tryParse(row[5]?.value.toString() ?? '') ?? 0,
-        fermentationTanks: int.tryParse(row[6]?.value.toString() ?? '') ?? 0,
-        pulpingCapacity: int.tryParse(row[7]?.value.toString() ?? '') ?? 0,
-        workers: int.tryParse(row[8]?.value.toString() ?? '') ?? 0,
-        farmers: int.tryParse(row[9]?.value.toString() ?? '') ?? 0,
+        isCenteredSubtitle: true,
+        onButtonPressed: () {
+          Navigator.of(context).pop();
+        },
       );
-      bool success = false;
-      String title = '';
-      String subTitle = '';
-      bool isLimitReached = false;
-      try {
-        success = await siteService.addSite(site);
-        if (success) {
-          selectedSites.add({
-            'siteId': site.id,
-            'siteName': site.siteName,
-          });
-        }
-      } catch (e) {
-        if (e.toString().contains('DUPLICATE_NAME')) {
-          title = 'Duplicate Coffee Washing Station';
-          subTitle =
-              'A site with this name already exists. Please choose a different name';
-        } else if (e.toString().contains('LIMIT_REACHED')) {
-          title = 'You can\'t add any more sites';
-          subTitle =
-              'The system has reached its limit for adding new sites. Delete previous sites to add new sites.';
-          isLimitReached = true;
-        } else {
-          title = 'Unexpected Error';
-          subTitle =
-              'An error occurred while adding the site. Please try again.';
-        }
-      }
-      if (!success) {
-        await Helpers().showBottomSheet(
-          // ignore: use_build_context_synchronously
-          context,
-          title: title,
-          subTitle: subTitle,
-          buttonText: 'OK',
-          imagePath: AppAssets.warningIcon,
-          isCenteredSubtitle: true,
-          onButtonPressed: () {
-            Navigator.of(context).pop();
-          },
+      return null; // 🔴 Return null early
+    }
+
+    // Create the appropriate model based on type
+    if (type == ResultsOverviewType.basic) {
+      basicCalcData = BasicCalculationEntryModel(
+        totalSellingPrice:
+            double.tryParse(breakdownRow[12]?.value.toString() ?? '') ?? 0,
+        sellingType: breakdownRow[1]?.value.toString() ?? '',
+        expectedProfit: breakdownRow[2]?.value.toString() ?? '',
+        purchaseVolume: breakdownRow[3]?.value.toString() ?? '',
+        seasonalPrice: breakdownRow[4]?.value.toString() ?? '',
+        fuelAndOils: breakdownRow[5]?.value.toString() ?? '',
+        cherryTransport: breakdownRow[6]?.value.toString() ?? '',
+        laborFullTime: breakdownRow[7]?.value.toString() ?? '',
+        laborCasual: breakdownRow[8]?.value.toString() ?? '',
+        repairsAndMaintenance: breakdownRow[9]?.value.toString() ?? '',
+        otherExpenses: breakdownRow[10]?.value.toString() ?? '',
+        ratio: breakdownRow[11]?.value.toString() ?? '',
+      );
+    } else if (type == ResultsOverviewType.advanced) {
+      advancedCalcData = AdvancedCalculationModel(
+        sellingType: breakdownRow[1]?.value.toString() ?? '',
+        cherryPurchase: breakdownRow[2]?.value.toString() ?? '',
+        seasonalCoffee: breakdownRow[3]?.value.toString() ?? '',
+        secondPayment: breakdownRow[4]?.value.toString() ?? '',
+        lowGradeHulling: breakdownRow[5]?.value.toString() ?? '',
+        juteBagPrice: breakdownRow[6]?.value.toString() ?? '',
+        juteBagVolume: breakdownRow[7]?.value.toString() ?? '',
+        ratio: breakdownRow[8]?.value.toString() ?? '',
+        procurementTotal:
+            double.tryParse(breakdownRow[9]?.value.toString() ?? '') ?? 0,
+        transportCost: breakdownRow[10]?.value.toString() ?? '',
+        commission: breakdownRow[11]?.value.toString() ?? '',
+        transportTotal:
+            double.tryParse(breakdownRow[12]?.value.toString() ?? '') ?? 0,
+        casualLabour: breakdownRow[13]?.value.toString() ?? '',
+        permanentLabour: breakdownRow[14]?.value.toString() ?? '',
+        overhead: breakdownRow[15]?.value.toString() ?? '',
+        otherLabour: breakdownRow[16]?.value.toString() ?? '',
+        permanentTotal:
+            double.tryParse(breakdownRow[17]?.value.toString() ?? '') ?? 0,
+        casualTotal:
+            double.tryParse(breakdownRow[18]?.value.toString() ?? '') ?? 0,
+        fuelCost: breakdownRow[19]?.value.toString() ?? '',
+        fuelTotal: double.tryParse(breakdownRow[20]?.value.toString() ?? '') ?? 0,
+        utilities: breakdownRow[21]?.value.toString() ?? '',
+        annualMaintenance: breakdownRow[22]?.value.toString() ?? '',
+        dryingBed: breakdownRow[23]?.value.toString() ?? '',
+        sparePart: breakdownRow[24]?.value.toString() ?? '',
+        maintenanceTotal:
+            double.tryParse(breakdownRow[25]?.value.toString() ?? '') ?? 0,
+        otherExpenses: breakdownRow[26]?.value.toString() ?? '',
+        otherTotal:
+            double.tryParse(breakdownRow[27]?.value.toString() ?? '') ?? 0,
+        jutBagTotal:
+            double.tryParse(breakdownRow[28]?.value.toString() ?? '') ?? 0,
+        variableCostTotal:
+            double.tryParse(breakdownRow[29]?.value.toString() ?? '') ?? 0,
+        procurementExtras: extrasMap['procurement']!,
+        transportExtras: extrasMap['transport']!,
+        fuelExtras: extrasMap['fuel']!,
+        maintenanceExtras: extrasMap['maintenance']!,
+        otherExtras: extrasMap['other']!,
+      );
+    }
+
+    final breakEvenPrice =
+        double.tryParse(breakdownRow[0]?.value.toString() ?? '') ?? 0;
+
+    // Handle Site Info
+    final List<Map<String, String>> selectedSites = [];
+    final siteHeaderIndex = sheet.rows.indexWhere(
+      (row) => row.any((cell) => cell?.value.toString().trim() == 'Site Info'),
+    );
+
+    if (siteHeaderIndex != -1 && siteHeaderIndex + 2 <= sheet.rows.length) {
+      for (int i = siteHeaderIndex + 2; i < sheet.rows.length; i++) {
+        final row = sheet.rows[i];
+        if (row.isEmpty || row[0] == null) continue;
+
+        final site = SiteInfo(
+          siteName: row[0]?.value.toString() ?? '',
+          location: row[1]?.value.toString() ?? '',
+          businessModel: row[2]?.value.toString() ?? '',
+          processingCapacity: int.tryParse(row[3]?.value.toString() ?? '') ?? 0,
+          storageSpace: int.tryParse(row[4]?.value.toString() ?? '') ?? 0,
+          dryingBeds: int.tryParse(row[5]?.value.toString() ?? '') ?? 0,
+          fermentationTanks: int.tryParse(row[6]?.value.toString() ?? '') ?? 0,
+          pulpingCapacity: int.tryParse(row[7]?.value.toString() ?? '') ?? 0,
+          workers: int.tryParse(row[8]?.value.toString() ?? '') ?? 0,
+          farmers: int.tryParse(row[9]?.value.toString() ?? '') ?? 0,
         );
-        return;
+
+        bool success = false;
+        String title = '';
+        String subTitle = '';
+        bool isLimitReached = false;
+
+        try {
+          success = await siteService.addSite(site);
+          if (success) {
+            selectedSites.add({
+              'siteId': site.id,
+              'siteName': site.siteName,
+            });
+          }
+        } catch (e) {
+          if (e.toString().contains('DUPLICATE_NAME')) {
+            title = 'Duplicate Coffee Washing Station';
+            subTitle =
+                'A site with this name already exists. Please choose a different name';
+          } else if (e.toString().contains('LIMIT_REACHED')) {
+            title = 'You can\'t add any more sites';
+            subTitle =
+                'The system has reached its limit for adding new sites. Delete previous sites to add new sites.';
+            isLimitReached = true;
+          } else {
+            title = 'Unexpected Error';
+            subTitle =
+                'An error occurred while adding the site. Please try again.';
+          }
+        }
+
+        if (!success) {
+          await Helpers().showBottomSheet(
+            context,
+            title: title,
+            subTitle: subTitle,
+            buttonText: 'OK',
+            imagePath: AppAssets.warningIcon,
+            isCenteredSubtitle: true,
+            onButtonPressed: () {
+              Navigator.of(context).pop();
+            },
+          );
+          return null; // 🔴 Return null if site add failed
+        }
       }
     }
+
+    // Save to Hive
+    final savedModel = SavedBreakdownModel(
+      title: title,
+      type: type,
+      basicCalculation: basicCalcData,
+      advancedCalculation: advancedCalcData,
+      breakEvenPrice: breakEvenPrice,
+      selectedSites: selectedSites,
+      isBestPractice:
+          breakdownRow[13]?.value.toString() == 'Best Practice' ? true : false,
+    );
+
+    await calculationService.saveBreakdown(savedModel);
+    Navigator.of(context).pop();
+
+    // ✅ Return the created model or null
+  return (basicCalcData ?? advancedCalcData) as CalculationModel?;
+  } catch (e) {
+    // Handle unexpected errors
+    await Helpers().showBottomSheet(
+      context,
+      title: 'Import Failed',
+      subTitle: 'An error occurred: $e',
+      buttonText: 'OK',
+      imagePath: AppAssets.warningIcon,
+      onButtonPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    return null;
   }
-
-  final savedModel = SavedBreakdownModel(
-    title: title,
-    type: type,
-    basicCalculation: basicCalcData,
-    advancedCalculation: advancedCalcData,
-    breakEvenPrice: breakEvenPrice,
-    selectedSites: selectedSites,
-    isBestPractice:
-        breakdownRow[13]?.value.toString() == 'Best Practice' ? true : false,
-  );
-
-  await calculationService.saveBreakdown(savedModel);
-  Navigator.of(context).pop();
 }

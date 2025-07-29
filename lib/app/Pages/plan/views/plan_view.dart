@@ -805,7 +805,7 @@ class _ProcessingMethodPageState extends State<ProcessingMethodPage> {
                       color: Color(0xFF23262F),
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Disk Pulper',
+                      hintText: 'Disk Pulper'.tr,
                       hintStyle: const TextStyle(
                         color: Color(0xFFB0B7C3),
                         fontWeight: FontWeight.w400,

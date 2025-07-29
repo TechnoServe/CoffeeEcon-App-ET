@@ -170,7 +170,7 @@ class BasicCalculatorController extends GetxController {
                   ),
                   TextSpan(
                     text: field == 'seasonalPrice'
-                        ? ' Lumpsum Seasonal Cherry Price: '
+                        ? ' Lump-sum Seasonal Cherry Price: '
                         : '  ${camelCaseToSpacedWords(field)}: ',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
@@ -322,6 +322,8 @@ class BasicCalculatorController extends GetxController {
 
   void patchPreviousData({BasicCalculationEntryModel? data}) {
     if (data != null) {
+      print({'callllllled here-------------------------',data.purchaseVolume});
+
       purchaseVolumeController.text = data.purchaseVolume;
       seasonalCoffeePriceController.text = data.seasonalPrice;
       fuelAndOilController.text = data.fuelAndOils;
@@ -333,6 +335,8 @@ class BasicCalculatorController extends GetxController {
       ratioController.text = data.ratio;
       expectedProfitMarginController.text = data.expectedProfit;
       selectedTCoffeesellingType.value = data.sellingType;
+      print({'callllllled here-------------------------',purchaseVolumeController.text});
+update();
     }
   }
 

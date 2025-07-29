@@ -1,9 +1,10 @@
+import 'package:flutter_template/app/data/models/calculation_model.dart';
 import 'package:hive/hive.dart';
 
 part 'advanced_calculation_model.g.dart';
 
 @HiveType(typeId: 6)
-class AdvancedCalculationModel extends HiveObject {
+class AdvancedCalculationModel extends HiveObject implements CalculationModel {
   AdvancedCalculationModel({
     required this.cherryPurchase,
     required this.seasonalCoffee,
