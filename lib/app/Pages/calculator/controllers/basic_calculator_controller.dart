@@ -7,10 +7,14 @@ import 'package:flutter_template/app/routes/app_routes.dart';
 import 'package:flutter_template/app/utils/helpers.dart';
 import 'package:get/get.dart';
 
+/// Controller for managing the basic calculator functionality.
+/// This controller handles form validation, cost calculations, best practice checks,
+/// and navigation to results for the basic calculation mode.
 class BasicCalculatorController extends GetxController {
+  /// Global form key for form validation.
   final formKey = GlobalKey<FormState>();
 
-  //intialize the controllers
+  // Text editing controllers for form fields
   final purchaseVolumeController = TextEditingController();
   final seasonalCoffeePriceController = TextEditingController();
   final cherryTransportController = TextEditingController();
@@ -20,19 +24,35 @@ class BasicCalculatorController extends GetxController {
   final repairsAndMaintenance = TextEditingController();
   final otherExpensesController = TextEditingController();
   final ratioController = TextEditingController();
-
   final expectedProfitMarginController = TextEditingController();
+  
+  /// Observable map to track field validation alerts.
+  /// Keys are field names, values indicate if the field has validation issues.
   final fieldAlerts = <String, bool>{}.obs;
+  
+  /// Observable total cost calculated from all expense fields.
   final totalCost = 0.0.obs;
+  
+  /// Break-even price calculated from total cost and ratio.
   double breakEvenPrice = 0.0;
+  
+  /// Observable flag for form auto-validation.
   final RxBool autoValidate = false.obs;
+  
+  /// Flag indicating if the calculation follows best practices.
   bool isBestPractice = true;
+  
+  /// Observable selected coffee selling type.
   final selectedTCoffeesellingType = RxnString();
+  
+  /// Observable selected unit for calculations (default: KG).
   final selectedUnit = 'KG'.obs;
 
+  /// Map to store overridden percentage values for custom calculations.
   final Map<String, double> overriddenPercentages = {};
 
-  //used for continue anyway
+  /// Map to track fields where user has chosen to continue despite warnings.
+  /// Used for "continue anyway" functionality when values are outside best practices.
   final Map<String, bool> overriddenFieldAlerts = {
     'seasonalPrice': false,
     'cherryTransport': false,
@@ -42,12 +62,16 @@ class BasicCalculatorController extends GetxController {
     'repairsAndMaintenance': false,
     'otherExpenses': false,
   };
+  
+  /// Available coffee types for selection.
   final coffeeTypes = [
     'Parchment',
     'Green Coffee',
     'Dried pod/Jenfel',
   ];
-  //focus node for edit
+  
+  /// Focus nodes for form fields to enable programmatic focus.
+  /// Used when user chooses to edit a field from the best practice modal.
   final Map<String, FocusNode> fieldFocusNodes = {
     'seasonalPrice': FocusNode(),
     'cherryTransport': FocusNode(),
@@ -58,11 +82,18 @@ class BasicCalculatorController extends GetxController {
     'otherExpenses': FocusNode(),
   };
 
+  /// Validates dropdown selection for coffee selling type.
+  /// 
+  /// [val] - The selected value to validate
+  /// Returns error message if validation fails, null if valid
   String? validateDropdown(String? val) {
     if (val == null || val.isEmpty) return 'Please select a selling type';
     return null;
   }
 
+  /// Submits the form and navigates to results if validation passes.
+  /// This method validates field percentages and proceeds to results
+  /// only if all validation issues are resolved.
   void submit() {
     validateFieldPercentages();
 
@@ -82,11 +113,11 @@ class BasicCalculatorController extends GetxController {
     }
   }
 
-  //to validate the percentage of the 7 cost list
-
-  //to validate the percentage of the 7 cost list
-
+  /// Validates the percentage distribution of the 7 cost categories.
+  /// This method checks if each expense category falls within recommended
+  /// percentage ranges and updates field alerts accordingly.
   void validateFieldPercentages() {
+    // Collect all field values with fallback to 0
     final values = {
       'seasonalPrice': double.tryParse(seasonalCoffeePriceController.text) ?? 0,
       'cherryTransport': double.tryParse(cherryTransportController.text) ?? 0,
@@ -97,27 +128,29 @@ class BasicCalculatorController extends GetxController {
       'otherExpenses': double.tryParse(otherExpensesController.text) ?? 0,
     };
 
+    // Calculate total cost from all fields
     final total = values.values.fold(0.0, (a, b) => a + b);
     totalCost.value = total;
     fieldAlerts.clear();
 
+    // Validate each field against recommended percentage ranges
     values.forEach((key, val) {
       if (overriddenFieldAlerts[key] == true) {
         fieldAlerts[key] = false; // Respect user's decision to continue
-
         return;
       }
+      // Calculate percentage of total cost
       final percent = total > 0 ? ((val / total) * 100).roundToDouble() : 0;
       final range = CalcuationConstants.fieldRanges[key]!;
-      fieldAlerts[key] = !range.isInRange(
-        percent.toDouble(),
-      );
+      // Check if percentage is within recommended range
+      fieldAlerts[key] = !range.isInRange(percent.toDouble());
     });
     update();
   }
 
   @override
   void onClose() {
+    // Dispose all text controllers to prevent memory leaks
     purchaseVolumeController.dispose();
     seasonalCoffeePriceController.dispose();
     cherryTransportController.dispose();
@@ -131,6 +164,16 @@ class BasicCalculatorController extends GetxController {
     super.onClose();
   }
 
+  /// Shows a modal dialog for best practice warnings.
+  /// This method displays a bottom sheet when field values are outside
+  /// recommended ranges, allowing users to continue or edit.
+  /// 
+  /// [context] - The build context for showing the modal
+  /// [field] - The field name that triggered the warning
+  /// [coffeeSellingType] - The selected coffee selling type
+  /// [minValue] - The minimum recommended value
+  /// [maxValue] - The maximum recommended value
+  /// Returns a Future with the modal result
   Future<T?> showBestPracticeModal<T>({
     required BuildContext context,
     required String field,
@@ -186,15 +229,6 @@ class BasicCalculatorController extends GetxController {
                       color: Color(0xFF252B37),
                     ),
                   ),
-                  // if (field != 'seasonalPrice')
-                  //   TextSpan(
-                  //     text: ' per ${selectedUnit.value}',
-                  //     style: const TextStyle(
-                  //       fontWeight: FontWeight.w400,
-                  //       fontSize: 12,
-                  //       color: Color(0xFF717680),
-                  //     ),
-                  //   ),
                 ],
               ),
             ),
@@ -220,7 +254,7 @@ class BasicCalculatorController extends GetxController {
                     ),
                     TextSpan(
                       text: () {
-                        // Parse the values
+                        // Parse the values for per-unit calculation
                         final minValueNum = double.tryParse(minValue);
                         final maxValueNum = double.tryParse(maxValue);
                         final volumeNum =
@@ -234,12 +268,12 @@ class BasicCalculatorController extends GetxController {
                           final minResult = minValueNum / volumeNum;
                           final maxResult = maxValueNum / volumeNum;
 
-                          // Format to 2 decimal places (or use 0 if whole numbers)
+                          // Format to 2 decimal places
                           return 'ETB ${minResult.toStringAsFixed(2)} to ETB ${maxResult.toStringAsFixed(2)}';
                         } else {
                           return 'ETB ? to ETB ?'; // Fallback for invalid input
                         }
-                      }(), // <-- Note: this is an immediately executed function
+                      }(), // Immediately executed function for dynamic calculation
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
@@ -285,8 +319,6 @@ class BasicCalculatorController extends GetxController {
               update();
               Navigator.pop(context);
             }
-
-            // handle continue
           },
           onEdit: () {
             Navigator.pop(context);
@@ -300,6 +332,12 @@ class BasicCalculatorController extends GetxController {
         ),
       );
 
+  /// Shows field range warning modal for a specific field.
+  /// This method calculates the recommended range based on total cost
+  /// and displays the best practice modal.
+  /// 
+  /// [context] - The build context for showing the modal
+  /// [fieldKey] - The field key to show warning for
   void showFieldRangeWarning({
     required BuildContext context,
     required String fieldKey,
@@ -320,10 +358,15 @@ class BasicCalculatorController extends GetxController {
     );
   }
 
+  /// Patches previous calculation data into the form fields.
+  /// This method is used when editing a previously saved calculation.
+  /// 
+  /// [data] - The previous calculation data to load
   void patchPreviousData({BasicCalculationEntryModel? data}) {
     if (data != null) {
       print({'callllllled here-------------------------',data.purchaseVolume});
 
+      // Populate all form fields with previous data
       purchaseVolumeController.text = data.purchaseVolume;
       seasonalCoffeePriceController.text = data.seasonalPrice;
       fuelAndOilController.text = data.fuelAndOils;
@@ -336,18 +379,25 @@ class BasicCalculatorController extends GetxController {
       expectedProfitMarginController.text = data.expectedProfit;
       selectedTCoffeesellingType.value = data.sellingType;
       print({'callllllled here-------------------------',purchaseVolumeController.text});
-update();
+      update();
     }
   }
 
+  /// Builds the current calculation entry with calculated prices.
+  /// This method creates a BasicCalculationEntryModel with all form data
+  /// and calculates the break-even price and total selling price.
+  /// 
+  /// Returns the complete calculation entry model
   BasicCalculationEntryModel buildCurrentEntryWithPrice() {
     final purchaseVolume = double.tryParse(purchaseVolumeController.text) ?? 0;
     final ratio = double.tryParse(ratioController.text) ?? 0;
     final expectedProfit =
         double.tryParse(expectedProfitMarginController.text) ?? 0;
 
+    // Calculate ratio output and break-even price
     final ratioOutput = purchaseVolume * ratio;
     breakEvenPrice = ratioOutput > 0 ? totalCost.value / ratioOutput : 0;
+    // Calculate total selling price with profit margin
     final totalSellingPrice =
         breakEvenPrice + (breakEvenPrice * (expectedProfit / 100));
 

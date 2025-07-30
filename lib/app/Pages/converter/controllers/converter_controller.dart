@@ -5,34 +5,61 @@ import 'package:flutter_template/app/Pages/converter/controllers/history_control
 import 'package:flutter_template/app/core/config/constants/dropdown_data.dart';
 import 'package:get/get.dart';
 
+/// Controller for managing coffee grade and unit conversion functionality.
+///
+/// This controller handles all aspects of conversion calculations including:
+/// - Coffee grade conversions (Cherries, Parchment, Green Coffee, etc.)
+/// - Unit conversions (Kg, Quintal, Feresula)
+/// - Real-time calculation updates
+/// - Form input management and validation
+/// - History tracking and persistence
+/// - Debounced input handling for performance
+///
+/// The controller provides comprehensive conversion capabilities with industry-standard
+/// ratios and supports both coffee grade and unit conversions.
 class ConverterController extends GetxController {
+  /// Reference to history controller for saving and loading conversion records
   final historyCalculator = Get.find<HistoryController>();
+  /// Currently selected tab (0 for coffee conversion, 1 for unit conversion)
   final selectedTab = 0.obs;
+  /// Currently selected coffee grade for conversion
   final selectedGrade = RxnString();
 
+  /// Text controllers for unit conversion inputs
   late TextEditingController fromUnitController;
   late TextEditingController fromRatioController;
   late TextEditingController toUnitController;
   late TextEditingController toRatioController;
+  /// Currently active text controller for input focus management
   late Rx<TextEditingController?> activeController;
 
+  /// Selected index for source unit (0=Kg, 1=Quintal, 2=Feresula)
   final RxInt selectedFromUnitIndex = 0.obs; // 0=Kg, 1=Quintal, 2=Feresula
+  /// Selected index for target unit (0=Kg, 1=Quintal, 2=Feresula)
   final RxInt selectedToUnitIndex = 0.obs; // 0=Kg, 1=Quintal, 2=Feresula
 
+  /// Source coffee grade for conversion
   final fromCoffeeGrade = Rx<String?>(DropdownData.coffeeGrades[0]);
+  /// Target coffee grade for conversion
   final toCoffeeGrade = Rx<String?>(DropdownData.coffeeGrades[1]);
 
+  /// Source unit for conversion
   final fromUnit = Rx<String?>(DropdownData.units[0]);
+  /// Target unit for conversion
   final toUnit = Rx<String?>(DropdownData.units[1]);
 
+  /// Timer for debouncing input changes to prevent excessive calculations
   Timer? _debounceTimer;
 
+  /// Whether the keyboard is currently open
   final RxBool isKeyboardOpen = false.obs;
+  /// Whether the unit "from" field is currently active
   bool isUnitFromActive = true;
+  /// Whether the ratio "from" field is currently active
   bool isRatioFromActive = true;
 
   /*
-  
+
 Ratio to 1 kg cherry    Ratio
 Cherry                             1 : 1                          1
 Pulped Parchment                   1.8 : 1                     0.55
@@ -53,6 +80,8 @@ Dried pod → Green coffee          1.25 : 1
 
    */
   // Conversion factors relative to cherry
+  /// Industry-standard conversion factors for different coffee grades
+  /// These ratios represent the conversion from cherry to various coffee products
   final Map<String, double> conversionFactors = {
     'Cherries': 1.0,
     'Pulped Parchment': 0.55,
@@ -63,6 +92,7 @@ Dried pod → Green coffee          1.25 : 1
     'Dried pod/Jenfel': 0.2,
   };
 
+  /// Cached values for input validation and change detection
   String? _fromUnitValue;
   String? _toUnitValue;
   String? _lastInputValue;
@@ -72,11 +102,13 @@ Dried pod → Green coffee          1.25 : 1
   @override
   void onInit() {
     super.onInit();
+    // Initialize form controllers and load history
     loadControllers();
     historyCalculator.loadHistory(
       isFromUnitConversion: false,
     );
     //unit
+    // Set up listeners for unit conversion inputs
     fromUnitController.addListener(() {
       if (isUnitFromActive) {}
     });
@@ -88,6 +120,7 @@ Dried pod → Green coffee          1.25 : 1
     });
 
     // ratio
+    // Set up listeners for ratio conversion inputs
     fromRatioController.addListener(() {
       if (isRatioFromActive) {}
     });

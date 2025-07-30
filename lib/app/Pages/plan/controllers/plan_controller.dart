@@ -7,20 +7,39 @@ import 'package:flutter_template/app/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+/// Controller for managing operational planning and coffee processing calculations.
+///
+/// This controller orchestrates the multi-step planning process for coffee processing operations.
+/// It manages all user input, state, and business logic for:
+/// - Setting processing goals (cherry input, output types, date ranges)
+/// - Calculating machine and labor requirements for each processing stage
+/// - Handling both fully washed (wet) and natural (dry) coffee processes
+/// - Converting between different coffee product types using industry-standard ratios
+/// - Managing plan persistence, loading, and site-specific filtering
+///
+/// The controller is designed for use with GetX and supports reactive state updates for the UI.
 class PlanController extends GetxController with GetTickerProviderStateMixin {
+  /// Currently selected tab ("Basic" or other types)
   final selectedTab = 'Basic'.obs;
+  /// Currently selected unit (e.g., KG)
   final selectedUnit = 'KG'.obs;
+  /// Current step in the multi-step planning process
   RxInt currentStep = 0.obs;
 
+  /// Output type selection for washed and natural processes
   final selectedOutPutValueForWashed = 'Green Coffee'.obs;
   final selectedOutPutValueForNatural = 'Dried Pod'.obs;
+  /// Reference to the calculator controller for shared logic
   final controller = Get.find<CalculatorController>();
 
   //coffee processing goal controllers
+  /// User input for seasonal coffee purchase volume
   final TextEditingController seasonalCoffeeController =
       TextEditingController();
+  /// Service for plan persistence and retrieval
   final PlanService _planService = PlanService();
 
+  /// User input for second payment, hulling, jute bag, ratio, and date range
   final TextEditingController secondPaymentController = TextEditingController();
   final TextEditingController lowGradeHullingController =
       TextEditingController();
@@ -30,27 +49,35 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
       TextEditingController(text: '18.0%');
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
+  /// Whether to auto-validate processing goal form
   final RxBool coffeeProcessingAutoValidate = false.obs;
+  /// Default percent split for fully washed and sun dried processes
   double fullyWashedPercent = 0.8;
+  /// Selected date range for planning
   final Rxn<DateTime> startDate = Rxn<DateTime>();
   final Rxn<DateTime> endDate = Rxn<DateTime>();
+  /// List of plans for the current site
   final RxList<OperationalPlanningModel> sitePlans =
       <OperationalPlanningModel>[].obs;
   double sunDriedPercent = 0.2;
   //pulping machine
+  /// User input for machine type, number of machines, disks, and operating hours
   final TextEditingController machineTypeController =
       TextEditingController(text: 'Disk Pulper'.tr);
   final TextEditingController numMachinesController = TextEditingController();
   final TextEditingController numDisksController = TextEditingController();
   final TextEditingController operatingHoursController =
       TextEditingController();
+  /// Whether to auto-validate pulping machine form
   final RxBool pulpingMachineAutoValidate = false.obs;
+  /// Calculated capacity values for pulping operations
   double pulperHourlyCapacity = 0.0;
   double dailyPulpingCapacity = 0.0;
   int pulpingDays = 0;
   int soakingTankPerBatch = 0;
 
   // Fermentation Tank
+  /// User input for fermentation tank dimensions and duration
   final TextEditingController fermentationLengthController =
       TextEditingController();
   final TextEditingController fermentationWidthController =
@@ -59,22 +86,28 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
       TextEditingController();
   final TextEditingController fermentationHoursController =
       TextEditingController();
+  /// Calculated fermentation tank requirements
   int volumeOfFermentationTank = 0;
   int fermentationTank = 0;
+  /// Metric tons per cubic meter conversion factor
   final double mtPerMeterCube = 1.5;
   // Soaking
+  /// User input for soaking tank dimensions and duration
   final TextEditingController soakingLengthController = TextEditingController();
   final TextEditingController soakingWidthController = TextEditingController();
   final TextEditingController soakingDepthController = TextEditingController();
   final TextEditingController soakingDurationController =
       TextEditingController();
 
+  /// Density of water in kg/m³ for volume calculations
   final int densityOfWater = 1000; // Density of water is 1000 kg/m3
+  /// Calculated soaking tank requirements
   int soakingTankVolume = 0;
   int naturalDailyDryingCapacity = 0;
   int washedDailyDryingCapacity = 0;
 
   // Drying Table
+  /// User input for drying bed dimensions and time requirements
   final TextEditingController dryingLengthController = TextEditingController();
   final TextEditingController dryingWidthController = TextEditingController();
   final TextEditingController dryingTimeWashedController =
@@ -83,20 +116,25 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
       TextEditingController();
 
   // Bagging
+  /// User input for bag size selection and calculated bag requirements
   final TextEditingController selectedBagSize = TextEditingController();
   final List<String> bagSizes = ['17', '60', '100'];
   int numberOfBagsForFullyWashed = 0;
   int numberOfBagsForNatural = 0;
 
+  /// Currently selected coffee selling type (e.g., Cherries, Parchment)
   final selectedCoffeesellingType = RxnString();
+  /// Whether to auto-validate processing setup form
   final RxBool processingSetupAutoValidate = false.obs;
 
+  /// Supported coffee types for planning
   final List<String> coffeeTypes = [
     'Cherries',
     'Parchment',
     'Green Coffee',
     'Dried pod/Jenfel',
   ];
+  /// Conversion factors for each coffee type (relative to cherry)
   static final Map<String, double> conversionFactors = {
     'Cherries': 1,
     'Parchment': 0.2,
@@ -106,11 +144,14 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
 
   // First conversion (Wet Parchment <-> Green Coffee)
   // final selectedOutPutValueForWashed = 'Green coffee'.obs;
+  /// Calculated output values for washed and natural processes
   final washedOutputValue = ''.obs;
 
   // Second conversion (Dried pod <-> Green Coffee)
   // final selectedOutPutValueForNatural = 'Dried pod'.obs;
   final naturalOutputValue = ''.obs;
+  
+  /// Constructor allows setting the initial step for multi-step flows
   PlanController({int initialStep = 0}) {
     currentStep.value = initialStep; // Initialize here
   }
@@ -129,9 +170,14 @@ Natural Process (dry method):
 2. Bagging        - Defined in calculateBagging()
 */
 
+  /// Retrieves the pulping operating hours from user input
   int get getPulpingOperatingHours =>
       int.tryParse(operatingHoursController.text) ?? 0;
 
+  /// Calculates the pulping machine's daily and hourly capacity based on user input.
+  ///
+  /// This is a key step in the fully washed process, determining how much cherry can be processed per day.
+  /// The calculation uses industry-standard assumptions about disk capacity and machine efficiency.
   void calculatePulpingCapacity() {
     // Calculate the number of disks and machines from user input
     final double numDisks = double.tryParse(numDisksController.text) ?? 0;
@@ -154,6 +200,10 @@ Natural Process (dry method):
     }
   }
 
+  /// Calculates the total processing days for the washed process.
+  ///
+  /// Sums pulping, fermenting, and soaking hours, divides by 24, and adds drying time for washed.
+  /// This provides the total time required for the complete washed process.
   int get getTotalProcessingDaysForWashed {
     final totalHours =
         getPulpingOperatingHours + getFermentingHours + getSoakingHours;
@@ -161,6 +211,10 @@ Natural Process (dry method):
     return totalDays + getDryingTimeForWashed;
   }
 
+  /// Calculates the number of fermentation tanks and days required for the process.
+  ///
+  /// Uses tank dimensions, cherry input, and process duration to determine requirements.
+  /// The calculation accounts for the conversion from cherry to wet parchment and tank capacity.
   void calculateFermentation() {
     // Calculate the volume of a single fermentation tank
     final length = double.tryParse(fermentationLengthController.text) ?? 0;
@@ -205,6 +259,10 @@ Natural Process (dry method):
     print('Fermentation days: $fermentationDays');
   }
 
+  /// Calculates the soaking tank requirements and batch counts.
+  ///
+  /// Uses tank dimensions, water density, and cherry input to determine soaking needs.
+  /// The calculation accounts for the percentage of fully washed coffee and water displacement.
   void calculateSoaking() {
     // Calculate the volume of a single soaking tank
     final length = double.tryParse(soakingLengthController.text) ?? 0;
@@ -247,19 +305,28 @@ Natural Process (dry method):
     }
   }
 
+  /// Safely divides two numbers, returning 0 if the denominator is zero or invalid.
+  /// This prevents division by zero errors in calculations.
   double safeDivide(double numerator, double denominator) {
     if (denominator == 0 || denominator.isNaN || numerator.isNaN) return 0;
     return numerator / denominator;
   }
 
+  /// Safely rounds a double value to the nearest integer, returning 0 for invalid values.
+  /// This prevents errors when dealing with NaN or infinite values.
   int safeCeil(double value) {
     if (value.isNaN || value.isInfinite) return 0;
     return value.ceil();
   }
 
+  /// Retrieves the drying time for the washed process from user input
   int get getDryingTimeForWashed =>
       int.tryParse(dryingTimeWashedController.text) ?? 0;
 
+  /// Calculates the drying bed requirements for both natural and washed processes.
+  ///
+  /// Uses drying bed area, cherry input, and process type to determine daily drying capacity.
+  /// Different capacity factors are used for natural vs washed processes due to moisture content differences.
   void calculateDrying() {
     // Calculate the area of a drying bed
     final dryingBedArea = (double.tryParse(dryingLengthController.text) ?? 0) *
@@ -289,6 +356,10 @@ Natural Process (dry method):
         naturalCapacity.isFinite ? naturalCapacity.ceil() : 0;
   }
 
+  /// Calculates the number of parchment bags needed for the washed process.
+  ///
+  /// Uses cherry input, conversion factors, and selected bag size.
+  /// The 0.2 factor represents the conversion from cherry to parchment.
   int get parchmentBags {
     // Calculate the number of parchment bags needed
     final calculatedFullyWashedPercent =
@@ -303,6 +374,10 @@ Natural Process (dry method):
         : 0;
   }
 
+  /// Calculates the number of green bean bags needed for the natural process.
+  ///
+  /// Uses cherry input, conversion factors, and selected bag size.
+  /// The 0.16 factor represents the conversion from cherry to green coffee.
   int get greenBeanBags {
     // Calculate the number of green bean bags needed
     final calculatedSunDriedPercent =
@@ -319,6 +394,10 @@ Natural Process (dry method):
         : 0;
   }
 
+  /// Calculates the number of bags needed for each process output.
+  ///
+  /// Uses cherry input, conversion factors, and selected bag size.
+  /// Different conversion factors are used for washed vs natural processes.
   void calculateBagging() {
     // 0.16 unsorted green coffee conversion factor relative to cherry
     // Calculate number of bags for fully washed process
@@ -350,9 +429,13 @@ Natural Process (dry method):
         : 0;
   }
 
-// Number of workers(Fully Washed) = (total kg of cherry x by the fully washed percentage ) ÷ 500 kg worker/day
-// Number of workers(Natural) = (total kg of cherry x by the natural  percentage ) ÷ 500 kg worker/day
+//Number of workers(Fully Washed) = (total kg of cherry x by the fully washed percentage ) ÷ 500 kg worker/day
+//Number of workers(Natural) = (total kg of cherry x by the natural  percentage ) ÷ 500 kg worker/day
 
+  /// Calculates the number of workers required for the fully washed process.
+  ///
+  /// Uses cherry input, process split, and standard labor rates.
+  /// Assumes 500 kg per worker per day as industry standard.
   int get numberOfWorkersForFullyWashed {
     // Number of workers for fully washed process = (total kg of cherry x fully washed percent) / 500 kg per worker per day
     final calculatedFullyWashedPercent =
@@ -362,7 +445,13 @@ Natural Process (dry method):
         : 0;
   }
 
+  /// Calculates the amount of cherry allocated to the fully washed process
   double get fullWashedCherry => cherryAmount * fullyWashedPercent;
+  
+  /// Calculates the number of workers required for the natural process.
+  ///
+  /// Uses cherry input, process split, and standard labor rates.
+  /// Assumes 500 kg per worker per day as industry standard.
   int get numberOfWorkersForNatural {
     // Number of workers for natural process = (total kg of cherry x natural percent) / 500 kg per worker per day
     final calculatedSunDriedPercent =
@@ -374,9 +463,15 @@ Natural Process (dry method):
         : 0;
   }
 
+  /// Calculates the total number of bags needed for both washed and natural processes.
+  /// This is used for warehouse planning and storage requirements.
   int get wareHousePlanning =>
       numberOfBagsForFullyWashed + numberOfBagsForNatural;
 
+  /// Retrieves the cherry amount based on the selected coffee selling type and conversion factors.
+  ///
+  /// If the selected type is Cherries, returns the input directly.
+  /// Otherwise, converts from the selected type to cherry equivalent using conversion factors.
   double get cherryAmount {
     // Calculate the cherry amount based on selected coffee selling type and conversion factors
     if (selectedCoffeesellingType.value == 'Cherries') {
@@ -386,36 +481,58 @@ Natural Process (dry method):
         (conversionFactors[selectedCoffeesellingType.value] ?? 0);
   }
 
+  /// Calculates the number of fermenting days (round up to nearest day).
+  ///
+  /// Converts fermenting hours to days and rounds up to ensure sufficient time.
   int get numberOfDaysFermenting {
     // Calculate the number of fermenting days (round up to nearest day)
     final days = getFermentingHours / 24;
     return days.ceil(); // Rounds up to the nearest whole day
   }
 
+  /// Retrieves the fermenting hours from user input
   int get getFermentingHours =>
       int.tryParse(fermentationHoursController.text) ?? 0;
+  /// Retrieves the soaking hours from user input
   int get getSoakingHours => int.tryParse(soakingDurationController.text) ?? 0;
+  /// Retrieves the dried hours for the washed process from user input
   int get getWashedDryingHours =>
       int.tryParse(dryingTimeWashedController.text) ?? 0;
 
+  /// Retrieves the wet parchment volume from cherry amount using a conversion rate.
+  ///
+  /// Uses 39% conversion rate from cherry to wet parchment.
+  /// This accounts for moisture loss during the pulping process.
   double get getWetParchmentVolume {
     // 39% conversion from cherry to wet parchment
     const conversionRate = 0.39;
     return cherryAmount * conversionRate;
   }
 
+  /// Retrieves the dry parchment volume from cherry amount using a conversion rate.
+  ///
+  /// Uses 20% conversion rate from cherry to dry parchment.
+  /// This represents the final parchment yield after drying.
   double get getDryParchmentVolume {
     // 20% conversion from cherry to dry parchment
     const conversionRate = 0.20;
     return cherryAmount * conversionRate;
   }
 
+  /// Retrieves the dry pod volume from cherry amount using a conversion rate.
+  ///
+  /// Uses 12% conversion rate from cherry to dry pod.
+  /// This represents the natural process yield after drying.
   double get getDryPodVolume {
     // 12% conversion from cherry to dry pod
     const conversionRate = 0.12;
     return cherryAmount * conversionRate;
   }
 
+  /// Calculates the green coffee output from the dry pod volume.
+  ///
+  /// Dried Pod : Green Coffee = 1.25 : 1, so divide dry pod volume by 1.25
+  /// This represents the final green coffee yield from the natural process.
   double get getGreenCoffeeOutput {
     // Dried Pod : Green Coffee = 1.25 : 1, so divide dry pod volume by 1.25
     const double conversionRate = 1.25;
@@ -423,12 +540,16 @@ Natural Process (dry method):
   }
 
 //The system will count from the start date to the end date excluding Sundays and will display the total operating day.
+  /// Calculates the total number of operating days, excluding Sundays.
+  ///
+  /// Uses the selected date range and skips Sundays for realistic scheduling.
+  /// This provides a more accurate planning timeline for coffee processing operations.
   int get totalOperatingDays {
     // Calculate the total number of operating days between start and end date, excluding Sundays
     if (startDate.value == null || endDate.value == null) return 0;
 
-    print('START: [38;5;246m[48;5;236m${startDate.value}[0m');
-    print('END: [38;5;246m[48;5;236m${endDate.value}[0m');
+    print('START: [38;5;246m [48;5;236m${startDate.value} [0m');
+    print('END: [38;5;246m [48;5;236m${endDate.value} [0m');
 
     int count = 0;
     DateTime current = startDate.value!;
@@ -443,6 +564,9 @@ Natural Process (dry method):
     return count;
   }
 
+  /// Returns a formatted date range string for display.
+  ///
+  /// Formats the start and end dates in a user-friendly format for UI display.
   String get dateRangeFormatted {
     if (startDate.value == null || endDate.value == null) return '';
     final formatter = DateFormat('MMM d, yyyy');
@@ -450,6 +574,10 @@ Natural Process (dry method):
   }
   // 0.16 unsorted green coffee conversion factor relative to cherry
 
+  /// Calculates the output value for the washed process based on user selection.
+  ///
+  /// Updates the washed output value based on the selected coffee selling type.
+  /// Uses different conversion factors for Parchment vs other types.
   void calculateWashedOutput() {
     // Calculate washed output value based on selected coffee selling type
     if (selectedCoffeesellingType.value == 'Parchment') {
@@ -460,6 +588,10 @@ Natural Process (dry method):
     }
   }
 
+  /// Calculates the output value for the natural process based on user selection.
+  ///
+  /// Updates the natural output value based on the selected coffee selling type.
+  /// Uses different conversion factors for Dried pod/Jenfel vs other types.
   void calculateNaturalOutput() {
     // Calculate natural output value based on selected coffee selling type
     if (selectedCoffeesellingType.value == 'Dried pod/Jenfel') {
@@ -470,6 +602,10 @@ Natural Process (dry method):
     }
   }
 
+  /// Updates the output value for the washed process when the user changes the output type.
+  ///
+  /// Handles conversion between Green Coffee and Parchment output types.
+  /// Recalculates the output value based on the new selection.
   void updateOutPutValueForWashed(String value) {
     // Update washed output value based on user selection (Green Coffee or Parchment)
     if (value == selectedOutPutValueForWashed.value) return; // No change
@@ -493,6 +629,10 @@ Natural Process (dry method):
     selectedOutPutValueForWashed.value = value;
   }
 
+  /// Updates the output value for the natural process when the user changes the output type.
+  ///
+  /// Handles conversion between Green Bean and Dried Pod output types.
+  /// Recalculates the output value based on the new selection.
   void updateOutPutValueForNatural(String value) {
     // Update natural output value based on user selection (Green Bean or Dried Pod)
     if (value == selectedOutPutValueForNatural.value) return; // No change
@@ -520,6 +660,10 @@ Natural Process (dry method):
     selectedOutPutValueForNatural.value = value;
   }
 
+  /// Navigates to the operational summary view with the current plan data.
+  ///
+  /// Builds the operational planning data model and passes it to the summary view
+  /// for display and further processing.
   void onDataSubmit() {
     Get.toNamed<void>(
       AppRoutes.OPERATIONAL_SUMMARY,
@@ -530,12 +674,20 @@ Natural Process (dry method):
     );
   }
 
+  /// Loads plans for a specific site from the plan service.
+  ///
+  /// Updates the sitePlans observable with plans filtered by the given site ID.
+  /// This allows users to view and manage site-specific operational plans.
   void loadPlansBySite({required String siteId}) {
     sitePlans.assignAll(
       _planService.getPlansBySite(siteId: siteId),
     );
   }
 
+  /// Saves the current plan to persistent storage using the plan service.
+  ///
+  /// Builds the operational planning data model and saves it with the provided
+  /// site information and plan name. Shows error message if saving fails.
   Future<void> savePlan({
     required List<Map<String, String>> selectedSites,
     required String planName,
@@ -559,6 +711,11 @@ Natural Process (dry method):
   }
 
 //(pulpingOperatinghours + fermantionHours + soakingHours = divided by 24 to ceil ) + dryingDays = processingDaysPerBatch
+  /// Builds the operational planning data model from the current controller state.
+  ///
+  /// This method collects all user input and calculated values into a single model
+  /// for saving or displaying in the summary view. It includes all form data,
+  /// calculated capacities, and planning requirements.
   OperationalPlanningModel buildOperationalPlanningData({
     List<Map<String, String>> selectedSites = const [],
     String planName = '',
@@ -612,6 +769,11 @@ Natural Process (dry method):
         numberOfWorkersForFullyWashed: numberOfWorkersForFullyWashed,
         selectedSites: selectedSites,
       );
+  
+  /// Updates the controller's state with data from a loaded operational planning model.
+  ///
+  /// This method restores all form fields and calculated values from a saved plan,
+  /// allowing users to edit or review previously created plans.
   void patchOperationalPlanningData(OperationalPlanningModel data) {
     startDate.value = data.startDate;
     endDate.value = data.endDate;

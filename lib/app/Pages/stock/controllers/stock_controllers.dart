@@ -1,12 +1,28 @@
 import 'package:get/get.dart';
 
+/// Controller for managing coffee stock data and price tracking functionality.
+///
+/// This controller handles the display and management of coffee stock information including:
+/// - Current stock prices and price changes
+/// - Time-based chart data (daily, weekly, monthly, yearly)
+/// - Coffee stock listings with different types and regions
+/// - Price trend visualization and analysis
+///
+/// The controller provides mock data for demonstration purposes and supports
+/// reactive updates for real-time price tracking and chart updates.
 class StockController extends GetxController {
+  /// Currently selected time range for chart display (Daily, Weekly, Monthly, Yearly)
   final selectedTimeRange = 'Weekly'.tr.obs;
+  /// Current price value for display
   final currentPrice = 350.0.obs;
+  /// Price change percentage for trend indication
   final priceChange = 0.05.obs;
+  /// Whether the price change is positive (true) or negative (false)
   final isPositiveChange = true.obs;
 
   // Mock data for the chart
+  /// Chart data points for the selected time range
+  /// Contains day/time and corresponding price values for visualization
   final chartData = [
     {'day': 'Mon', 'price': 100.0},
     {'day': 'Tue', 'price': 500.0},
@@ -18,6 +34,8 @@ class StockController extends GetxController {
   ].obs;
 
   // Mock data for different time ranges
+  /// Comprehensive time range data for different chart periods
+  /// Provides historical price data for daily, weekly, monthly, and yearly views
   final timeRangeData = {
     'Daily': [
       {'time': '9:00', 'price': 300.0},
@@ -59,6 +77,8 @@ class StockController extends GetxController {
     ],
   }.obs;
 
+  /// List of coffee stocks with their details including name, type, price, and change
+  /// Each stock entry contains information about different coffee varieties and their market performance
   final coffeeStocks = [
     {
       'name': 'Yirgachefe Coffee',
@@ -104,6 +124,12 @@ class StockController extends GetxController {
     },
   ].obs;
 
+  /// Updates the selected time range and refreshes the chart data accordingly.
+  ///
+  /// This method changes the time range filter and updates the chart data
+  /// to reflect the new time period for price trend analysis.
+  ///
+  /// [range] - The new time range to display (Daily, Weekly, Monthly, Yearly)
   void updateTimeRange(String range) {
     selectedTimeRange.value = range;
     // Update chart data based on selected time range
@@ -116,7 +142,7 @@ class StockController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Initialize with weekly data
+    // Initialize with weekly data as the default view
     updateTimeRange('Weekly');
   }
 }

@@ -13,20 +13,32 @@ class ExchangeRateService {
   final String _apiUrl = 'https://api.nbe.gov.et/api/filter-exchange-rates';
 
   /// Fetches exchange rates for the given [date] from the API.
+  /// Falls back to cached rates if the API call fails.
   Future<List<ExchangeRate>> fetchRates({required String date}) async {
     print({'date is ---------------------------------', date});
-    // final response = await dio.get('$_apiUrl?date=$date');
-    final response = await dio.get('$_apiUrl?date=2025-05-29');
+    try {
+      final response = await dio.get('$_apiUrl?date=$date');
 
-    if (response.statusCode == 200) {
-      final data = response.data['data'] as List;
-      print({'daata is ---------------------------------', date});
+      if (response.statusCode == 200) {
+        final data = response.data['data'] as List;
+        print({'data is ---------------------------------', data});
 
-      return data
-          .map((e) => ExchangeRate.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } else {
-      throw Exception('Failed to fetch exchange rates');
+        final rates = data
+            .map((e) => ExchangeRate.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        // Cache the fetched rates
+        await cacheRates(rates);
+        return rates;
+      } else {
+        print('API request failed with status code: ${response.statusCode}');
+        // Fallback to cached rates
+        return await getCachedRates();
+      }
+    } catch (e) {
+      print('Error fetching exchange rates: $e');
+      // Fallback to cached rates
+      return await getCachedRates();
     }
   }
 
@@ -44,6 +56,10 @@ class ExchangeRateService {
   /// Retrieves cached exchange rates from local storage.
   Future<List<ExchangeRate>> getCachedRates() async {
     final box = await Hive.openBox('exchange_rates');
+    if (box.isEmpty) {
+      print('No cached rates available');
+      return []; // Return empty list if no cached data
+    }
     return box.keys.map((key) {
       final data = box.get(key) as Map<dynamic, dynamic>;
       return ExchangeRate(

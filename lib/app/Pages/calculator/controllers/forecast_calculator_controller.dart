@@ -4,6 +4,9 @@ import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:flutter_template/app/routes/app_routes.dart';
 import 'package:get/get.dart';
 
+/// Controller for managing the forecast calculator functionality.
+/// This controller handles price forecasting calculations based on coffee type
+/// conversions and market price analysis.
 class ForecastCalculatorController extends GetxController {
   /*
   
@@ -23,35 +26,48 @@ Dried pod → Green coffee          1.25 : 1
 
 
    */
-  // Conversion factors relative to cherry
-  // These represent how many kilograms of cherry are equivalent to 1 kilogram of the given coffee type.
-  // For example, 1 kg of Parchment is equivalent to 5 kg of cherry.
+  
+  /// Conversion factors relative to cherry.
+  /// These represent how many kilograms of cherry are equivalent to 1 kilogram of the given coffee type.
+  /// For example, 1 kg of Parchment is equivalent to 5 kg of cherry.
   final Map<String, double> conversionFactors = {
     'Parchment': 5,
     'Dried pod/Jenfel': 5,
   };
+  
+  /// Global form key for form validation.
   final formKey = GlobalKey<FormState>();
+  
+  /// Available coffee types for forecasting calculations.
   final List<String> coffeeTypes = [
     'Parchment',
     'Dried pod/Jenfel',
   ];
+  
+  /// Observable selected unit for calculations (default: Feresula).
   final selectedUnit = 'Feresula'.obs;
 
   // Initialize the controllers for form fields
-  final TextEditingController priceController =
-      TextEditingController(); // For inputting price per unit
-  final TextEditingController coffeeVolume =
-      TextEditingController(); // For inputting coffee volume
-  final TextEditingController otherExpensesController =
-      TextEditingController(); // For inputting other expenses
-  final selectedCoffeeType = RxnString(); // Observable for selected coffee type
-  final RxBool autoValidate =
-      false.obs; // Observable for form auto-validation state
+  /// Text controller for inputting price per unit.
+  final TextEditingController priceController = TextEditingController();
+  
+  /// Text controller for inputting coffee volume.
+  final TextEditingController coffeeVolume = TextEditingController();
+  
+  /// Text controller for inputting other expenses.
+  final TextEditingController otherExpensesController = TextEditingController();
+  
+  /// Observable for selected coffee type.
+  final selectedCoffeeType = RxnString();
+  
+  /// Observable for form auto-validation state.
+  final RxBool autoValidate = false.obs;
 
   // Outputs
-  // The calculated cost of cherries per kg (intermediate value)
+  /// The calculated cost of cherries per kg (intermediate value).
   double? volumeOfCherry;
-  // The final calculated total market price
+  
+  /// The final calculated total market price.
   double? totalMarketPrice;
 
   /// Performs the forecast calculation based on user input.
@@ -96,8 +112,7 @@ Dried pod → Green coffee          1.25 : 1
     // (How many kg of cherry are needed for the given coffee volume)
     volumeOfCherry = coffeeVolumeInput * conversionFactor;
 
-    // Step 5: convert the input
-
+    // Step 5: Convert the input to standard units
     final convertedPriceInput =
         priceInput / CalcuationConstants.unitToKg[selectedUnit.value]!;
     final convertedCoffeeVolumeInput =

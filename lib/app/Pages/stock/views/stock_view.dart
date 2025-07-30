@@ -8,11 +8,24 @@ import 'package:flutter_template/app/Pages/stock/widget/section_title.dart';
 
 import 'package:get/get.dart';
 
+/// Main stock view that provides the interface for coffee price forecasting and stock analysis.
+///
+/// This view serves as the container for stock-related functionality including:
+/// - Coffee price forecasting based on cost factors
+/// - Unit selection for price calculations
+/// - Form-based input for forecast parameters
+/// - Integration with forecast calculator controller
+/// - Responsive layout with scrollable content
+///
+/// The view uses GetX for state management and provides a clean, form-based interface
+/// for users to input forecast parameters and view price predictions.
 class StockView extends GetView<StockController> {
+  /// Creates a StockView widget.
   const StockView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Ensure stock controller is available for state management
     Get.put(StockController());
     return SafeArea(
       child: Scaffold(
@@ -31,14 +44,22 @@ class StockView extends GetView<StockController> {
 // AppBar Widget
 
 // Body Widget
+/// Body widget that contains the main stock forecasting interface.
+///
+/// This widget manages the form-based interface for coffee price forecasting,
+/// including unit selection, input fields, and forecast calculations.
+/// It integrates with the ForecastCalculatorController for business logic.
 class _StockBody extends StatefulWidget {
+  /// Creates a _StockBody widget with forecast calculator controller.
   _StockBody({
     super.key,
   }) {
+    // Initialize forecast calculator controller with unique tag for proper state management
     controller =
         Get.put(ForecastCalculatorController(), tag: UniqueKey().toString());
   }
 
+  /// Reference to the forecast calculator controller for business logic
   late final ForecastCalculatorController controller;
   @override
   State<_StockBody> createState() => _StockBodyState();
@@ -46,6 +67,8 @@ class _StockBody extends StatefulWidget {
 
 class _StockBodyState extends State<_StockBody> {
   // Simulate connection status for demonstration; replace with your actual logic or controller
+  /// Whether the app has an active internet connection
+  /// This is used for determining if real-time data can be fetched
   bool get hasConnection => true;
   // Set this based on your connectivity logic
   @override
@@ -54,6 +77,7 @@ class _StockBodyState extends State<_StockBody> {
     // You can use a controller or a package like connectivity_plus for real status
     // return const Center(child: ComingSoon());
     return WillPopScope(
+      // Handle back navigation and reset form validation state
       onWillPop: () async {
         widget.controller.autoValidate.value = false;
         return true;
@@ -62,12 +86,14 @@ class _StockBodyState extends State<_StockBody> {
         () => Padding(
           padding: const EdgeInsets.all(16),
           child: Form(
+            // Configure form validation based on controller state
             autovalidateMode: widget.controller.autoValidate.value
                 ? AutovalidateMode.onUserInteraction
                 : AutovalidateMode.disabled,
             key: widget.controller.formKey,
             child: Column(
               children: [
+                // Scrollable content area for form inputs
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.only(
@@ -77,6 +103,7 @@ class _StockBodyState extends State<_StockBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Section title with unit selection chip
                         Obx(
                           () => SectionTitle(
                             title: 'Price Forecast',
@@ -96,6 +123,7 @@ class _StockBodyState extends State<_StockBody> {
                           ),
                         ),
                         const SizedBox(height: 24),
+                        // Coffee type selection dropdown
                         LabeledDropdown<String>(
                           label: 'Coffee Type',
                           hintText: 'Select type',
