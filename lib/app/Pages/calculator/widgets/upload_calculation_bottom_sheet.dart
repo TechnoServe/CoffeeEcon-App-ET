@@ -14,7 +14,7 @@ import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:get/get.dart';
 
 class UploadCalculationBottomSheet extends StatefulWidget {
-final VoidCallback? onUploadComplete;
+final Function(dynamic)? onUploadComplete; // Updated to accept dynamic parameter
 
   const UploadCalculationBottomSheet({super.key, this.onUploadComplete});
 
@@ -279,18 +279,9 @@ class _UploadCalculationBottomSheetState
   // Reload saved calculations
   calcController.loadSavedCalcuations();
 if (importedModel != null) {
-  setState(() {
-    if (importedModel is BasicCalculationEntryModel) {
-      final basicController = Get.find<BasicCalculatorController>(); // Retrieve the existing instance
-      basicController.patchPreviousData(data: importedModel);
-    } else if (importedModel is AdvancedCalculationModel) {
-      final advancedController = Get.find<AdvancedCalculatorController>(); // Retrieve the existing instance
-      advancedController.patchAdvancedCalcData(data: importedModel);
-    }
-  });
+  widget.onUploadComplete?.call(importedModel);
+    
 }
-widget.onUploadComplete?.call();
-  // Now use the returned model
 
 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/app/Pages/calculator/controllers/advanced_calculator_controller.dart';
-import 'package:flutter_template/app/Pages/calculator/controllers/basic_calculator_controller.dart';
+
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/general_app_bar.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/tab/advanced_tab.dart';
@@ -14,23 +13,36 @@ import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:flutter_template/app/routes/app_routes.dart';
 import 'package:get/get.dart';
 
-class CalculatorView extends GetView<CalculatorController> {
+class CalculatorView extends StatefulWidget {
   CalculatorView({
     super.key,
     this.basicCalcData,
     this.advancedCalcData,
     this.type = ResultsOverviewType.basic,
   });
-  final BasicCalculationEntryModel? basicCalcData;
+final BasicCalculationEntryModel? basicCalcData;
   final AdvancedCalculationModel? advancedCalcData;
 
   ResultsOverviewType type;
 
   @override
+  State<CalculatorView> createState() => _CalculatorViewState();
+}
+
+class _CalculatorViewState extends State<CalculatorView> {
+  BasicCalculationEntryModel? basicCalcData;
+  AdvancedCalculationModel? advancedCalcData;
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with widget's initial data
+    basicCalcData = widget.basicCalcData;
+    advancedCalcData = widget.advancedCalcData;
+  }
+  @override
   Widget build(BuildContext context) {
     Get.put(CalculatorController());
-Get.put(BasicCalculatorController(), permanent: true); // Register BasicCalculatorController
-    Get.put(AdvancedCalculatorController(), permanent: true); // Register AdvancedCalculatorController
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: GeneralAppBar(
@@ -54,11 +66,26 @@ Get.put(BasicCalculatorController(), permanent: true); // Register BasicCalculat
                         BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   builder: (context) => UploadCalculationBottomSheet(
-                    onUploadComplete: () {
-                      // Trigger UI refresh if needed
-                      controller.loadSavedCalcuations(); // Update CalculatorController
-                      Get.find<BasicCalculatorController>().update(); // Notify GetX to rebuild
-                    },
+                     onUploadComplete: (importedModel) {
+
+                      setState(() {
+                             
+   if (importedModel is BasicCalculationEntryModel) {
+                          basicCalcData = importedModel;
+                        } else if (importedModel is AdvancedCalculationModel) {
+                          advancedCalcData = importedModel;
+                        }
+                      });
+                      // Show SnackBar if import was successful
+          if (importedModel != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('File uploaded successfully!'),
+                duration: Duration(seconds: 4),
+              ),
+            );
+          }
+  },
                   ),
                 
                 );
@@ -84,7 +111,7 @@ Get.put(BasicCalculatorController(), permanent: true); // Register BasicCalculat
       body: _CalculatorBody(
         basicCalcData: basicCalcData,
         advancedCalcData: advancedCalcData,
-        type: type,
+        type: widget.type,
       ),
     );
   }
