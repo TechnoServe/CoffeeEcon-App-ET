@@ -52,14 +52,14 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
   /// Whether to auto-validate processing goal form
   final RxBool coffeeProcessingAutoValidate = false.obs;
   /// Default percent split for fully washed and sun dried processes
-  double fullyWashedPercent = 0.8;
+  Rx<double> fullyWashedPercent = 0.8.obs;
   /// Selected date range for planning
   final Rxn<DateTime> startDate = Rxn<DateTime>();
   final Rxn<DateTime> endDate = Rxn<DateTime>();
   /// List of plans for the current site
   final RxList<OperationalPlanningModel> sitePlans =
       <OperationalPlanningModel>[].obs;
-  double sunDriedPercent = 0.2;
+  Rx<double> sunDriedPercent = 0.2.obs;
   //pulping machine
   /// User input for machine type, number of machines, disks, and operating hours
   final TextEditingController machineTypeController =
@@ -141,6 +141,7 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
     'Green Coffee': 0.16,
     'Dried pod/Jenfel': 0.2,
   };
+  
 
   // First conversion (Wet Parchment <-> Green Coffee)
   // final selectedOutPutValueForWashed = 'Green coffee'.obs;
@@ -284,7 +285,7 @@ Natural Process (dry method):
       final calculatedFullyWashedPercent =
           selectedCoffeesellingType.value == 'Parchment'
               ? 1
-              : fullyWashedPercent;
+              : fullyWashedPercent.value;
       // Calculate the total soaking tank volume needed
       soakingTankVolume =
           ((getWetParchmentVolume * calculatedFullyWashedPercent) /
@@ -339,7 +340,7 @@ Natural Process (dry method):
 
     // Calculate the percent of fully washed coffee based on selling type
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent;
+        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
     // 0.39 is a conversion factor to wet parchment since it lost some amount during pulping, soaking, etc.
     final capacity = (cherryAmount * 0.39 * calculatedFullyWashedPercent) /
         dryingCapacityPerBedForWashed;
@@ -349,7 +350,7 @@ Natural Process (dry method):
     final calculatedSunDriedPercent =
         selectedCoffeesellingType.value == 'Dried pod/Jenfel'
             ? 1
-            : sunDriedPercent;
+            : sunDriedPercent.value;
     final naturalCapacity = (cherryAmount * calculatedSunDriedPercent) /
         dryingCapacityPerBedForNatural;
     naturalDailyDryingCapacity =
@@ -363,7 +364,7 @@ Natural Process (dry method):
   int get parchmentBags {
     // Calculate the number of parchment bags needed
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent;
+        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
     return ((cherryAmount * 0.2 * calculatedFullyWashedPercent) /
                 (double.tryParse(selectedBagSize.text) ?? 0))
             .isFinite
@@ -383,7 +384,7 @@ Natural Process (dry method):
     final calculatedSunDriedPercent =
         selectedCoffeesellingType.value == 'Dried pod/Jenfel'
             ? 1
-            : sunDriedPercent;
+            : sunDriedPercent.value;
     return ((cherryAmount * 0.16 * calculatedSunDriedPercent) /
                 (double.tryParse(selectedBagSize.text) ?? 0))
             .isFinite
@@ -402,7 +403,7 @@ Natural Process (dry method):
     // 0.16 unsorted green coffee conversion factor relative to cherry
     // Calculate number of bags for fully washed process
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent;
+        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
     numberOfBagsForFullyWashed =
         ((cherryAmount * 0.16 * calculatedFullyWashedPercent) /
                     (double.tryParse(selectedBagSize.text) ?? 0))
@@ -417,7 +418,7 @@ Natural Process (dry method):
     final calculatedSunDriedPercent =
         selectedCoffeesellingType.value == 'Dried pod/Jenfel'
             ? 1
-            : sunDriedPercent;
+            : sunDriedPercent.value;
 
     numberOfBagsForNatural = ((cherryAmount * 0.2 * calculatedSunDriedPercent) /
                 (double.tryParse(selectedBagSize.text) ?? 0))
@@ -439,14 +440,14 @@ Natural Process (dry method):
   int get numberOfWorkersForFullyWashed {
     // Number of workers for fully washed process = (total kg of cherry x fully washed percent) / 500 kg per worker per day
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent;
+        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
     return ((cherryAmount * calculatedFullyWashedPercent) / 500).isFinite
         ? ((cherryAmount * calculatedFullyWashedPercent) / 500).ceil()
         : 0;
   }
 
   /// Calculates the amount of cherry allocated to the fully washed process
-  double get fullWashedCherry => cherryAmount * fullyWashedPercent;
+  double get fullWashedCherry => cherryAmount * fullyWashedPercent.value;
   
   /// Calculates the number of workers required for the natural process.
   ///
@@ -457,7 +458,7 @@ Natural Process (dry method):
     final calculatedSunDriedPercent =
         selectedCoffeesellingType.value == 'Dried pod/Jenfel'
             ? 1
-            : sunDriedPercent;
+            : sunDriedPercent.value;
     return ((cherryAmount * calculatedSunDriedPercent) / 500).isFinite
         ? ((cherryAmount * calculatedSunDriedPercent) / 500).ceil()
         : 0;
@@ -584,7 +585,7 @@ Natural Process (dry method):
       washedOutputValue.value = (cherryAmount * 0.16).toStringAsFixed(2);
     } else {
       washedOutputValue.value =
-          (cherryAmount * fullyWashedPercent * 0.16).toStringAsFixed(2);
+          (cherryAmount * fullyWashedPercent.value * 0.16).toStringAsFixed(2);
     }
   }
 
@@ -598,7 +599,7 @@ Natural Process (dry method):
       naturalOutputValue.value = (cherryAmount * 0.2).toStringAsFixed(2);
     } else {
       naturalOutputValue.value =
-          (cherryAmount * sunDriedPercent * 0.2).toStringAsFixed(2);
+          (cherryAmount * sunDriedPercent.value * 0.2).toStringAsFixed(2);
     }
   }
 
@@ -618,7 +619,7 @@ Natural Process (dry method):
     }
     //200,000 = green coffee 160,000 and dried pod same
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent;
+        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
     if (value == 'Green Coffee') {
       parsed = cherryAmount * calculatedFullyWashedPercent * 0.16;
     } else {
@@ -650,7 +651,7 @@ Natural Process (dry method):
     final calculatedSunDriedPercent =
         selectedCoffeesellingType.value == 'Dried pod/Jenfel'
             ? 1
-            : sunDriedPercent;
+            : sunDriedPercent.value;
     if (value == 'Green Bean') {
       parsed = cherryAmount * calculatedSunDriedPercent * 0.16;
     } else {

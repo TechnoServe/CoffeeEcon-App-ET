@@ -68,6 +68,7 @@ dependencies:
   open_file: ^3.5.10
   file_picker: ^10.1.9
   flutter_launcher_icons: ^0.14.4
+  url_launcher: ^6.3.2
 
 flutter_launcher_icons:
   image_path: "assets/images/primary_logo.png"

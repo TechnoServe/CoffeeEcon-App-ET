@@ -127,12 +127,14 @@ class _ForecastTabState extends State<ForecastTab> {
                     text: 'Calculate',
                     iconPath: 'assets/icons/calc.svg',
                     onPressed: () {
+
                       widget.controller.autoValidate.value = true;
 
                       final isValid =
                           widget.controller.formKey.currentState?.validate() ??
                               false;
                       if (isValid) {
+
                         widget.controller.onCalculate();
                       }
                     },

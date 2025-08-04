@@ -82,6 +82,7 @@ Dried pod → Green coffee          1.25 : 1
   /// 7. Calculate the total market price per kg cherry: net revenue / total cherry volume.
   /// 8. Navigate to the results overview page, passing the calculated values as arguments.
   void onCalculate() {
+
     // Parse the price input, removing any commas
     final priceInput =
         double.tryParse(priceController.text.replaceAll(',', ''));
@@ -133,11 +134,17 @@ Dried pod → Green coffee          1.25 : 1
       arguments: {
         'type': ResultsOverviewType.forecast,
         'totalMarketPrice': totalMarketPrice,
-        'cherryPrice': totalMarketPrice,
+        'cherryPrice': convertToKg(selectedUnit.value,totalMarketPrice ?? 0),
         'selectedUnit': selectedUnit.value,
         'isBestPractice': true,
         'selectedCoffeeType': selectedCoffeeType.value
       },
     );
   }
+
+  double convertToKg(String unit, double value) {
+  final conversionFactor = CalcuationConstants.unitToKg[unit] ?? 1.0;
+  return value * conversionFactor;
+}
+
 }

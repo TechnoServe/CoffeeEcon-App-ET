@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 /// and navigation to results for the basic calculation mode.
 class BasicCalculatorController extends GetxController {
   /// Global form key for form validation.
-  final formKey = GlobalKey<FormState>();
 
   // Text editing controllers for form fields
   final purchaseVolumeController = TextEditingController();
@@ -26,6 +25,7 @@ class BasicCalculatorController extends GetxController {
   final ratioController = TextEditingController();
   final expectedProfitMarginController = TextEditingController();
   
+
   /// Observable map to track field validation alerts.
   /// Keys are field names, values indicate if the field has validation issues.
   final fieldAlerts = <String, bool>{}.obs;
@@ -47,6 +47,10 @@ class BasicCalculatorController extends GetxController {
   
   /// Observable selected unit for calculations (default: KG).
   final selectedUnit = 'KG'.obs;
+
+ final Map<String, double> referenceTotalPerField = {};
+
+  bool skipBestPracticeWarning = false;
 
   /// Map to store overridden percentage values for custom calculations.
   final Map<String, double> overriddenPercentages = {};
@@ -82,6 +86,17 @@ class BasicCalculatorController extends GetxController {
     'otherExpenses': FocusNode(),
   };
 
+  final Map<String, bool> freezeContextShown = {
+  'seasonalPrice': false,
+  'cherryTransport': false,
+  'laborFullTime': false,
+  'laborCasual': false,
+  'fuelAndOils': false,
+  'repairsAndMaintenance': false,
+  'otherExpenses': false,
+};
+
+
   /// Validates dropdown selection for coffee selling type.
   /// 
   /// [val] - The selected value to validate
@@ -95,11 +110,11 @@ class BasicCalculatorController extends GetxController {
   /// This method validates field percentages and proceeds to results
   /// only if all validation issues are resolved.
   void submit() {
-    validateFieldPercentages();
-
+    referenceTotalPerField.clear(); // clear any frozen totals before final check
+   if(!skipBestPracticeWarning)  validateFieldPercentages();     // validate all fields with current total
     final remainingIssues = fieldAlerts.entries.where((e) => e.value).length;
-
-    if (remainingIssues == 0) {
+    
+    if (skipBestPracticeWarning || remainingIssues == 0) {
       final entry = buildCurrentEntryWithPrice();
       Get.toNamed<void>(
         AppRoutes.RESULTSOVERVIEWVIEW,
@@ -113,10 +128,11 @@ class BasicCalculatorController extends GetxController {
     }
   }
 
+
   /// Validates the percentage distribution of the 7 cost categories.
   /// This method checks if each expense category falls within recommended
   /// percentage ranges and updates field alerts accordingly.
-  void validateFieldPercentages() {
+ void validateFieldPercentages({String? freezeForField}) {
     // Collect all field values with fallback to 0
     final values = {
       'seasonalPrice': double.tryParse(seasonalCoffeePriceController.text) ?? 0,
@@ -129,8 +145,9 @@ class BasicCalculatorController extends GetxController {
     };
 
     // Calculate total cost from all fields
-    final total = values.values.fold(0.0, (a, b) => a + b);
-    totalCost.value = total;
+    final currentTotal = values.values.fold(0.0, (a, b) => a + b);
+  
+    totalCost.value = currentTotal;
     fieldAlerts.clear();
 
     // Validate each field against recommended percentage ranges
@@ -139,13 +156,33 @@ class BasicCalculatorController extends GetxController {
         fieldAlerts[key] = false; // Respect user's decision to continue
         return;
       }
-      // Calculate percentage of total cost
-      final percent = total > 0 ? ((val / total) * 100).roundToDouble() : 0;
-      final range = CalcuationConstants.fieldRanges[key]!;
-      // Check if percentage is within recommended range
-      fieldAlerts[key] = !range.isInRange(percent.toDouble());
-    });
-    update();
+
+    // Check if frozen validation context should be used
+    final shouldUseFrozen = (freezeForField != null && key == freezeForField) ||
+                            overriddenFieldAlerts[key] == true ||
+                            freezeContextShown[key] == true;
+
+    double totalToUse = currentTotal;
+    if (shouldUseFrozen) {
+      final frozenTotalWithoutField = currentTotal - val;
+      referenceTotalPerField[key] ??= frozenTotalWithoutField;
+      totalToUse = referenceTotalPerField[key]!;
+    }
+
+    final percent = totalToUse > 0 ? (val / totalToUse) * 100 : 0;
+    final range = CalcuationConstants.fieldRanges[key]!;
+
+    fieldAlerts[key] = !(percent >= range.min && percent <= range.max);
+
+    // Auto-clear overrides and frozen state if value becomes valid
+    if (!fieldAlerts[key]!) {
+      overriddenFieldAlerts[key] = false;
+      referenceTotalPerField.remove(key);
+      freezeContextShown[key] = false;
+    }
+  });
+
+  update();
   }
 
   @override
@@ -322,6 +359,7 @@ class BasicCalculatorController extends GetxController {
           },
           onEdit: () {
             Navigator.pop(context);
+             referenceTotalPerField.remove(field);
             if (fieldFocusNodes.containsKey(field)) {
               // Delay focus until after the frame has settled
               Future.delayed(const Duration(milliseconds: 100), () {
@@ -338,25 +376,45 @@ class BasicCalculatorController extends GetxController {
   /// 
   /// [context] - The build context for showing the modal
   /// [fieldKey] - The field key to show warning for
-  void showFieldRangeWarning({
-    required BuildContext context,
-    required String fieldKey,
-  }) {
-    final range = CalcuationConstants.fieldRanges[fieldKey];
-    if (range == null) return;
+void showFieldRangeWarning({
+  required BuildContext context,
+  required String fieldKey,
+}) {
+  final range = CalcuationConstants.fieldRanges[fieldKey];
+  if (range == null) return;
 
-    final total = totalCost.value;
-    final minPrice = (total * (range.min / 100)).toStringAsFixed(2);
-    final maxPrice = (total * (range.max / 100)).toStringAsFixed(2);
+  // Freeze validation total for this field
+  validateFieldPercentages(freezeForField: fieldKey);
+  freezeContextShown[fieldKey] = true;
 
-    showBestPracticeModal<void>(
-      context: context,
-      field: fieldKey,
-      coffeeSellingType: selectedTCoffeesellingType.value ?? '',
-      minValue: minPrice,
-      maxValue: maxPrice,
-    );
-  }
+final fieldValue = double.tryParse(
+    {
+      'seasonalPrice': seasonalCoffeePriceController.text,
+      'cherryTransport': cherryTransportController.text,
+      'laborFullTime': laborFullTimeController.text,
+      'laborCasual': laborCasualController.text,
+      'fuelAndOils': fuelAndOilController.text,
+      'repairsAndMaintenance': repairsAndMaintenance.text,
+      'otherExpenses': otherExpensesController.text,
+    }[fieldKey] ?? '0',
+  ) ?? 0;
+
+  final frozenBaseTotal = referenceTotalPerField[fieldKey] ?? (totalCost.value - fieldValue);
+  final effectiveTotal = frozenBaseTotal; // Don't re-add the field value
+
+  final minPrice = (effectiveTotal * (range.min / 100)).toStringAsFixed(2);
+  final maxPrice = (effectiveTotal * (range.max / 100)).toStringAsFixed(2);
+
+
+  showBestPracticeModal<void>(
+    context: context,
+    field: fieldKey,
+    coffeeSellingType: selectedTCoffeesellingType.value ?? '',
+    minValue: minPrice,
+    maxValue: maxPrice,
+  );
+}
+
 
   /// Patches previous calculation data into the form fields.
   /// This method is used when editing a previously saved calculation.
@@ -416,4 +474,5 @@ class BasicCalculatorController extends GetxController {
       totalSellingPrice: totalSellingPrice,
     );
   }
+
 }

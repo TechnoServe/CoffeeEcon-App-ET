@@ -18,8 +18,8 @@ class AdvancedTab extends StatefulWidget {
     this.totalSteps = 6,
     this.entry,
   }) {
-    controller =
-        Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
+         controller = Get.find<AdvancedCalculatorController>();
+
   }
 
   late final AdvancedCalculatorController controller;
@@ -37,7 +37,7 @@ class _AdvancedTabState extends State<AdvancedTab> {
     'Procurement Expenses',
     'Transport and Commission',
     'Labour Cost',
-    'Fuels',
+    'Fuel and Oils',
     'Maintenance & Equipment Cost',
     'Other Expenses',
   ];
@@ -57,9 +57,7 @@ class _AdvancedTabState extends State<AdvancedTab> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
+ 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.entry != null) {
@@ -263,12 +261,7 @@ class _ProcurementExpensesPageState extends State<ProcurementExpensesPage> {
 
   bool hasDuplicateError = false;
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
-
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async {
         widget.controller.procurumentExpenseAutoValidate.value = false;
         return true;
@@ -350,8 +343,9 @@ class _ProcurementExpensesPageState extends State<ProcurementExpensesPage> {
                       .toList(),
                   onChanged: (val) => setState(() {
                     if (val != null) {
-                      widget.controller.ratioController.text =
-                          CalcuationConstants.conversionFactors[val].toString();
+                   
+                                    widget.controller.ratioController.text =
+                          ((CalcuationConstants.conversionFactors[val]?? 0) * 100).toString();
                     }
                     widget.controller.selectedCoffeesellingType.value = val;
                   }),
@@ -533,7 +527,6 @@ class _ProcurementExpensesPageState extends State<ProcurementExpensesPage> {
         ),
       ),
     );
-  }
 }
 
 class TransportAndCommissionPage extends StatefulWidget {
@@ -590,12 +583,7 @@ class _TransportAndCommissionPageState
   final transportAndCommissionFormKey = GlobalKey<FormState>();
 
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
-
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async {
         widget.controller.transportAndCommissionAutoValidate.value = false;
         return true;
@@ -725,7 +713,6 @@ class _TransportAndCommissionPageState
         ),
       ),
     );
-  }
 }
 
 class LabourCostPage extends StatefulWidget {
@@ -740,12 +727,7 @@ class _LabourCostPageState extends State<LabourCostPage> {
   final labourCostFormKey = GlobalKey<FormState>();
 
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
-
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async {
         widget.controller.labourCostAutoValidate.value = false;
         return true;
@@ -859,7 +841,6 @@ class _LabourCostPageState extends State<LabourCostPage> {
         ),
       ),
     );
-  }
 }
 
 class FuelsPage extends StatefulWidget {
@@ -912,12 +893,7 @@ class _FuelsPageState extends State<FuelsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
-
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async {
         widget.controller.fuelsAutoValidate.value = false;
         return true;
@@ -1041,7 +1017,6 @@ class _FuelsPageState extends State<FuelsPage> {
         ),
       ),
     );
-  }
 }
 
 class MaintenanceEquipmentCostPage extends StatefulWidget {
@@ -1097,12 +1072,7 @@ class _MaintenanceEquipmentCostPageState
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
-
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async {
         widget.controller.maintenanceEquipmentCostAutoValidate.value = false;
         return true;
@@ -1254,7 +1224,6 @@ class _MaintenanceEquipmentCostPageState
         ),
       ),
     );
-  }
 }
 
 class OtherExpensesPage extends StatefulWidget {
@@ -1316,12 +1285,7 @@ class _OtherExpensesPageState extends State<OtherExpensesPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<AdvancedCalculatorController>()) {
-      Get.put(AdvancedCalculatorController(), tag: UniqueKey().toString());
-    }
-
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async {
         widget.controller.otherExpensesAutoValidate.value = false;
         return true;
@@ -1445,5 +1409,4 @@ class _OtherExpensesPageState extends State<OtherExpensesPage> {
         ),
       ),
     );
-  }
 }

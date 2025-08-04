@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/advanced_calculator_controller.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/basic_calculator_controller.dart';
 
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/general_app_bar.dart';
@@ -42,6 +44,9 @@ class _CalculatorViewState extends State<CalculatorView> {
   @override
   Widget build(BuildContext context) {
     Get.put(CalculatorController());
+    Get.put(BasicCalculatorController());
+    Get.put(AdvancedCalculatorController());
+
 
     return Scaffold(
       backgroundColor: Colors.white,

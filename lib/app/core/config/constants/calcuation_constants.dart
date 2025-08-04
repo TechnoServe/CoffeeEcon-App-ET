@@ -28,6 +28,7 @@ class CalcuationConstants {
   static const Map<String, double> unitToKg = {
     'Grams': 0.001,
     'Kilograms': 1.0,
+    'KG': 1.0,
     'Feresula': 17.0,
     'Quintal': 100.0,
     'Qt': 100.0,

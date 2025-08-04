@@ -157,6 +157,9 @@ class AdvancedCalculatorController extends GetxController {
 
   /// Total number of steps in the advanced calculator form.
   final int totalSteps = 6; // Or pass this as a parameter
+  
+   bool skipBestPracticeWarning = false;
+
 
   /// Navigation method to go to the next step in the stepper.
   void goNext() {
@@ -576,14 +579,14 @@ class AdvancedCalculatorController extends GetxController {
             Navigator.pop(context);
 
             // Re-validate to update fieldAlerts state
-            validateCostPercentages(context);
+           if(!skipBestPracticeWarning)  validateCostPercentages(context);
 
             // Wait a frame if needed for GetX reactivity to settle
             Future.delayed(const Duration(milliseconds: 50), () {
               final remaining =
                   fieldAlerts.entries.where((e) => e.value).length;
 
-              if (remaining == 0) {
+              if (skipBestPracticeWarning || remaining == 0) {
                 isBestPractice = false;
 
                 Get.offNamed<void>(
@@ -723,7 +726,7 @@ class AdvancedCalculatorController extends GetxController {
         maintenanceTotal: maintenanceEquipmentCostTotal.value,
         otherTotal: otherExpensesTotal.value,
         jutBagTotal: jutBagTotal,
-        variableCostTotal: variableTotal / variableCostTotal,
+        variableCostTotal: getTotalExpenses,
         sellingType: selectedCoffeesellingType.value ?? '',
       );
 
@@ -762,6 +765,8 @@ class AdvancedCalculatorController extends GetxController {
   /// Fixed costs remain constant regardless of production volume.
   double get fixedCostTotal =>
       labourFullTimeTotal.value + maintenanceEquipmentCostTotal.value;
+
+  double get getTotalExpenses => procurumentExpenseTotal.value + transportAndCommissionTotal.value +  labourFullTimeTotal.value + labourCasualTotal.value + fuelsTotal.value + maintenanceEquipmentCostTotal.value + otherExpensesTotal.value;
 
   /// Calculates the total jute bag cost.
   /// Formula: (cherryPurchase / selectedJuteBagVolume) * juteBagPrice

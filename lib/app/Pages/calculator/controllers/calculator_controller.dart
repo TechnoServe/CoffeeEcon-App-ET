@@ -183,8 +183,6 @@ class CalculatorController extends GetxController
   ///
   /// Returns the converted value based on the unit conversion map in DropdownData
   double convertUnit({required String to, required double input}) {
-    print({'input is sssssssssssssss', input});
-    print({'to is sssssssssssssss', to});
 
     // If the target unit is KG, return the input as is
     if (to == 'KG') {

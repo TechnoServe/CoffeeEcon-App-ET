@@ -48,6 +48,13 @@ class AppAssets {
   static const String carouselTwo = 'assets/images/carousel-two.png';
   static const String carouselThree = 'assets/images/carousel-three.png';
 
+  static const String cherryAppLogo = 'assets/images/cherryAppLogo.png';
+  static const String farmControlImage = 'assets/images/farmControlImage.jpg';
+  static const String yirgaCheffeBackgroundImage = 'assets/images/yirgaCheffeBackgroundImage.jpg';
+
+
+
+
   /// Path to the background image.
   /// Used as a general background for various screens.
   static const String background = 'assets/images/background.png';
@@ -117,4 +124,6 @@ class AppAssets {
   /// Path to the coffee animation GIF.
   /// Used for loading states and coffee-related animations.
   static const String coffeeAnimation = 'assets/animations/Coffee.gif';
+
+
 }

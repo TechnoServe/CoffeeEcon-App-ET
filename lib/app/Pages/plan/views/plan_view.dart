@@ -147,13 +147,16 @@ class PlanBodyState extends State<PlanBody>
     }
   }
 
-  List<int> get visibleSteps => [
-        0,
-        if (widget.controller.selectedCoffeesellingType.value !=
-            'Dried pod/Jenfel')
-          1,
-        2,
-      ];
+List<int> get visibleSteps {
+  final selectedType = widget.controller.selectedCoffeesellingType.value;
+  final sunDried = widget.controller.sunDriedPercent.value;
+  return [
+    0,
+    if (selectedType != 'Dried pod/Jenfel' && sunDried != 1.0) 1,
+    2,
+  ];
+}
+
 
   @override
   void initState() {
@@ -401,6 +404,7 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
     }
     return Stack(
       children: [
+
         SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Form(
@@ -470,11 +474,11 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
                         children: [
                           Expanded(
                             child: Slider(
-                              value: widget.controller.fullyWashedPercent,
+                              value: widget.controller.fullyWashedPercent.value,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.controller.fullyWashedPercent = value;
-                                  widget.controller.sunDriedPercent = 1 - value;
+                                  widget.controller.fullyWashedPercent.value = value;
+                                  widget.controller.sunDriedPercent.value = 1 - value;
                                 });
                               },
                               min: 0,
@@ -485,7 +489,7 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
                             ),
                           ),
                           Text(
-                            '${(widget.controller.fullyWashedPercent * 100).round()}%${' Coffee'.tr}',
+                            '${(widget.controller.fullyWashedPercent.value * 100).round()}%${' Coffee'.tr}',
                             style: const TextStyle(
                               color: Color(0xFF8C9199),
                               fontSize: 12,
@@ -506,11 +510,11 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
                         children: [
                           Expanded(
                             child: Slider(
-                              value: widget.controller.sunDriedPercent,
+                              value: widget.controller.sunDriedPercent.value,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.controller.sunDriedPercent = value;
-                                  widget.controller.fullyWashedPercent =
+                                  widget.controller.sunDriedPercent.value = value;
+                                  widget.controller.fullyWashedPercent.value =
                                       1 - value;
                                 });
                               },
@@ -522,7 +526,7 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
                             ),
                           ),
                           Text(
-                            '${(widget.controller.sunDriedPercent * 100).round()}${'% Coffee'.tr}',
+                            '${(widget.controller.sunDriedPercent.value * 100).round()}${'% Coffee'.tr}',
                             style: const TextStyle(
                               color: Color(0xFF8C9199),
                               fontSize: 12,
@@ -980,7 +984,7 @@ class _ProcessingSetupPageState extends State<ProcessingSetupPage> {
             children: [
               // Fermentation Tank Section
               if (widget.controller.selectedCoffeesellingType.value !=
-                  'Dried pod/Jenfel')
+                  'Dried pod/Jenfel' && widget.controller.sunDriedPercent.value != 1.0)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1154,10 +1158,10 @@ class _ProcessingSetupPageState extends State<ProcessingSetupPage> {
                 minValue: '1',
               ),
               if (widget.controller.selectedCoffeesellingType.value !=
-                  'Dried pod/Jenfel')
+                  'Dried pod/Jenfel' && widget.controller.sunDriedPercent.value != 1.0)
                 const SizedBox(height: 20),
               if (widget.controller.selectedCoffeesellingType.value !=
-                  'Dried pod/Jenfel')
+                  'Dried pod/Jenfel' && widget.controller.sunDriedPercent.value != 1.0)
                 LabeledTextField(
                   label: 'Average Estimated Drying Time For Washed',
                   hintText: 'Number of days',
@@ -1166,7 +1170,7 @@ class _ProcessingSetupPageState extends State<ProcessingSetupPage> {
                 ),
               const SizedBox(height: 20),
               if (widget.controller.selectedCoffeesellingType.value !=
-                  'Parchment')
+                  'Parchment' && widget.controller.fullyWashedPercent.value != 1.0)
                 LabeledTextField(
                   label: 'Average Estimated Drying Time For Natural Sun Dried',
                   hintText: 'Number of days',

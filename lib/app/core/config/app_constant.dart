@@ -34,4 +34,11 @@ class AppConstants {
   /// Key for storing user preferences.
   /// Used in secure storage to persist user settings and preferences.
   static const String userPrefsKey = 'USER_PREFS';
+
+
+  static const String cherryAppUrl = 'https://play.google.com/store/apps/details?id=org.technoserve.cherieapp';
+  static const String farmControllerAppUrl = 'https://play.google.com/store/apps/details?id=org.technoserve.farmcollector';
+  static const String yirgaChefeWebUrl = 'https://yirgacheffecoffeemarket.com';
+
+  
 }

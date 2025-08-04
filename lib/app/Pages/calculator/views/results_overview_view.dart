@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/advanced_calculator_controller.dart';
+import 'package:flutter_template/app/Pages/calculator/controllers/basic_calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/dashed_divider.dart';
 import 'package:flutter_template/app/Pages/calculator/widgets/general_app_bar.dart';
@@ -54,6 +56,8 @@ class ResultsOverviewView extends StatefulWidget {
 
 class _ResultsOverviewViewState extends State<ResultsOverviewView> {
   final controller = Get.put(CalculatorController());
+
+
 
   @override
   void dispose() {
@@ -250,7 +254,10 @@ class BasicResultsOverviewBody extends StatelessWidget {
   final exchangeController = Get.find<ExchangeRateController>();
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
+  Widget build(BuildContext context) { 
+  final basicCalculatorController = Get.find<BasicCalculatorController>();
+    
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Obx(
           () => Column(
@@ -421,9 +428,10 @@ class BasicResultsOverviewBody extends StatelessWidget {
                 text: 'Calculate Again',
                 iconPath: 'assets/icons/calc.svg',
                 onPressed: () {
+                  basicCalculatorController.skipBestPracticeWarning = true;
                   controller.selectedTab.value = 'Basic';
                   controller.goToTab(0);
-
+         
                   Get.to<void>(
                     () => MainView(
                       initialIndex: 1,
@@ -439,7 +447,7 @@ class BasicResultsOverviewBody extends StatelessWidget {
         ),
       );
 }
-
+}
 class AdvancedResultsOverviewBody extends StatefulWidget {
   const AdvancedResultsOverviewBody({
     required this.entry,
@@ -466,6 +474,7 @@ class _AdvancedResultsOverviewBodyState
   Widget build(BuildContext context) {
     final controller = Get.find<CalculatorController>();
     final exchangeController = Get.find<ExchangeRateController>();
+    final advancedCalculatorController = Get.find<AdvancedCalculatorController>();
 
     int convertedOutPutVolume = controller
         .convertUnit(
@@ -474,6 +483,13 @@ class _AdvancedResultsOverviewBodyState
               double.tryParse(widget.entry.ratio)!,
         )
         .toInt();
+
+      final double convertedPreTaxBreakEvenPrice = controller
+        .convertUnit(
+          to: selectedUnit,
+          input: widget.breakEvenPrice,
+        );
+           
 
     return Obx(
       () => SingleChildScrollView(
@@ -506,7 +522,7 @@ class _AdvancedResultsOverviewBodyState
                             'Calculated coffee selling price based on key costs.'
                                 .tr,
                             style: const TextStyle(
-                                color: Colors.grey, fontSize: 12),
+                                color: Colors.grey, fontSize: 12,),
                           ),
                         ],
                       ),
@@ -765,7 +781,7 @@ class _AdvancedResultsOverviewBodyState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Total Variable Cost'.tr,
+                          'Total Expenses'.tr,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF252B37),
@@ -801,7 +817,7 @@ class _AdvancedResultsOverviewBodyState
               ),
               child: SummaryRow(
                 label: 'Pre-Tax Break-even Price',
-                value: widget.breakEvenPrice.toStringAsFixed(2),
+                value: convertedPreTaxBreakEvenPrice.toStringAsFixed(2),
                 valueColor: const Color(0xFF1AB98B),
                 isBold: true,
               ),
@@ -811,6 +827,7 @@ class _AdvancedResultsOverviewBodyState
               text: 'Calculate Again',
               iconPath: 'assets/icons/calc.svg',
               onPressed: () {
+                advancedCalculatorController.skipBestPracticeWarning = true;
                 controller.selectedTab.value = 'Advanced';
                 controller.goToTab(1);
                 Get.to<void>(
@@ -899,7 +916,7 @@ class ForecastResultsOverviewBody extends StatelessWidget {
                           valueColor: const Color(0xFF00B3B0),
                           value: selectedCoffeeType == 'Dried pod/Jenfel'
                               ? '${exchangeController.convertPrice(cherryPrice).toStringAsFixed(2)} Birr - ${(exchangeController.convertPrice(cherryPrice) * 1.25).toStringAsFixed(2)} Birr / $selectedUnit'
-                              : '${exchangeController.convertPrice(cherryPrice).toStringAsFixed(2)} / $selectedUnit',
+                              : '${exchangeController.convertPrice(cherryPrice).toStringAsFixed(2)} / ${'KG'.tr}',
                         ),
                       ),
                     ),

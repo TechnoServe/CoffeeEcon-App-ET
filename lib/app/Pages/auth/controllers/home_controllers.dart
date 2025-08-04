@@ -1,12 +1,15 @@
 import 'dart:ui';
 
 import 'package:flutter_template/app/core/config/app_assets.dart';
+import 'package:flutter_template/app/core/config/app_constant.dart';
 import 'package:flutter_template/app/core/services/language_service.dart';
 import 'package:flutter_template/app/core/services/wet_mill_service.dart';
 import 'package:flutter_template/app/data/models/site_info_model.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 /// Controller for managing home page functionality and language settings.
 /// This controller handles site data loading, language switching,
@@ -25,6 +28,19 @@ class HomeControllers extends GetxController {
   /// Observable boolean indicating if Amharic language is currently selected.
   /// Used for language switching and UI updates.
   final isAmharic = true.obs;
+
+ 
+  final List<String> imageUrls = [
+    AppAssets.cherryAppLogo,
+    AppAssets.farmControlImage,
+    AppAssets.yirgaCheffeBackgroundImage,
+  ];
+
+  final List<String> linkUrls = [
+    AppConstants.cherryAppUrl,
+    AppConstants.farmControllerAppUrl,
+    AppConstants.yirgaChefeWebUrl,
+  ];
 
   @override
   void onInit() {
@@ -91,4 +107,29 @@ class HomeControllers extends GetxController {
   /// Returns the language text for the toggle button.
   /// Shows "አማርኛ" for English and "English" for Amharic.
   String get languageText => !isAmharic.value ? 'አማርኛ' : 'English';
+
+
+
+Future<void> launchURL(String externalUrl) async {
+  final Uri uri = Uri.parse(externalUrl);
+
+  // Try external application first
+  bool launched = await launchUrl(
+    uri,
+    mode: LaunchMode.externalApplication,
+  );
+
+  // Fallback if that fails
+  if (!launched) {
+    launched = await launchUrl(
+      uri,
+      mode: LaunchMode.platformDefault,
+    );
+  }
+
+  if (!launched) {
+    throw 'Could not launch $externalUrl';
+  }
+}
+
 }

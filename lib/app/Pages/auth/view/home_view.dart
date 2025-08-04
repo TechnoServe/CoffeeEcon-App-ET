@@ -10,6 +10,7 @@ import 'package:flutter_template/app/Pages/plan/controllers/plan_controller.dart
 import 'package:flutter_template/app/Pages/wetMill/widgets/site_card.dart';
 import 'package:flutter_template/app/core/config/app_assets.dart';
 import 'package:flutter_template/app/core/config/app_color.dart';
+import 'package:flutter_template/app/core/config/app_constant.dart';
 import 'package:flutter_template/app/core/config/app_sizes.dart';
 
 import 'package:flutter_template/app/routes/app_routes.dart';
@@ -30,11 +31,6 @@ class _HomeViewState extends State<HomeView> {
 
   int _currentPage = 0;
   Timer? _autoSlideTimer;
-  final List<String> imageUrls = [
-    AppAssets.carouselOne,
-    AppAssets.carouselTwo,
-    AppAssets.carouselThree,
-  ];
 
   @override
   void initState() {
@@ -47,7 +43,7 @@ class _HomeViewState extends State<HomeView> {
   void _startAutoSlide() {
     _autoSlideTimer?.cancel();
     _autoSlideTimer = Timer.periodic(const Duration(seconds: 2), (_) {
-      final nextPage = (_currentPage + 1) % imageUrls.length;
+      final nextPage = (_currentPage + 1) % homeController.imageUrls.length;
       _pageController.animateToPage(
         nextPage,
         duration: const Duration(milliseconds: 1500),
@@ -286,7 +282,7 @@ class _HomeViewState extends State<HomeView> {
               height: 134,
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: imageUrls.length,
+                itemCount: homeController.imageUrls.length,
                 itemBuilder: (context, index) {
                   final isActive = index == _currentPage;
                   final scale = isActive ? 1.0 : 0.95;
@@ -298,49 +294,55 @@ class _HomeViewState extends State<HomeView> {
                       child: Stack(
                         children: [
                           Image.asset(
-                            imageUrls[index],
+                            homeController.imageUrls[index],
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
                           ),
                           Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                color: Colors.black.withOpacity(0.3),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 40,
-                                horizontal: 16,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    (sliderTexts[index]['title'] ?? '').tr,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Expanded(
-                                    child: Text(
-                                      (sliderTexts[index]['subtitle'] ?? '').tr,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            color: Colors.white70,
-                                          ),
-                                    ),
-                                  ),
-                                ],
+                            child: InkWell(
+                              onTap: () => {
+                               homeController.launchURL(homeController.linkUrls[index]),
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Colors.black.withOpacity(0.3),
+                                ),
+                                // padding: const EdgeInsets.symmetric(
+                                //   vertical: 40,
+                                //   horizontal: 16,
+                                // ),
+                                // child: Column(
+                                //   crossAxisAlignment: CrossAxisAlignment.start,
+                                //   children: [
+                                //     Text(
+                                //       (sliderTexts[index]['title'] ?? '').tr,
+                                //       overflow: TextOverflow.ellipsis,
+                                //       style: Theme.of(context)
+                                //           .textTheme
+                                //           .titleSmall
+                                //           ?.copyWith(
+                                //             color: Colors.white,
+                                //             fontWeight: FontWeight.w600,
+                                //           ),
+                                //     ),
+                                //     const SizedBox(height: 4),
+                                //     Expanded(
+                                //       child: Text(
+                                //         (sliderTexts[index]['subtitle'] ?? '').tr,
+                                //         overflow: TextOverflow.ellipsis,
+                                //         style: Theme.of(context)
+                                //             .textTheme
+                                //             .labelSmall
+                                //             ?.copyWith(
+                                //               color: Colors.white70,
+                                //             ),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
+                              
                               ),
                             ),
                           ),
@@ -393,7 +395,25 @@ class _HomeViewState extends State<HomeView> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const AppTitle(titleName: 'Sites'),
-                            GestureDetector(
+                      if (homeController.sites.isNotEmpty)
+
+                            Row(
+                              children: [
+                                   GestureDetector(
+                              onTap: () =>
+                                  {Get.toNamed<void>(AppRoutes.SITEREGISTRATION)},
+                              child: Text(
+                                'Add Site'.tr,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall
+                                    ?.copyWith(
+                                      color: AppColors.primary,
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(width: 15,),
+                             GestureDetector(
                               onTap: () =>
                                   {Get.toNamed<void>(AppRoutes.SITELIST)},
                               child: Text(
@@ -406,6 +426,9 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                               ),
                             ),
+                              ],
+                            )
+                         
                           ],
                         ),
                       ),

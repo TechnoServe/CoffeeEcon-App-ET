@@ -14,17 +14,22 @@ class BasicTab extends StatefulWidget {
     this.siteData,
     this.entry,
   }) {
-    controller =
-        Get.put(BasicCalculatorController(), tag: UniqueKey().toString());
+         controller = Get.find<BasicCalculatorController>();
+
+        
   }
   final BasicCalculationEntryModel? entry;
   late final BasicCalculatorController controller;
   final Map<String, String>? siteData;
+  
   @override
   State<BasicTab> createState() => _BasicTabState();
 }
 
 class _BasicTabState extends State<BasicTab> {
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
   if (!Get.isRegistered<BasicCalculatorController>()) {
@@ -47,7 +52,7 @@ class _BasicTabState extends State<BasicTab> {
             autovalidateMode: widget.controller.autoValidate.value
                 ? AutovalidateMode.onUserInteraction
                 : AutovalidateMode.disabled,
-            key: widget.controller.formKey,
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -247,8 +252,11 @@ class _BasicTabState extends State<BasicTab> {
                       .toList(),
                   onChanged: (val) => setState(() {
                     if (val != null) {
+                    
+
                       widget.controller.ratioController.text =
-                          CalcuationConstants.conversionFactors[val].toString();
+                          ((CalcuationConstants.conversionFactors[val]?? 0) * 100).toString();
+                          
                     }
                     widget.controller.selectedTCoffeesellingType.value = val;
                   }),
@@ -281,7 +289,7 @@ class _BasicTabState extends State<BasicTab> {
                     widget.controller.autoValidate.value = true;
 
                     final isValid =
-                        widget.controller.formKey.currentState?.validate() ??
+                        _formKey.currentState?.validate() ??
                             false;
                     if (isValid) {
                       widget.controller.submit();

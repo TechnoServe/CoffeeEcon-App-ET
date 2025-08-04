@@ -168,7 +168,6 @@
 "Conversion Ratio" : "Conversion Ratio" , 
 "Profit Margin" : "Profit Margin"  ,
 "Calculate" : "Calculate" , 
-
 "Seasonal Coffee Cherry Price is required" : "Seasonal Coffee Cherry Price is required",
 "Cherry purchase volume is required" : "Cherry purchase volume is required",
 "Fuels is required" : "Fuels is required",
@@ -220,6 +219,8 @@
 "Spare Part Cost": "Spare Part Cost",
 "Spare Part Cost is required": "Spare Part Cost is required",
 "Other Expnese is required": "Other Expnese is required",
+"Total Expenses": "Total Expenses",
+
 "Add New Field": "Add New Field",
 "Note": "Note",
 "Unknown Step": "Unknown Step",
