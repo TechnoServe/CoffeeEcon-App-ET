@@ -73,7 +73,7 @@ class _ForecastTabState extends State<ForecastTab> {
                                 .map(
                                   (type) => DropdownMenuItem(
                                     value: type,
-                                    child: Text(type),
+                                    child: Text(type.tr),
                                   ),
                                 )
                                 .toList(),

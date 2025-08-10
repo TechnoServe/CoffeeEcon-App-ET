@@ -86,24 +86,16 @@ class SiteRegistrationView extends StatelessWidget {
                     const SizedBox(
                       height: 16,
                     ),
-                    Obx(
-                      () => AppDropdown(
+                   AppTextField(
                         label: 'Location',
                         borderColor: AppColors.stroke100,
-                        hintText: 'Select Location',
-                        useTextFieldStyle: true,
-                        value: controller.locationValue.value,
-                        useDarkDropDown: true,
-                        items: DropdownData.locations,
-                        onChanged: (value) {
-                          controller.locationValue.value = value;
-                          controller.locationController.text = value ?? '';
-                        },
-                        errorText: controller.siteNameController.text.isEmpty
+                        hintText: 'Add Location',
+                        controller: controller.locationController,
+                        errorText: controller.locationController.text.isEmpty
                             ? 'Location is required'
                             : null,
                       ),
-                    ),
+                    
                     const SizedBox(
                       height: 16,
                     ),

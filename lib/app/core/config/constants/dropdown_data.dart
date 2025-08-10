@@ -36,6 +36,7 @@ class DropdownData {
   static const Map<String, double> unitToKg = {
     'Grams': 0.001,
     'Kilograms': 1.0,
+    'Kg':1.0,
     'Feresula': 17.0,
     'Qt': 100.0,
     'Pound': 0.45359237,
@@ -45,10 +46,10 @@ class DropdownData {
 
   /// List of business model options.
   static const List<String> businessModels = [
-    'Direct Export',
-    'Supplier',
-    'Cooperative',
-    'Other',
+    'Private', 
+    'Cooperative', 
+    'Private With Vertical Integration', 
+    'Private Exporter',
   ];
 
   /// List of coffee types.

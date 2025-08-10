@@ -228,7 +228,7 @@ class SummeryBodyState extends State<SummeryBody>
           // ),
 
           // Washed Process Summary
-          if (controller.selectedCoffeesellingType.value != 'Dried pod/Jenfel')
+          if (controller.selectedCoffeesellingType.value != 'Dried pod/Jenfel' && controller.sunDriedPercent.value != 1.0)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -244,29 +244,29 @@ class SummeryBodyState extends State<SummeryBody>
                 ),
                 const SizedBox(height: 16),
                 // Processing Days Card
-                SummaryInfoCard(
-                  iconPath: 'assets/icons/calendar2.svg',
-                  label: 'Processing Days',
-                  value: '${widget.data.processingDaysForWashed} Days',
-                  iconColor: const Color(0xFF00B3B0),
-                  iconSize: 20,
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    color: Color(0xFF23262F),
-                  ),
-                  valueStyle: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                    color: Color(0xFF23262F),
-                  ),
-                ),
+                // SummaryInfoCard(
+                //   iconPath: 'assets/icons/calendar2.svg',
+                //   label: 'Processing Days',
+                //   value: '${widget.data.processingDaysForWashed} Days',
+                //   iconColor: const Color(0xFF00B3B0),
+                //   iconSize: 20,
+                //   labelStyle: const TextStyle(
+                //     fontWeight: FontWeight.w400,
+                //     fontSize: 12,
+                //     color: Color(0xFF23262F),
+                //   ),
+                //   valueStyle: const TextStyle(
+                //     fontWeight: FontWeight.w500,
+                //     fontSize: 14,
+                //     color: Color(0xFF23262F),
+                //   ),
+                // ),
                 // Pulping Machine Capacity / Day Card
                 Obx(
                   () => SummaryInfoCard(
                     iconPath: 'assets/icons/drying.svg',
                     label: 'Pulping Machine Capacity / Day',
-                    showAlert: true,
+                    // showAlert: true,
                     onValidationTap: () {
                       showBestPracticeModal(
                         context,
@@ -305,29 +305,77 @@ class SummeryBodyState extends State<SummeryBody>
                   children: [
                     _SummaryGridCard(
                       icon: 'assets/icons/fermentation.svg',
-                      label: 'Fermentation Tanks',
+                      label: 'Fermentation Tank Per Batch',
                       value:
-                          '${widget.data.volumeOfFermentationTank?.toString()}',
+                          '${widget.data.ferTanksPerBatch?.toString()}',
                     ),
-                    // Soaking Tanks
-                    _SummaryGridCard(
+                     _SummaryGridCard(
+                      icon: 'assets/icons/fermentation.svg',
+                      label: 'Fermentation Cycle Total',
+                      value:
+                          '${widget.data.ferCycleTotal?.toString()}',
+                    ),
+                    
+                    // Green Coffee Output
+                  ],
+                ),
+                 _SummaryGridCard(
+                      icon: 'assets/icons/fermentation.svg',
+                      label: 'Fermentation Capacity Per Cycle (kg)',
+                      value:
+                        '${calculatorController.convertUnit(to: controller.selectedUnit.value, input: (widget.data.totalFerCapacityPerCycle ?? 0).toDouble()).toStringAsFixed(2)} ${controller.selectedUnit.value.tr}',
+
+                    ),
+                    const SizedBox(height: 16,),
+
+                                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.3,
+                  children: [
+               _SummaryGridCard(
                       icon: 'assets/icons/drying.svg',
-                      label: 'Soaking Tanks',
-                      value: '${widget.data.soakingTankVolume?.toString()}',
+                      label: 'Soaking Cycle Per Batch',
+                      value: '${widget.data.soakCyclesPerBatch?.toString()}',
                       onValidationTap: () {
                         // showBestPracticeModal(context);
                       },
                     ),
-
+                     _SummaryGridCard(
+                      icon: 'assets/icons/fermentation.svg',
+                      label: 'Soaking Cycle Total',
+                      value:
+                          '${widget.data.soakingCycleTotal?.toString()}',
+                    ),
+                     
                     // Green Coffee Output
                   ],
                 ),
+                _SummaryGridCard(
+                      icon: 'assets/icons/fermentation.svg',
+                      label: 'Soaking Capacity Per Cycle (kg)',
+                      value:
+                        '${calculatorController.convertUnit(to: controller.selectedUnit.value, input: (widget.data.soakingPulpCapacity ?? 0).toDouble()).toStringAsFixed(2)} ${controller.selectedUnit.value.tr}',
+                
+                    ),
+                 
                 const SizedBox(
                   height: 16,
                 ),
+                 GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.3,
+                  children: [
                 _SummaryGridCard(
                   icon: 'assets/icons/drying.svg',
-                  label: 'Drying Beds',
+                  label: 'Drying Beds Per Batch',
                   value: '${widget.data.washedDailyDryingCapacity?.toString()}',
                   showAlert: true,
                   onValidationTap: () {
@@ -337,9 +385,22 @@ class SummeryBodyState extends State<SummeryBody>
                     );
                   },
                 ),
-                const SizedBox(
-                  height: 16,
+                                _SummaryGridCard(
+                  icon: 'assets/icons/drying.svg',
+                  label: 'Drying Beds Total',
+                  value: '${widget.data.totalWashedDryingBeds?.toString()}',
+                  showAlert: true,
+                  onValidationTap: () {
+                    showBestPracticeModal(
+                      context,
+                      'To minimize the number of drying beds required, align your soaking schedule with the availability of empty drying beds.',
+                    );
+                  },
                 ),
+                  ]),
+                // const SizedBox(
+                //   height: 16,
+                // ),
                 Obx(
                   () => _SummaryGridCard(
                     icon: 'assets/icons/coffee-beans.svg',
@@ -374,11 +435,19 @@ class SummeryBodyState extends State<SummeryBody>
 
                     _SummaryGridCard(
                       icon: 'assets/icons/labour.svg',
-                      label: 'Labor',
+                      label: 'Labor Per Batch',
                       value:
-                          '${widget.data.numberOfWorkersForFullyWashed?.toString()}',
+                          '${widget.data.laborPerBatch?.toString()}',
                     ),
 
+                _SummaryGridCard(
+                      icon: 'assets/icons/labour.svg',
+                      label: 'Total Batches Needed',
+                      value:
+                          '${widget.data.batches?.toString()}',
+                    ),
+                  ],
+                ),
                     Obx(
                       () => _SummaryGridCard(
                         icon: 'assets/icons/bag.svg',
@@ -391,13 +460,11 @@ class SummeryBodyState extends State<SummeryBody>
                             : '${widget.data.numberOfBagsForFullyWashed?.toString()}',
                       ),
                     ),
-                  ],
-                ),
               ],
             ),
 
           const SizedBox(height: 24),
-          if (controller.selectedCoffeesellingType.value != 'Parchment')
+          if (controller.selectedCoffeesellingType.value != 'Parchment' &&  controller.fullyWashedPercent.value != 1.0)
 
             // Natural Process Summary
             Column(
@@ -412,24 +479,24 @@ class SummeryBodyState extends State<SummeryBody>
                   ),
                 ),
                 const SizedBox(height: 16),
-                SummaryInfoCard(
-                  iconPath: 'assets/icons/calendar2.svg',
-                  label: 'Processing Days',
-                  value: '${widget.data.dryingTimeSunDried} Days',
-                  iconColor: const Color(0xFF00B3B0),
-                  iconSize: 20,
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    color: Color(0xFF23262F),
-                  ),
-                  valueStyle: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                    color: Color(0xFF23262F),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                // SummaryInfoCard(
+                //   iconPath: 'assets/icons/calendar2.svg',
+                //   label: 'Processing Days',
+                //   value: '${widget.data.dryingTimeSunDried} Days',
+                //   iconColor: const Color(0xFF00B3B0),
+                //   iconSize: 20,
+                //   labelStyle: const TextStyle(
+                //     fontWeight: FontWeight.w400,
+                //     fontSize: 12,
+                //     color: Color(0xFF23262F),
+                //   ),
+                //   valueStyle: const TextStyle(
+                //     fontWeight: FontWeight.w500,
+                //     fontSize: 14,
+                //     color: Color(0xFF23262F),
+                //   ),
+                // ),
+                // const SizedBox(height: 16),
                 Obx(
                   () => _SummaryGridCard(
                     icon: 'assets/icons/coffee-beans.svg',
@@ -449,10 +516,18 @@ class SummeryBodyState extends State<SummeryBody>
                   ),
                 ),
                 const SizedBox(height: 16),
+                   GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.3,
+                  children: [
                 _SummaryGridCard(
                   icon: 'assets/icons/drying.svg',
-                  label: 'Drying Beds',
-                  showAlert: true,
+                  label: 'Drying Beds Per Batch',
+                  // showAlert: true,
                   onValidationTap: () {
                     showBestPracticeModal(
                       context,
@@ -462,7 +537,21 @@ class SummeryBodyState extends State<SummeryBody>
                   value:
                       '${widget.data.naturalDailyDryingCapacity?.toString()}',
                 ),
-                const SizedBox(height: 16),
+                  _SummaryGridCard(
+                  icon: 'assets/icons/drying.svg',
+                  label: 'Drying Beds Total',
+                  // showAlert: true,
+                  onValidationTap: () {
+                    showBestPracticeModal(
+                      context,
+                      'To minimize the number of drying beds required, align your soaking schedule with the availability of empty drying beds.',
+                    );
+                  },
+                  value:
+                      '${widget.data.totalNatDryingBeds?.toString()}',
+                ),
+                  ]),
+                // const SizedBox(height: 16),
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
@@ -473,11 +562,21 @@ class SummeryBodyState extends State<SummeryBody>
                   children: [
                     _SummaryGridCard(
                       icon: 'assets/icons/labour.svg',
-                      label: 'Labor',
+                      label: 'Labor Per Batch',
                       value:
-                          '${widget.data.numberOfWorkersForNatural?.toString()}',
+                          '${widget.data.laborPerBatch?.toString()}',
                     ),
-                    Obx(
+                        _SummaryGridCard(
+                      icon: 'assets/icons/labour.svg',
+                      label: 'Total Batches Needed',
+                      value:
+                          '${widget.data.batches?.toString()}',
+                    ),
+                    
+                    
+                  ],
+                ),
+                Obx(
                       () => _SummaryGridCard(
                         icon: 'assets/icons/bag2.svg',
                         label: 'Bags Needed',
@@ -487,8 +586,6 @@ class SummeryBodyState extends State<SummeryBody>
                             : '${widget.data.numberOfBagsForNatural?.toString()}',
                       ),
                     ),
-                  ],
-                ),
               ],
             ),
           const SizedBox(height: 24),
@@ -666,7 +763,7 @@ class _SummaryInfoCardState extends State<SummaryInfoCard> {
 
 // Helper widget for grid cards
 class _SummaryGridCard extends StatefulWidget {
-  final String icon;
+  final String? icon;
   final String label;
   final String value;
   final bool valueBold;
@@ -676,7 +773,7 @@ class _SummaryGridCard extends StatefulWidget {
   final List<String>? dropdownItems;
   final ValueChanged<String?>? onDropdownChanged;
   const _SummaryGridCard({
-    required this.icon,
+     this.icon,
     required this.label,
     required this.value,
     this.valueBold = false,
@@ -714,8 +811,8 @@ class _SummaryGridCardState extends State<_SummaryGridCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset(widget.icon, width: 24, height: 24),
-            const SizedBox(width: 12),
+            if(widget.icon != null) SvgPicture.asset(widget.icon!, width: 24, height: 24),
+            if(widget.icon != null) const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -886,7 +983,7 @@ Future<T?> showBestPracticeModal<T>(BuildContext context, String message) =>
                     children: [
                       TextSpan(
                         text: 'Hint: '.tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                           color: Color(0xFF252B37),
@@ -909,66 +1006,7 @@ Future<T?> showBestPracticeModal<T>(BuildContext context, String message) =>
                 ),
               ),
               const SizedBox(height: 24),
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: SizedBox(
-              //         height: 56,
-              //         child: OutlinedButton(
-              //           onPressed: onContinue ??
-              //               () => Navigator.pop(context, 'continue'),
-              //           style: OutlinedButton.styleFrom(
-              //             backgroundColor: const Color(0xFFF8F9FB),
-              //             side: const BorderSide(
-              //               color: Color(0xFFFFA800),
-              //             ),
-              //             shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(16),
-              //             ),
-              //             textStyle: const TextStyle(
-              //               fontWeight: FontWeight.w600,
-              //               fontSize: 14,
-              //             ),
-              //           ),
-              //           child: Text(
-              //             continueText.tr,
-              //             style: const TextStyle(
-              //               color: Color(0xFFFFA800),
-              //               fontWeight: FontWeight.w500,
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //     const SizedBox(width: 16),
-              //     Expanded(
-              //       child: SizedBox(
-              //         height: 56,
-              //         child: ElevatedButton(
-              //           onPressed:
-              //               onEdit ?? () => Navigator.pop(context, 'edit'),
-              //           style: ElevatedButton.styleFrom(
-              //             backgroundColor: AppColors.primary,
-              //             shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(16),
-              //             ),
-              //             textStyle: const TextStyle(
-              //               fontWeight: FontWeight.w600,
-              //               fontSize: 14,
-              //             ),
-              //           ),
-              //           child: Text(
-              //             editText.tr,
-              //             style: const TextStyle(
-              //               color: Colors.white,
-              //               fontWeight: FontWeight.w600,
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
+            
             ],
           ),
         ),

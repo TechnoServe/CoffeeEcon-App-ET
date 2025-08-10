@@ -87,17 +87,7 @@ class OnboardingSiteRegistrationView extends GetView<SiteController> {
                                 ?.copyWith(color: AppColors.textWhite100),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Enter your name to personalize your experience'.tr,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall
-                                ?.copyWith(
-                                  color: Colors.white.withOpacity(0.5),
-                                  height: 1.5,
-                                ),
-                          ),
+                     
                           const SizedBox(height: 16),
                           AppTextField(
                             controller: controller.siteNameController,
@@ -107,35 +97,22 @@ class OnboardingSiteRegistrationView extends GetView<SiteController> {
                             backgroundColor: Colors.white.withOpacity(0.1),
                           ),
                           const SizedBox(height: 16),
-                          Obx(
-                            () => AppDropdown(
-                              label: 'Location',
-                              hintText: 'Select Location',
-                              hintTextColor:
-                                  AppColors.textWhite100.withOpacity(0.4),
-                              useTextFieldStyle: true,
-                              value: controller.locationValue.value,
-                              backgroundColor: Colors.white.withOpacity(0.1),
-                              useDarkDropDown: false,
-                              items: DropdownData.locations,
-                              isForOnboarding: true,
-                              onChanged: (value) {
-                                controller.locationValue.value = value;
-                                controller.locationController.text =
-                                    value ?? '';
-                              },
-                              dropDownIcon: const Icon(
-                                Icons.keyboard_arrow_down,
-                                color: AppColors.textWhite100,
-                                size: 18,
-                              ),
+                     AppTextField(
+                        label: 'Location',
+                        hintText: 'Add Location',
+                        useDarkTextField: false,
+                        controller: controller.locationController,
+                        backgroundColor: Colors.white.withOpacity(0.1),
+                       
+
+                      
                             ),
-                          ),
+                          
                           const SizedBox(height: 16),
                           Obx(
                             () => AppDropdown(
                               useTextFieldStyle: true,
-                              label: 'Bussiness Model',
+                              label: 'Business Model',
                               hintText: 'Select Model',
                               items: DropdownData.businessModels,
                               backgroundColor: Colors.white.withOpacity(0.1),
@@ -170,7 +147,7 @@ class OnboardingSiteRegistrationView extends GetView<SiteController> {
                                       siteName:
                                           controller.siteNameController.text,
                                       locationValue:
-                                          controller.locationValue.value ?? '',
+                                          controller.locationController.text,
                                       businessModelValue:
                                           controller.businessValue.value ?? '',
                                     ),

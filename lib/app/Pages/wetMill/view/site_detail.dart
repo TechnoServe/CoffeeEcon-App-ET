@@ -293,7 +293,7 @@ class SiteDetailView extends StatelessWidget {
                                     svgAsset: AppAssets.pulpingIcon,
                                     backgroundColor: Color(0xff673AB7),
                                   ),
-                                  unit: 'Pulping Capacity',
+                                  unit: 'Pulping Capacity'.tr,
                                   value: '${site.pulpingCapacity} ${"kg".tr}',
                                 ),
                               ),

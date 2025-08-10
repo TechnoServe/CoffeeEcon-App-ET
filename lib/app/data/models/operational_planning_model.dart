@@ -7,7 +7,7 @@ part 'operational_planning_model.g.dart';
 @HiveType(typeId: 12)
 class OperationalPlanningModel extends HiveObject {
   /// Creates an [OperationalPlanningModel] entry.
-  OperationalPlanningModel({
+  OperationalPlanningModel( {
     required this.startDate,
     required this.endDate,
     required this.selectedCoffeeSellingType,
@@ -27,6 +27,7 @@ class OperationalPlanningModel extends HiveObject {
     this.fermentationLength,
     this.fermentationWidth,
     this.fermentationDepth,
+    this.numberOfFermentationTank,
     this.fermentationHours,
     this.soakingLength,
     this.soakingWidth,
@@ -50,9 +51,18 @@ class OperationalPlanningModel extends HiveObject {
     this.processingDaysForWashed,
     this.greenCoffeeOutput,
     this.dryParchmentVolume,
-    this.numberOfWorkersForNatural,
-    this.numberOfWorkersForFullyWashed,
+    this.laborPerBatch,
+    this.batches,
     this.dryPodVolume,
+    this.totalFerCapacityPerCycle, 
+    this.ferTanksPerBatch,
+    this.ferCycleTotal,
+    this.soakingPulpCapacity,
+    this.soakCyclesPerBatch, 
+    this.soakingCycleTotal, 
+    this.totalWashedDryingBeds, 
+    this.totalNatDryingBeds,
+    required this.plannedCherriesPerBatch,
     List<Map<String, String>>? selectedSites,
     String? savedTitle,
     String? id,
@@ -132,10 +142,20 @@ class OperationalPlanningModel extends HiveObject {
   @HiveField(15)
   final String? fermentationDepth;
 
+    /// The fermentation hours.
+  @HiveField(61)
+  final String? numberOfFermentationTank;
+
   /// The fermentation hours.
   @HiveField(16)
   final String? fermentationHours;
 
+  @HiveField(62)
+  final int? totalFerCapacityPerCycle;
+  @HiveField(63)
+  final int? ferTanksPerBatch;
+  @HiveField(64)
+  final int? ferCycleTotal;
   /// The soaking tank length.
   @HiveField(17)
   final String? soakingLength;
@@ -152,6 +172,13 @@ class OperationalPlanningModel extends HiveObject {
   @HiveField(20)
   final String? soakingDuration;
 
+  @HiveField(201)
+  final int? soakingPulpCapacity;
+  @HiveField(202)
+  final int? soakCyclesPerBatch;
+  @HiveField(203)
+  final int? soakingCycleTotal;
+
   /// The drying bed length.
   @HiveField(22)
   final String? dryingLength;
@@ -167,6 +194,14 @@ class OperationalPlanningModel extends HiveObject {
   /// The drying time for sun-dried coffee.
   @HiveField(25)
   final String? dryingTimeSunDried;
+
+  /// The drying time for washed coffee.
+  @HiveField(70)
+  final int? totalWashedDryingBeds;
+
+  /// The drying time for sun-dried coffee.
+  @HiveField(71)
+  final int? totalNatDryingBeds;
 
   /// The selected bag size.
   @HiveField(26)
@@ -238,11 +273,11 @@ class OperationalPlanningModel extends HiveObject {
 
   /// The number of workers for fully washed process.
   @HiveField(43)
-  final int? numberOfWorkersForFullyWashed;
+  final int? laborPerBatch;
 
   /// The number of workers for natural process.
   @HiveField(44)
-  final int? numberOfWorkersForNatural;
+  final int? batches;
 
   /// The dry pod volume.
   @HiveField(45)
@@ -263,4 +298,7 @@ class OperationalPlanningModel extends HiveObject {
   /// The saved title for the plan.
   @HiveField(49)
   final String savedTitle;
+
+  @HiveField(50)
+  final String plannedCherriesPerBatch;
 }

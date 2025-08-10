@@ -100,7 +100,7 @@
 
 
     "Edit Site":"የቡና ማጠቢያ ጣቢያውን አስተካክል",
-    "Add Site":"የቡና ማጠቢያ ጣቢያ መዝግብ",
+    "Add Site":"ጣቢያ መዝግብ",
     "Add Site From List":"ጣቢያ መዝግብ",
     "Basic Information":"መሰረታዊ መረጃ",
     "Back":"ተመለስ",
@@ -121,7 +121,22 @@
     "Storage space is required":"የማከማቻ ቦታ ያስፈልጋል",
     "Number of drying beds":"የማድረቂያ አልጋዎች ብዛት",
     "Number of drying is required":"የማድረቂያ አልጋዎች ብዛት ያስፈልጋል",
-    "Number of Fermentation Tanks":"የማቡኪያ ገንዳዎች  ብዛት",
+    "Number of Fermentation Tanks":"የማቡኪያ ገንዳዎች ብዛት",
+    
+    "Fermentation Tank Per Batch":"በባች የማቡኪያ ገንዳ",
+    "Fermentation Cycle Total":"አጠቃላይ የማቡካት ዙር",
+    "Fermentation Capacity Per Cycle (kg)":"በአንድ ዙር የማቡካት አቅም (ኪ.ግ)",
+
+    "Soaking Cycle Per Batch":"በአንድ ዙር በባች የመዘፍዘፍ አቅም",
+    "Soaking Cycle Total":"አጠቃላይ የመዘፍዘፍ አቅም",
+    "Soaking Capacity Per Cycle (kg)":"በአንድ ዙር የመዝፍዘፍ አቅም (ኪ.ግ)",
+
+    "Drying Beds Per Batch":"በባች የማድረቂያ አቅም",
+    "Drying Beds Total":"አጠቃላይ የማድረቂያ አቅም",
+    "Labor Per Batch":"የጉልበት ሰራተኞች በባች",
+    "Total Batches Needed":"አጠቃላይ የጉልበት ሰራተኞች",
+    "Planned Cherries Per Batch":"በባች የታቀደው የቼሪ መጠን",
+
     "if available":"ካለ",
     "Number of Fermentation is required":"የማቡኪያ ገንዳዎች ብዛት ያስፈልጋል",
     "Pulping Machine Capacity  is required":"የመፈልፈል አቅም ያስፈልጋል",
@@ -327,6 +342,7 @@
 "Download As PDF": "እንደ PDF ያውርዱ",
 "Download As Excel": "እንደ Excel ያውርዱ",
 "Total Calculated Price": "ጠቅላላ የተሰላው ዋጋ",
+" of ":" በ ",
 
 "Operational Summary": "የስራ ማጠቃለያ",
 "Total Overview": "ጠቅላላ እይታ", 
@@ -431,7 +447,16 @@
 "Labor Full Time": "የጉልበት ሠራተኛ(ቋሚ)",
 "Labor Casual": "የጉልበት ሠራተኛ(ጊዜያዊ)",
 "Fuel And Oils": "ነዳጅ እና ዘይቶች",
-"Repairs And Maintenance": "ጥገና እና የጥገና አገልግሎት"
+"Repairs And Maintenance": "ጥገና እና የጥገና አገልግሎት",
+"Pulping Capacity":"የመፈልፈል አቅም",
+"Planned volume per batch exceeds daily pulping capacity. Cherry per batch should be below":"በባች የተፈቀደው የታቀድው መጠን ከፖሊሹ አቅም በላይ ነው. በባች የተፈቀደው ቼሪ ወደ ቀጣዩ ዋጋ ማነስ አለበት ",
+"Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to":"በባች የተፈቀደው የታቀድው መጠን ከፖሊሹ አቅም በታች ነው. በባች የተፈቀደው ቼሪ ወደ ቀጣዩ ዋጋ መጨመር አለበት ",
+"Private": "የግል",
+"Private With Vertical Integration": "የግል ከቋሚ ውህደት ጋር",
+"Private Exporter": "የግል ላኪ"
+
+
+
 
   }
   

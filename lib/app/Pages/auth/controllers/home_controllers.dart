@@ -32,7 +32,7 @@ class HomeControllers extends GetxController {
  
   final List<String> imageUrls = [
     AppAssets.cherryAppLogo,
-    AppAssets.farmControlImage,
+    AppAssets.terraTracLogo,
     AppAssets.yirgaCheffeBackgroundImage,
   ];
 

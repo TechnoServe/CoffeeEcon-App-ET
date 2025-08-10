@@ -37,6 +37,7 @@ class OperationalPlanningModelAdapter
       fermentationLength: fields[13] as String?,
       fermentationWidth: fields[14] as String?,
       fermentationDepth: fields[15] as String?,
+      numberOfFermentationTank: fields[61] as String?,
       fermentationHours: fields[16] as String?,
       soakingLength: fields[17] as String?,
       soakingWidth: fields[18] as String?,
@@ -60,9 +61,18 @@ class OperationalPlanningModelAdapter
       processingDaysForWashed: fields[40] as int?,
       greenCoffeeOutput: fields[41] as double?,
       dryParchmentVolume: fields[42] as double?,
-      numberOfWorkersForNatural: fields[44] as int?,
-      numberOfWorkersForFullyWashed: fields[43] as int?,
+      laborPerBatch: fields[43] as int?,
+      batches: fields[44] as int?,
       dryPodVolume: fields[45] as double?,
+      totalFerCapacityPerCycle: fields[62] as int?,
+      ferTanksPerBatch: fields[63] as int?,
+      ferCycleTotal: fields[64] as int?,
+      soakingPulpCapacity: fields[201] as int?,
+      soakCyclesPerBatch: fields[202] as int?,
+      soakingCycleTotal: fields[203] as int?,
+      totalWashedDryingBeds: fields[70] as int?,
+      totalNatDryingBeds: fields[71] as int?,
+      plannedCherriesPerBatch: fields[50] as String,
       selectedSites: (fields[48] as List?)
           ?.map((dynamic e) => (e as Map).cast<String, String>())
           ?.toList(),
@@ -76,7 +86,7 @@ class OperationalPlanningModelAdapter
   @override
   void write(BinaryWriter writer, OperationalPlanningModel obj) {
     writer
-      ..writeByte(50)
+      ..writeByte(60)
       ..writeByte(100)
       ..write(obj.id)
       ..writeByte(0)
@@ -111,8 +121,16 @@ class OperationalPlanningModelAdapter
       ..write(obj.fermentationWidth)
       ..writeByte(15)
       ..write(obj.fermentationDepth)
+      ..writeByte(61)
+      ..write(obj.numberOfFermentationTank)
       ..writeByte(16)
       ..write(obj.fermentationHours)
+      ..writeByte(62)
+      ..write(obj.totalFerCapacityPerCycle)
+      ..writeByte(63)
+      ..write(obj.ferTanksPerBatch)
+      ..writeByte(64)
+      ..write(obj.ferCycleTotal)
       ..writeByte(17)
       ..write(obj.soakingLength)
       ..writeByte(18)
@@ -121,6 +139,12 @@ class OperationalPlanningModelAdapter
       ..write(obj.soakingDepth)
       ..writeByte(20)
       ..write(obj.soakingDuration)
+      ..writeByte(201)
+      ..write(obj.soakingPulpCapacity)
+      ..writeByte(202)
+      ..write(obj.soakCyclesPerBatch)
+      ..writeByte(203)
+      ..write(obj.soakingCycleTotal)
       ..writeByte(22)
       ..write(obj.dryingLength)
       ..writeByte(23)
@@ -129,6 +153,10 @@ class OperationalPlanningModelAdapter
       ..write(obj.dryingTimeWashed)
       ..writeByte(25)
       ..write(obj.dryingTimeSunDried)
+      ..writeByte(70)
+      ..write(obj.totalWashedDryingBeds)
+      ..writeByte(71)
+      ..write(obj.totalNatDryingBeds)
       ..writeByte(26)
       ..write(obj.selectedBagSize)
       ..writeByte(27)
@@ -164,9 +192,9 @@ class OperationalPlanningModelAdapter
       ..writeByte(42)
       ..write(obj.dryParchmentVolume)
       ..writeByte(43)
-      ..write(obj.numberOfWorkersForFullyWashed)
+      ..write(obj.laborPerBatch)
       ..writeByte(44)
-      ..write(obj.numberOfWorkersForNatural)
+      ..write(obj.batches)
       ..writeByte(45)
       ..write(obj.dryPodVolume)
       ..writeByte(46)
@@ -176,7 +204,9 @@ class OperationalPlanningModelAdapter
       ..writeByte(48)
       ..write(obj.selectedSites)
       ..writeByte(49)
-      ..write(obj.savedTitle);
+      ..write(obj.savedTitle)
+      ..writeByte(50)
+      ..write(obj.plannedCherriesPerBatch);
   }
 
   @override

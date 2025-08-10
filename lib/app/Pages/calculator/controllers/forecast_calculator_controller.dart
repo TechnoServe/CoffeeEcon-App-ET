@@ -40,8 +40,8 @@ Dried pod → Green coffee          1.25 : 1
   
   /// Available coffee types for forecasting calculations.
   final List<String> coffeeTypes = [
-    'Parchment',
-    'Dried pod/Jenfel',
+    'Parchment'.tr,
+    'Dried pod/Jenfel'.tr,
   ];
   
   /// Observable selected unit for calculations (default: Feresula).

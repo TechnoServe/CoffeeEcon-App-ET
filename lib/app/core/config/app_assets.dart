@@ -49,8 +49,8 @@ class AppAssets {
   static const String carouselThree = 'assets/images/carousel-three.png';
 
   static const String cherryAppLogo = 'assets/images/cherryAppLogo.png';
-  static const String farmControlImage = 'assets/images/farmControlImage.jpg';
-  static const String yirgaCheffeBackgroundImage = 'assets/images/yirgaCheffeBackgroundImage.jpg';
+  static const String terraTracLogo = 'assets/images/terraTracLogo.png';
+  static const String yirgaCheffeBackgroundImage = 'assets/images/yirgaCheffeBackgroundImage.png';
 
 
 

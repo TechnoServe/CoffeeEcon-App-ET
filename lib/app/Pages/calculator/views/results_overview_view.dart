@@ -604,7 +604,7 @@ class _AdvancedResultsOverviewBodyState
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: SummaryRow(
-                      label: 'Output Volume of ${widget.entry.sellingType}',
+                      label: 'Output Volume'.tr +' of '.tr +  widget.entry.sellingType.tr,
                       showCurrency: false,
                       value: convertedOutPutVolume.toStringAsFixed(2),
                       valueColor: const Color(0xFF1AB98B),

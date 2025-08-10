@@ -99,6 +99,21 @@
     "Number of drying beds":"Number of drying beds",
     "Number of drying is required":"Number of drying is required",
     "Number of Fermentation Tanks":"Number of Fermentation Tanks",
+
+    "Fermentation Tank Per Batch":"Fermentation Tank Per Batch",
+    "Fermentation Cycle Total":"Fermentation Cycle Tota",
+    "Fermentation Capacity Per Cycle (kg)":"Fermentation Capacity Per Cycle (kg)",
+
+    "Soaking Cycle Per Batch":"Soaking Cycle Per Batch",
+    "Soaking Cycle Total":"Soaking Cycle Total",
+    "Soaking Capacity Per Cycle (kg)":"Soaking Capacity Per Cycle (kg)",
+    "Planned Cherries Per Batch":"Planned Cherries Per Batch",
+
+    "Drying Beds Per Batch":"Drying Beds Per Batch",
+    "Drying Beds Total":"Drying Beds Total",
+    "Labor Per Batch":"Labor Per Batch",
+    "Total Batches Needed":"Total Batches Needed",
+    " of ":" of ",
     "if available":"if available",
     "Number of Fermentation is required":"Number of Fermentation is required",
     "Pulping Machine Capacity ":"Pulping Machine Capacity ",
@@ -405,8 +420,12 @@
 "Labor Full Time": "Labor Full Time",
 "Labor Casual": "Labor Casual",
 "Fuel And Oils": "Fuel And Oils",
-"Repairs And Maintenance": "Repairs And Maintenance"
-
-
+"Repairs And Maintenance": "Repairs And Maintenance",
+"Pulping Capacity":"Pulping Capacity",
+"Planned volume per batch exceeds daily pulping capacity. Cherry per batch should be below":"Planned volume per batch exceeds daily pulping capacity. Cherry per batch should be below",
+"Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to":"Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to",
+"Private": "Private",
+"Private With Vertical Integration": "Private With Vertical Integration",
+"Private Exporter": "Private Exporter"
   }
   

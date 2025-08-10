@@ -370,7 +370,7 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
           widget.controller.startDateController.text =
               DateFormat('MMM dd, yyyy').format(picked);
           // If end date is before start date, update it
-          if (widget.controller.endDate != null &&
+          if (widget.controller.endDate.value != null &&
               widget.controller.endDate.value!.isBefore(picked)) {
             widget.controller.endDate.value = picked;
             widget.controller.endDateController.text =
@@ -442,6 +442,15 @@ class _CoffeeProcessingGoalPageState extends State<CoffeeProcessingGoalPage> {
                   controller: widget.controller.seasonalCoffeeController,
                   keyboardType: TextInputType.number,
                   errorText: 'Total planned volume should not be empty',
+                  minValue: '1',
+                ),
+                const SizedBox(height: 16),
+                   LabeledTextField(
+                  label: 'Planned Cherries Per Batch',
+                  hintText: 'Amount in KG',
+                  controller: widget.controller.plannedCherriesPerBatch,
+                  keyboardType: TextInputType.number,
+                  errorText: 'Planned Cherries should not be empty',
                   minValue: '1',
                 ),
                 const SizedBox(height: 16),
@@ -809,7 +818,7 @@ class _ProcessingMethodPageState extends State<ProcessingMethodPage> {
                       color: Color(0xFF23262F),
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Disk Pulper'.tr,
+                      // hintText: 'Disk Pulper'.tr,
                       hintStyle: const TextStyle(
                         color: Color(0xFFB0B7C3),
                         fontWeight: FontWeight.w400,
@@ -1037,6 +1046,15 @@ class _ProcessingSetupPageState extends State<ProcessingSetupPage> {
                     ),
                     const SizedBox(height: 20),
                     LabeledTextField(
+                      label: 'Number of Fermentation Tanks',
+                      hintText: '1',
+                      controller: widget.controller.numberOfFermentationTank,
+                      minValue: '1',
+                    
+                    ),
+                         const SizedBox(height: 20),
+
+                    LabeledTextField(
                       label: 'Fermentation Hours',
                       hintText: '12',
                       controller: widget.controller.fermentationHoursController,
@@ -1253,13 +1271,16 @@ class _ProcessingSetupPageState extends State<ProcessingSetupPage> {
                     final isValid =
                         planFormKey.currentState?.validate() ?? false;
                     if (isValid) {
-                      widget.controller.calculateFermentation();
-                      widget.controller.calculateSoaking();
+                         if (widget.controller.selectedCoffeesellingType.value !=
+                  'Dried pod/Jenfel' && widget.controller.sunDriedPercent.value != 1.0) widget.controller.calculateFermentation();
+                        if (widget.controller.selectedCoffeesellingType.value !=
+                  'Dried pod/Jenfel' && widget.controller.sunDriedPercent.value != 1.0) widget.controller.calculateSoaking();
                       widget.controller.calculateDrying();
                       widget.controller.calculateBagging();
                       widget.controller.calculateWashedOutput();
                       widget.controller.calculateNaturalOutput();
-                      widget.controller.onDataSubmit();
+                      widget.controller.calculateLaborAndBatches();
+                      widget.controller.onDataSubmit(context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -1296,10 +1317,81 @@ class _ProcessingSetupPageState extends State<ProcessingSetupPage> {
                 ),
               ),
               const SizedBox(height: 24),
-            ],
+             
+          
+           ],
           ),
         ),
       ),
     );
   }
+
+}
+
+class BottleNeck extends StatelessWidget {
+  const BottleNeck({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => Row(
+                    children: [
+    Expanded(
+      child: SizedBox(
+        height: 56,
+        child: OutlinedButton(
+          onPressed: 
+              () => Navigator.pop(context, 'continue'),
+          style: OutlinedButton.styleFrom(
+            backgroundColor: const Color(0xFFF8F9FB),
+            side: const BorderSide(
+              color: Color(0xFFFFA800),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          child: Text(
+            'Continue'.tr,
+            style: const TextStyle(
+              color: Color(0xFFFFA800),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    ),
+    const SizedBox(width: 16),
+    Expanded(
+      child: SizedBox(
+        height: 56,
+        child: ElevatedButton(
+          onPressed:
+              () => Navigator.pop(context, 'edit'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          child: Text(
+            'Edit'.tr,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    ),
+                    ],
+                  );
 }

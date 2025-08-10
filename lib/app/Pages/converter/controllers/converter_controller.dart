@@ -58,6 +58,8 @@ class ConverterController extends GetxController {
   /// Whether the ratio "from" field is currently active
   bool isRatioFromActive = true;
 
+  final selectedOutputUnit = 'Kg'.obs;
+  
   /*
 
 Ratio to 1 kg cherry    Ratio
@@ -145,7 +147,7 @@ Dried pod → Green coffee          1.25 : 1
     _debounceTimer?.cancel();
 
     // Start a new timer
-    _debounceTimer = Timer(const Duration(seconds: 2), () {
+    _debounceTimer = Timer(const Duration(seconds: 1), () {
       // Perform the conversion and save to history
       _convertUnit(fromTo: isUnitFromActive);
     });
@@ -156,7 +158,7 @@ Dried pod → Green coffee          1.25 : 1
     _debounceTimer?.cancel();
 
     // Start a new timer
-    _debounceTimer = Timer(const Duration(seconds: 2), () {
+    _debounceTimer = Timer(const Duration(seconds: 1), () {
       // Perform the conversion and save to history
       _convertRatio(fromTo: isRatioFromActive);
     });
@@ -172,15 +174,19 @@ Dried pod → Green coffee          1.25 : 1
 
     final input = double.tryParse(controller.text);
     if (input == null) return;
-
     final inKg = input * (DropdownData.unitToKg[oldUnit] ?? 1);
-    final result = inKg / (DropdownData.unitToKg[newUnit] ?? 1);
-    final resultText = result.toStringAsFixed(2);
 
+
+    final result = inKg / (DropdownData.unitToKg[newUnit] ?? 1);
+
+    final resultText = result.toStringAsFixed(2);
+    
     controller.text = resultText;
 
     isRatioFromActive = controller == fromRatioController;
-    // _convertRatio(fromTo: isRatioFromActive);
+    selectedOutputUnit.value = newUnit;
+
+    _onRatioInputChanged(inKg.toString());
   }
 
   void loadControllers() {
@@ -237,7 +243,7 @@ Dried pod → Green coffee          1.25 : 1
       return;
     }
 
-    final input = double.tryParse(source.text);
+    final input = (double.tryParse(source.text)??0) * (DropdownData.unitToKg[selectedOutputUnit.value] ?? 1);
     if (input == null) {
       target.text = '';
       return;
@@ -248,7 +254,12 @@ Dried pod → Green coffee          1.25 : 1
 
     final conversionRate = toFactor / fromFactor;
     final result = input * conversionRate;
-    final resultText = result.toStringAsFixed(2);
+    final roundedResult = ceilingIfAboveThreshold(result);
+final resultText = roundedResult == roundedResult.floor() 
+    ? roundedResult.toStringAsFixed(0) 
+    : roundedResult.toStringAsFixed(2);
+
+
     // target.text = resultText;
     if (fromTo) {
       if (toRatioController.text != resultText) {
@@ -288,6 +299,11 @@ Dried pod → Green coffee          1.25 : 1
       isUnitConverstion: isUnitConverstion,
     );
   }
+
+  void updateSelectedOutputUnit(int unitIndex){
+     selectedOutputUnit.value = _getUnitName(unitIndex);
+  }
+ 
 
   void onNumberInput(
     String input, {
@@ -415,4 +431,8 @@ Dried pod → Green coffee          1.25 : 1
         return 'Kg';
     }
   }
+  double ceilingIfAboveThreshold(double value, {double threshold = 0.9}) {
+  final decimalPart = value - value.floor();
+  return decimalPart >= threshold ? value.ceil().toDouble() : value;
+}
 }

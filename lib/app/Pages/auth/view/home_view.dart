@@ -10,7 +10,6 @@ import 'package:flutter_template/app/Pages/plan/controllers/plan_controller.dart
 import 'package:flutter_template/app/Pages/wetMill/widgets/site_card.dart';
 import 'package:flutter_template/app/core/config/app_assets.dart';
 import 'package:flutter_template/app/core/config/app_color.dart';
-import 'package:flutter_template/app/core/config/app_constant.dart';
 import 'package:flutter_template/app/core/config/app_sizes.dart';
 
 import 'package:flutter_template/app/routes/app_routes.dart';
@@ -278,8 +277,8 @@ class _HomeViewState extends State<HomeView> {
             const SizedBox(
               height: 16,
             ),
-            SizedBox(
-              height: 134,
+            AspectRatio(
+              aspectRatio: 4,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: homeController.imageUrls.length,
@@ -295,57 +294,57 @@ class _HomeViewState extends State<HomeView> {
                         children: [
                           Image.asset(
                             homeController.imageUrls[index],
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fill,
                             width: double.infinity,
                             height: double.infinity,
                           ),
-                          Positioned.fill(
-                            child: InkWell(
-                              onTap: () => {
-                               homeController.launchURL(homeController.linkUrls[index]),
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: Colors.black.withOpacity(0.3),
-                                ),
-                                // padding: const EdgeInsets.symmetric(
-                                //   vertical: 40,
-                                //   horizontal: 16,
-                                // ),
-                                // child: Column(
-                                //   crossAxisAlignment: CrossAxisAlignment.start,
-                                //   children: [
-                                //     Text(
-                                //       (sliderTexts[index]['title'] ?? '').tr,
-                                //       overflow: TextOverflow.ellipsis,
-                                //       style: Theme.of(context)
-                                //           .textTheme
-                                //           .titleSmall
-                                //           ?.copyWith(
-                                //             color: Colors.white,
-                                //             fontWeight: FontWeight.w600,
-                                //           ),
-                                //     ),
-                                //     const SizedBox(height: 4),
-                                //     Expanded(
-                                //       child: Text(
-                                //         (sliderTexts[index]['subtitle'] ?? '').tr,
-                                //         overflow: TextOverflow.ellipsis,
-                                //         style: Theme.of(context)
-                                //             .textTheme
-                                //             .labelSmall
-                                //             ?.copyWith(
-                                //               color: Colors.white70,
-                                //             ),
-                                //       ),
-                                //     ),
-                                //   ],
-                                // ),
+                          // Positioned.fill(
+                          //   child: InkWell(
+                          //     onTap: () => {
+                          //      homeController.launchURL(homeController.linkUrls[index]),
+                          //     },
+                          //     child: Container(
+                          //       decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(16),
+                          //         color: Colors.black.withOpacity(0.3),
+                          //       ),
+                          //       // padding: const EdgeInsets.symmetric(
+                          //       //   vertical: 40,
+                          //       //   horizontal: 16,
+                          //       // ),
+                          //       // child: Column(
+                          //       //   crossAxisAlignment: CrossAxisAlignment.start,
+                          //       //   children: [
+                          //       //     Text(
+                          //       //       (sliderTexts[index]['title'] ?? '').tr,
+                          //       //       overflow: TextOverflow.ellipsis,
+                          //       //       style: Theme.of(context)
+                          //       //           .textTheme
+                          //       //           .titleSmall
+                          //       //           ?.copyWith(
+                          //       //             color: Colors.white,
+                          //       //             fontWeight: FontWeight.w600,
+                          //       //           ),
+                          //       //     ),
+                          //       //     const SizedBox(height: 4),
+                          //       //     Expanded(
+                          //       //       child: Text(
+                          //       //         (sliderTexts[index]['subtitle'] ?? '').tr,
+                          //       //         overflow: TextOverflow.ellipsis,
+                          //       //         style: Theme.of(context)
+                          //       //             .textTheme
+                          //       //             .labelSmall
+                          //       //             ?.copyWith(
+                          //       //               color: Colors.white70,
+                          //       //             ),
+                          //       //       ),
+                          //       //     ),
+                          //       //   ],
+                          //       // ),
                               
-                              ),
-                            ),
-                          ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

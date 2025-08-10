@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_template/app/Pages/calculator/controllers/calculator_controller.dart';
+import 'package:flutter_template/app/Pages/calculator/widgets/best_practice_modal.dart';
 import 'package:flutter_template/app/core/config/app_color.dart';
 import 'package:flutter_template/app/core/services/plan_service.dart';
 import 'package:flutter_template/app/data/models/operational_planning_model.dart';
@@ -25,7 +26,8 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
   final selectedUnit = 'KG'.obs;
   /// Current step in the multi-step planning process
   RxInt currentStep = 0.obs;
-
+ int laborPerBatch = 0;
+ int batches = 0;
   /// Output type selection for washed and natural processes
   final selectedOutPutValueForWashed = 'Green Coffee'.obs;
   final selectedOutPutValueForNatural = 'Dried Pod'.obs;
@@ -36,6 +38,9 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
   /// User input for seasonal coffee purchase volume
   final TextEditingController seasonalCoffeeController =
       TextEditingController();
+    /// User input for planned cherries per batch
+  final TextEditingController plannedCherriesPerBatch =
+      TextEditingController();    
   /// Service for plan persistence and retrieval
   final PlanService _planService = PlanService();
 
@@ -84,6 +89,8 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
       TextEditingController();
   final TextEditingController fermentationDepthController =
       TextEditingController();
+    final TextEditingController numberOfFermentationTank =
+      TextEditingController();    
   final TextEditingController fermentationHoursController =
       TextEditingController();
   /// Calculated fermentation tank requirements
@@ -105,6 +112,8 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
   int soakingTankVolume = 0;
   int naturalDailyDryingCapacity = 0;
   int washedDailyDryingCapacity = 0;
+  int totalWashedDryingBeds = 0;
+  int totalNatDryingBeds = 0;
 
   // Drying Table
   /// User input for drying bed dimensions and time requirements
@@ -141,8 +150,16 @@ class PlanController extends GetxController with GetTickerProviderStateMixin {
     'Green Coffee': 0.16,
     'Dried pod/Jenfel': 0.2,
   };
-  
 
+  Rx<bool> showBottleNeck = true.obs;
+  
+  int totalFerCapacityPerCycle = 0;
+  int ferTanksPerBatch = 0;
+  int ferCycleTotal = 0;
+
+  int soakingPulpCapacity = 0;
+  int soakCyclesPerBatch = 0;
+  int soakingCycleTotal = 0;
   // First conversion (Wet Parchment <-> Green Coffee)
   // final selectedOutPutValueForWashed = 'Green coffee'.obs;
   /// Calculated output values for washed and natural processes
@@ -189,7 +206,7 @@ Natural Process (dry method):
 
     // Daily capacity = PulperHourly x OperatingHours x NumMachines
     dailyPulpingCapacity =
-        pulperHourlyCapacity * getPulpingOperatingHours * numMachines;
+        pulperHourlyCapacity * getPulpingOperatingHours;
 
     // Calculate the number of days required for pulping based on total cherry amount and daily capacity
     if (dailyPulpingCapacity > 0 && dailyPulpingCapacity.isFinite) {
@@ -212,6 +229,7 @@ Natural Process (dry method):
     return totalDays + getDryingTimeForWashed;
   }
 
+  double get cherryBatch => double.parse(plannedCherriesPerBatch.text);
   /// Calculates the number of fermentation tanks and days required for the process.
   ///
   /// Uses tank dimensions, cherry input, and process duration to determine requirements.
@@ -221,9 +239,25 @@ Natural Process (dry method):
     final length = double.tryParse(fermentationLengthController.text) ?? 0;
     final width = double.tryParse(fermentationWidthController.text) ?? 0;
     final depth = double.tryParse(fermentationDepthController.text) ?? 0;
+    const pulpToWaterRatio = 1;
+    const tankUsableRatio = 0.85;
+    const cherryToWetParchment = 0.39;
 
+   
     volumeOfFermentationTank =
-        (length * width * depth).isFinite ? (length * width * depth).ceil() : 0;
+        (length * width * depth).isFinite ? (length * width * depth * 907.4).ceil() : 0;
+    final usableFerTankVol = volumeOfFermentationTank * tankUsableRatio;
+    
+    final perTankPulpCapacity = usableFerTankVol / (1 + pulpToWaterRatio);
+   
+    totalFerCapacityPerCycle = (perTankPulpCapacity * double.parse(numberOfFermentationTank.text)).ceil();
+    ferTanksPerBatch =  ceilSafe((cherryBatch * 0.55) / perTankPulpCapacity);
+    
+  
+    final parchmentAmount = cherryBatch * cherryToWetParchment;
+
+    final fermentCyclesPerBatch = ceilSafe(parchmentAmount / totalFerCapacityPerCycle) * batches;
+    ferCycleTotal =  fermentCyclesPerBatch * batches;
 
     if (volumeOfFermentationTank == 0) {
       // Handle gracefully
@@ -269,9 +303,22 @@ Natural Process (dry method):
     final length = double.tryParse(soakingLengthController.text) ?? 0;
     final width = double.tryParse(soakingWidthController.text) ?? 0;
     final depth = double.tryParse(soakingDepthController.text) ?? 0;
+    const tankUsableRatio = 0.85;
+    const pulpToWaterRatio = 1;
+    const cherryToWetParchment = 0.39;
+
+    final parchmentAmount = cherryBatch * cherryToWetParchment;
+    final batches = ceilSafe(cherryAmount / cherryBatch);
 
     final volumeOfSoakingTank = length * width * depth;
-
+    final soakingTankLiters = volumeOfSoakingTank * 907.4;
+    final usableSoakTank = soakingTankLiters * tankUsableRatio;
+    //Soaking capacity per cycle (kg)
+     soakingPulpCapacity = (usableSoakTank / (1 + pulpToWaterRatio)).ceil();
+     //Soaking cycles per batch
+     soakCyclesPerBatch = ceilSafe(parchmentAmount / soakingPulpCapacity);
+    //Soaking cycles total
+     soakingCycleTotal = soakCyclesPerBatch * batches;
     // If density or input is invalid, set to zero
     if (densityOfWater == 0 ||
         densityOfWater.isNaN ||
@@ -283,7 +330,7 @@ Natural Process (dry method):
     } else {
       // Calculate the percent of fully washed coffee based on selling type
       final calculatedFullyWashedPercent =
-          selectedCoffeesellingType.value == 'Parchment'
+          selectedCoffeesellingType.value == 'Parchment' || fullyWashedPercent.value == 1.0
               ? 1
               : fullyWashedPercent.value;
       // Calculate the total soaking tank volume needed
@@ -305,6 +352,7 @@ Natural Process (dry method):
       }
     }
   }
+  
 
   /// Safely divides two numbers, returning 0 if the denominator is zero or invalid.
   /// This prevents division by zero errors in calculations.
@@ -332,29 +380,38 @@ Natural Process (dry method):
     // Calculate the area of a drying bed
     final dryingBedArea = (double.tryParse(dryingLengthController.text) ?? 0) *
         (double.tryParse(dryingWidthController.text) ?? 0);
+   final cherryBatch = double.parse(plannedCherriesPerBatch.text);
+   const cherryToWetParchment = 0.39;
+   final parchmentAmount = cherryBatch * cherryToWetParchment;
+
     // Drying capacity per bed for natural and washed processes (constants)
     final dryingCapacityPerBedForNatural =
         dryingBedArea * 11; // 11 is some constant
     final dryingCapacityPerBedForWashed =
         dryingBedArea * 13.5; // 13.5 is some constant
 
+    final batches = ceilSafe(cherryAmount / cherryBatch);
+    
     // Calculate the percent of fully washed coffee based on selling type
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
+        selectedCoffeesellingType.value == 'Parchment' || fullyWashedPercent.value == 1.0 ? 1 : fullyWashedPercent.value;
     // 0.39 is a conversion factor to wet parchment since it lost some amount during pulping, soaking, etc.
-    final capacity = (cherryAmount * 0.39 * calculatedFullyWashedPercent) /
+    final capacity = parchmentAmount /
         dryingCapacityPerBedForWashed;
     washedDailyDryingCapacity = capacity.isFinite ? capacity.ceil() : 0;
+    totalWashedDryingBeds =     washedDailyDryingCapacity * batches;
 
     // Calculate the percent of sun dried coffee based on selling type
     final calculatedSunDriedPercent =
         selectedCoffeesellingType.value == 'Dried pod/Jenfel'
             ? 1
             : sunDriedPercent.value;
-    final naturalCapacity = (cherryAmount * calculatedSunDriedPercent) /
+    final naturalCapacity = parchmentAmount /
         dryingCapacityPerBedForNatural;
     naturalDailyDryingCapacity =
         naturalCapacity.isFinite ? naturalCapacity.ceil() : 0;
+    totalNatDryingBeds =     naturalDailyDryingCapacity * batches;
+    
   }
 
   /// Calculates the number of parchment bags needed for the washed process.
@@ -364,7 +421,7 @@ Natural Process (dry method):
   int get parchmentBags {
     // Calculate the number of parchment bags needed
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
+        selectedCoffeesellingType.value == 'Parchment'  || fullyWashedPercent.value == 1.0 ? 1 : fullyWashedPercent.value;
     return ((cherryAmount * 0.2 * calculatedFullyWashedPercent) /
                 (double.tryParse(selectedBagSize.text) ?? 0))
             .isFinite
@@ -382,7 +439,7 @@ Natural Process (dry method):
   int get greenBeanBags {
     // Calculate the number of green bean bags needed
     final calculatedSunDriedPercent =
-        selectedCoffeesellingType.value == 'Dried pod/Jenfel'
+        selectedCoffeesellingType.value == 'Dried pod/Jenfel' || sunDriedPercent.value == 1
             ? 1
             : sunDriedPercent.value;
     return ((cherryAmount * 0.16 * calculatedSunDriedPercent) /
@@ -403,7 +460,7 @@ Natural Process (dry method):
     // 0.16 unsorted green coffee conversion factor relative to cherry
     // Calculate number of bags for fully washed process
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
+        selectedCoffeesellingType.value == 'Parchment' || fullyWashedPercent.value == 1.0 ? 1 : fullyWashedPercent.value;
     numberOfBagsForFullyWashed =
         ((cherryAmount * 0.16 * calculatedFullyWashedPercent) /
                     (double.tryParse(selectedBagSize.text) ?? 0))
@@ -416,7 +473,7 @@ Natural Process (dry method):
 
     // Calculate number of bags for natural process
     final calculatedSunDriedPercent =
-        selectedCoffeesellingType.value == 'Dried pod/Jenfel'
+        selectedCoffeesellingType.value == 'Dried pod/Jenfel' || sunDriedPercent.value == 1
             ? 1
             : sunDriedPercent.value;
 
@@ -440,7 +497,7 @@ Natural Process (dry method):
   int get numberOfWorkersForFullyWashed {
     // Number of workers for fully washed process = (total kg of cherry x fully washed percent) / 500 kg per worker per day
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
+        selectedCoffeesellingType.value == 'Parchment' || fullyWashedPercent.value == 1.0 ? 1 : fullyWashedPercent.value;
     return ((cherryAmount * calculatedFullyWashedPercent) / 500).isFinite
         ? ((cherryAmount * calculatedFullyWashedPercent) / 500).ceil()
         : 0;
@@ -453,16 +510,13 @@ Natural Process (dry method):
   ///
   /// Uses cherry input, process split, and standard labor rates.
   /// Assumes 500 kg per worker per day as industry standard.
-  int get numberOfWorkersForNatural {
-    // Number of workers for natural process = (total kg of cherry x natural percent) / 500 kg per worker per day
-    final calculatedSunDriedPercent =
-        selectedCoffeesellingType.value == 'Dried pod/Jenfel'
-            ? 1
-            : sunDriedPercent.value;
-    return ((cherryAmount * calculatedSunDriedPercent) / 500).isFinite
-        ? ((cherryAmount * calculatedSunDriedPercent) / 500).ceil()
-        : 0;
+  void calculateLaborAndBatches() {
+    final cherryBatch = double.tryParse(plannedCherriesPerBatch.text) ?? 0.0;
+    laborPerBatch = ceilSafe(cherryBatch / 500);
+    batches = ceilSafe(cherryAmount / cherryBatch);
   }
+
+
 
   /// Calculates the total number of bags needed for both washed and natural processes.
   /// This is used for warehouse planning and storage requirements.
@@ -581,7 +635,7 @@ Natural Process (dry method):
   /// Uses different conversion factors for Parchment vs other types.
   void calculateWashedOutput() {
     // Calculate washed output value based on selected coffee selling type
-    if (selectedCoffeesellingType.value == 'Parchment') {
+    if (selectedCoffeesellingType.value == 'Parchment'|| fullyWashedPercent.value == 1.0) {
       washedOutputValue.value = (cherryAmount * 0.16).toStringAsFixed(2);
     } else {
       washedOutputValue.value =
@@ -595,7 +649,7 @@ Natural Process (dry method):
   /// Uses different conversion factors for Dried pod/Jenfel vs other types.
   void calculateNaturalOutput() {
     // Calculate natural output value based on selected coffee selling type
-    if (selectedCoffeesellingType.value == 'Dried pod/Jenfel') {
+    if (selectedCoffeesellingType.value == 'Dried pod/Jenfel' || sunDriedPercent.value == 1) {
       naturalOutputValue.value = (cherryAmount * 0.2).toStringAsFixed(2);
     } else {
       naturalOutputValue.value =
@@ -619,7 +673,7 @@ Natural Process (dry method):
     }
     //200,000 = green coffee 160,000 and dried pod same
     final calculatedFullyWashedPercent =
-        selectedCoffeesellingType.value == 'Parchment' ? 1 : fullyWashedPercent.value;
+        selectedCoffeesellingType.value == 'Parchment' || fullyWashedPercent.value == 1.0 ? 1 : fullyWashedPercent.value;
     if (value == 'Green Coffee') {
       parsed = cherryAmount * calculatedFullyWashedPercent * 0.16;
     } else {
@@ -649,7 +703,7 @@ Natural Process (dry method):
 
     // Apply new conversion
     final calculatedSunDriedPercent =
-        selectedCoffeesellingType.value == 'Dried pod/Jenfel'
+        selectedCoffeesellingType.value == 'Dried pod/Jenfel' || sunDriedPercent.value == 1
             ? 1
             : sunDriedPercent.value;
     if (value == 'Green Bean') {
@@ -665,14 +719,29 @@ Natural Process (dry method):
   ///
   /// Builds the operational planning data model and passes it to the summary view
   /// for display and further processing.
-  void onDataSubmit() {
-    Get.toNamed<void>(
+  void onDataSubmit(BuildContext context) {
+      String message = '';
+      if (cherryBatch > dailyPulpingCapacity && selectedCoffeesellingType.value !=
+                  'Dried pod/Jenfel' && sunDriedPercent.value != 1.0) {
+      message = '${'Planned volume per batch exceeds daily pulping capacity. Cherry per batch should be below'.tr}$dailyPulpingCapacity ${'kg'.tr}.';
+      showBottleNeckModal(context: context,message: message);
+   
+    }else  if (cherryBatch < dailyPulpingCapacity  && selectedCoffeesellingType.value !=
+                  'Dried pod/Jenfel' && sunDriedPercent.value != 1.0) {
+      message =  '${'Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to'.tr}$dailyPulpingCapacity ${'kg'.tr}.';
+      showBottleNeckModal(context: context,message: message);  
+    }else{
+   Get.toNamed<void>(
       AppRoutes.OPERATIONAL_SUMMARY,
       arguments: {
         'data': buildOperationalPlanningData(),
         'isFromTable': false,
       },
     );
+    }
+
+
+   
   }
 
   /// Loads plans for a specific site from the plan service.
@@ -722,6 +791,7 @@ Natural Process (dry method):
     String planName = '',
   }) =>
       OperationalPlanningModel(
+        plannedCherriesPerBatch:plannedCherriesPerBatch.text,
         savedTitle: planName,
         startDate: startDate.value!,
         endDate: endDate.value!,
@@ -742,6 +812,7 @@ Natural Process (dry method):
         fermentationLength: fermentationLengthController.text,
         fermentationWidth: fermentationWidthController.text,
         fermentationDepth: fermentationDepthController.text,
+        numberOfFermentationTank : numberOfFermentationTank.text,
         fermentationHours: fermentationHoursController.text,
         soakingLength: soakingLengthController.text,
         soakingWidth: soakingWidthController.text,
@@ -766,9 +837,19 @@ Natural Process (dry method):
         greenCoffeeOutput: getGreenCoffeeOutput,
         dryParchmentVolume: getDryParchmentVolume,
         dryPodVolume: getDryPodVolume,
-        numberOfWorkersForNatural: numberOfWorkersForNatural,
-        numberOfWorkersForFullyWashed: numberOfWorkersForFullyWashed,
+        laborPerBatch: laborPerBatch,
+        batches: batches,
         selectedSites: selectedSites,
+
+        totalFerCapacityPerCycle: totalFerCapacityPerCycle,
+        ferTanksPerBatch:ferTanksPerBatch,
+        ferCycleTotal: ferCycleTotal,
+
+        soakingPulpCapacity: soakingPulpCapacity,
+        soakCyclesPerBatch: soakCyclesPerBatch, 
+        soakingCycleTotal: soakingCycleTotal, 
+        totalWashedDryingBeds: totalWashedDryingBeds, 
+        totalNatDryingBeds : totalNatDryingBeds,
       );
   
   /// Updates the controller's state with data from a loaded operational planning model.
@@ -782,6 +863,7 @@ Natural Process (dry method):
     selectedCoffeesellingType.value = data.selectedCoffeeSellingType;
 
     seasonalCoffeeController.text = data.seasonalCoffee ?? '';
+    plannedCherriesPerBatch.text = data.plannedCherriesPerBatch ?? '';
     secondPaymentController.text = data.secondPayment ?? '';
     lowGradeHullingController.text = data.lowGradeHulling ?? '';
     juteBagPriceController.text = data.juteBagPrice ?? '';
@@ -793,6 +875,7 @@ Natural Process (dry method):
     operatingHoursController.text = data.operatingHours ?? '';
     fermentationLengthController.text = data.fermentationLength ?? '';
     fermentationWidthController.text = data.fermentationWidth ?? '';
+    numberOfFermentationTank.text = data.numberOfFermentationTank ?? '';      
     fermentationDepthController.text = data.fermentationDepth ?? '';
     fermentationHoursController.text = data.fermentationHours ?? '';
     soakingLengthController.text = data.soakingLength ?? '';
@@ -814,6 +897,16 @@ Natural Process (dry method):
     washedDailyDryingCapacity = data.washedDailyDryingCapacity ?? 0;
     numberOfBagsForFullyWashed = data.numberOfBagsForFullyWashed ?? 0;
     numberOfBagsForNatural = data.numberOfBagsForNatural ?? 0;
+    laborPerBatch = data.laborPerBatch ?? 0;
+    batches = data.batches ?? 0;
+    totalFerCapacityPerCycle = data.totalFerCapacityPerCycle ?? 0;
+    ferTanksPerBatch = data.ferTanksPerBatch ?? 0;
+    ferCycleTotal = data.ferCycleTotal?? 0;
+    soakingPulpCapacity = data.soakingPulpCapacity?? 0;
+    soakCyclesPerBatch = data.soakCyclesPerBatch?? 0; 
+    soakingCycleTotal = data.soakingCycleTotal?? 0; 
+    totalWashedDryingBeds = data.totalWashedDryingBeds?? 0; 
+    totalNatDryingBeds  = data.totalNatDryingBeds?? 0;
     // cherryAmount = data.cherryAmount ?? 0;
     // getTotalProcessingDaysForWashed = data.processingDaysForWashed ?? 0;
     // getGreenCoffeeOutput = data.greenCoffeeOutput ?? 0;
@@ -822,41 +915,93 @@ Natural Process (dry method):
     // numberOfWorkersForNatural = data.numberOfWorkersForNatural ?? 0;
     // numberOfWorkersForFullyWashed = data.numberOfWorkersForFullyWashed ?? 0;
   }
+  
+   Future<T?> showBottleNeckModal<T>({
+    required BuildContext context,
+    required String message,
+  }) =>
+      showModalBottomSheet<T>(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (_) => BestPracticeModal(
+          title: 'Value Outside Best Practices'.tr,
+          message:
+              message,
+              recommendedRanges: [],
+          // recommendedRanges: [
+          //   Builder(
+          //     builder: (context) => Padding(
+          //       padding: const EdgeInsets.only(top: 8, bottom: 12),
+          //       child: Text(
+          //         'Recommended Range'.tr,
+          //         style: Theme.of(context)
+          //             .textTheme
+          //             .titleMedium
+          //             ?.copyWith(fontWeight: FontWeight.w500, fontSize: 16),
+          //       ),
+          //     ),
+          //   ),
+          //   Text.rich(
+          //     TextSpan(
+          //       children: [
+          //         const WidgetSpan(
+          //           child: Icon(Icons.circle, size: 4, color: Colors.black54),
+          //           alignment: PlaceholderAlignment.middle,
+          //         ),
+          //         TextSpan(
+          //           text:
+          //               ' Lump-sum Seasonal Cherry Price: ',
+                       
+          //           style: const TextStyle(
+          //             fontWeight: FontWeight.w400,
+          //             fontSize: 12,
+          //             color: Color(0xFF717680),
+          //           ),
+          //         ),
+          //         TextSpan(
+          //           text: 'ETB  to ETB ',
+          //           style: const TextStyle(
+          //             fontWeight: FontWeight.w600,
+          //             fontSize: 12,
+          //             color: Color(0xFF252B37),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          
+          // ],
+         
+          tip:
+              'Double-check your input and ensure it aligns with industry best practices for better results.'
+                  .tr,
+          onContinue: () {
+      Get.toNamed<void>(
+      AppRoutes.OPERATIONAL_SUMMARY,
+      arguments: {
+        'data': buildOperationalPlanningData(),
+        'isFromTable': false,
+      },
+    );
+          },
+          onEdit: () {
+            currentStep.value = 0;
+            Navigator.pop(context);
+           
+          },
+        ),
+      );
+   int ceilSafe(double? value) {
+    if (value == null || value.isNaN || value.isInfinite) return 0;
+    return value.ceil();
+  }
 
   @override
   void onClose() {
-    // seasonalCoffeeController.dispose();
-    // seasonalCoffeeController.dispose();
-    // secondPaymentController.dispose();
-    // lowGradeHullingController.dispose();
-    // juteBagPriceController.dispose();
-    // juteBagVolumeController.dispose();
-    // ratioController.dispose();
-    // startDateController.dispose();
-    // endDateController.dispose();
-    // machineTypeController.dispose();
-    // numMachinesController.dispose();
-    // numDisksController.dispose();
-    // operatingHoursController.dispose();
-    // startDateController.dispose();
-    // endDateController.dispose();
-
-    // //washed process controllers
-    // fermentationLengthController.dispose();
-    // fermentationWidthController.dispose();
-    // fermentationDepthController.dispose();
-    // fermentationHoursController.dispose();
-    // soakingLengthController.dispose();
-    // soakingWidthController.dispose();
-    // soakingDepthController.dispose();
-    // soakingDurationController.dispose();
-    // dryingLengthController.dispose();
-    // dryingWidthController.dispose();
-    // dryingTimeWashedController.dispose();
-    // dryingTimeSunDriedController.dispose();
-
     controller.selectedSite = [];
-
     super.dispose();
   }
 }

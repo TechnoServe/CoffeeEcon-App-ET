@@ -88,185 +88,311 @@ class _CalculationHistoryTableState extends State<CalculationHistoryTable> {
             children: [
               const AppTitle(titleName: 'Calculation Histories'),
               const SizedBox(height: 16),
-              Expanded(
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(
-                    scrollbars: false,
-                    overscroll: false,
-                  ),
-                  child: ScrollbarTheme(
-                    data: ScrollbarThemeData(
-                      thumbColor: WidgetStateProperty.all(
-                        AppColors.stroke100,
-                      ),
-                      trackColor: WidgetStateProperty.all(
-                        AppColors.background60,
-                      ),
-                      trackVisibility: WidgetStateProperty.all(true),
-                      thickness: WidgetStateProperty.all(6),
-                      radius: const Radius.circular(32),
-                      minThumbLength: 4,
-                      thumbVisibility: WidgetStateProperty.all(true),
-                      trackBorderColor: WidgetStateProperty.all(
-                        Colors.transparent,
-                      ), // Remove track border
-                      crossAxisMargin:
-                          0, // Remove any margin around the scrollbar
-                    ),
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      interactive: true,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 32),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Header
-                              Container(
-                                height: 54.h,
-                                padding: EdgeInsets.only(left: 8.w),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondary,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: Row(
-                                  children: [
-                                    _buildHeaderCell(
-                                      'Calculation Type',
-                                      context,
-                                      width: 154,
-                                    ),
-                                    _buildHeaderCell(
-                                      'Saved Date',
-                                      context,
-                                      width: 200,
-                                    ),
-                                    _buildHeaderCell(
-                                      'Calculation Name',
-                                      context,
-                                      width: 200,
-                                    ),
-                                    _buildHeaderCell(
-                                      'Break Even Price',
-                                      context,
-                                      width: 200,
-                                    ),
-                                    _buildHeaderCell(
-                                      'Status',
-                                      context,
-                                      width: 154,
-                                    ),
-                                  ],
-                                ),
-                              ),
+              ScrollConfiguration(
+  behavior: ScrollConfiguration.of(context).copyWith(
+    scrollbars: false,
+    overscroll: false,
+  ),
+  child: ScrollbarTheme(
+    data: ScrollbarThemeData(
+      thumbColor: WidgetStateProperty.all(AppColors.stroke100),
+      trackColor: WidgetStateProperty.all(AppColors.background60),
+      trackVisibility: WidgetStateProperty.all(true),
+      thickness: WidgetStateProperty.all(6),
+      radius: const Radius.circular(32),
+      minThumbLength: 4,
+      thumbVisibility: WidgetStateProperty.all(true),
+      trackBorderColor: WidgetStateProperty.all(Colors.transparent),
+      crossAxisMargin: 0,
+    ),
+    child: Scrollbar(
+      thumbVisibility: true,
+      interactive: true,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row
+              Container(
+                height: 54.h,
+                padding: EdgeInsets.only(left: 8.w),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  children: [
+                    _buildHeaderCell('Calculation Type', context, width: 154),
+                    _buildHeaderCell('Saved Date', context, width: 200),
+                    _buildHeaderCell('Calculation Name', context, width: 200),
+                    _buildHeaderCell('Break Even Price', context, width: 200),
+                    _buildHeaderCell('Status', context, width: 154),
+                  ],
+                ),
+              ),
 
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ...widget.siteCalculationHistory.map(
-                                        (row) => GestureDetector(
-                                          onTap: () {
-                                            Get.toNamed<void>(
-                                              AppRoutes.RESULTSOVERVIEWVIEW,
-                                              arguments: {
-                                                'type':
-                                                    ResultsOverviewTypeExtension
-                                                        .fromString(
-                                                  row.type.name,
-                                                ),
-                                                'basicCalcData':
-                                                    row.basicCalculation,
-                                                'advancedCalcData':
-                                                    row.advancedCalculation,
-                                                'breakEvenPrice':
-                                                    row.breakEvenPrice,
-                                                'isBestPractice':
-                                                    row.isBestPractice,
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            height: 54.h,
-                                            padding: EdgeInsets.only(left: 8.w),
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: AppColors.secondary,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                _buildRowCell(
-                                                  row.type.name,
-                                                  context,
-                                                  width: 154,
-                                                ),
-                                                _buildRowCell(
-                                                  DateFormat('MMM d, yyyy')
-                                                      .format(row.createdAt),
-                                                  context,
-                                                  width: 200,
-                                                ),
-                                                _buildRowCell(
-                                                  row.title,
-                                                  context,
-                                                  width: 200,
-                                                ),
-                                                _buildRowCell(
-                                                  row.breakEvenPrice
-                                                          ?.toStringAsFixed(
-                                                        2,
-                                                      ) ??
-                                                      '0',
-                                                  context,
-                                                  width: 200,
-                                                ),
-                                                SizedBox(
-                                                  width: 154.w,
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Text(
-                                                      row.isBestPractice
-                                                          ? '✅ Best Practice'
-                                                          : '⚠️ Below Market',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .labelSmall
-                                                          ?.copyWith(
-                                                            color:
-                                                                row.isBestPractice
-                                                                    ? AppColors
-                                                                        .success
-                                                                    : AppColors
-                                                                        .success,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+              // Data rows — no Expanded here
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...widget.siteCalculationHistory.map(
+                      (row) => GestureDetector(
+                        onTap: () {
+                          Get.toNamed<void>(
+                            AppRoutes.RESULTSOVERVIEWVIEW,
+                            arguments: {
+                              'type': ResultsOverviewTypeExtension.fromString(
+                                row.type.name,
+                              ),
+                              'basicCalcData': row.basicCalculation,
+                              'advancedCalcData': row.advancedCalculation,
+                              'breakEvenPrice': row.breakEvenPrice,
+                              'isBestPractice': row.isBestPractice,
+                            },
+                          );
+                        },
+                        child: Container(
+                          height: 54.h,
+                          padding: EdgeInsets.only(left: 8.w),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: AppColors.secondary),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              _buildRowCell(row.type.name, context, width: 154),
+                              _buildRowCell(
+                                DateFormat('MMM d, yyyy')
+                                    .format(row.createdAt),
+                                context,
+                                width: 200,
+                              ),
+                              _buildRowCell(row.title, context, width: 200),
+                              _buildRowCell(
+                                row.breakEvenPrice?.toStringAsFixed(2) ?? '0',
+                                context,
+                                width: 200,
+                              ),
+                              SizedBox(
+                                width: 154.w,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    row.isBestPractice
+                                        ? '✅ Best Practice'
+                                        : '⚠️ Below Market',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: row.isBestPractice
+                                              ? AppColors.success
+                                              : AppColors.success,
                                         ),
-                                      ),
-                                    ],
                                   ),
                                 ),
                               ),
-                              // Data rows
                             ],
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  ),
+)
+
+              // Expanded(
+              //   child: ScrollConfiguration(
+              //     behavior: ScrollConfiguration.of(context).copyWith(
+              //       scrollbars: false,
+              //       overscroll: false,
+              //     ),
+              //     child: ScrollbarTheme(
+              //       data: ScrollbarThemeData(
+              //         thumbColor: WidgetStateProperty.all(
+              //           AppColors.stroke100,
+              //         ),
+              //         trackColor: WidgetStateProperty.all(
+              //           AppColors.background60,
+              //         ),
+              //         trackVisibility: WidgetStateProperty.all(true),
+              //         thickness: WidgetStateProperty.all(6),
+              //         radius: const Radius.circular(32),
+              //         minThumbLength: 4,
+              //         thumbVisibility: WidgetStateProperty.all(true),
+              //         trackBorderColor: WidgetStateProperty.all(
+              //           Colors.transparent,
+              //         ), // Remove track border
+              //         crossAxisMargin:
+              //             0, // Remove any margin around the scrollbar
+              //       ),
+              //       child: Scrollbar(
+              //         thumbVisibility: true,
+              //         interactive: true,
+              //         child: SingleChildScrollView(
+              //           scrollDirection: Axis.horizontal,
+              //           child: Padding(
+              //             padding: const EdgeInsets.only(bottom: 32),
+              //             child: Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 // Header
+              //                 Container(
+              //                   height: 54.h,
+              //                   padding: EdgeInsets.only(left: 8.w),
+              //                   decoration: BoxDecoration(
+              //                     color: AppColors.secondary,
+              //                     borderRadius: BorderRadius.circular(8.r),
+              //                   ),
+              //                   child: Row(
+              //                     children: [
+              //                       _buildHeaderCell(
+              //                         'Calculation Type',
+              //                         context,
+              //                         width: 154,
+              //                       ),
+              //                       _buildHeaderCell(
+              //                         'Saved Date',
+              //                         context,
+              //                         width: 200,
+              //                       ),
+              //                       _buildHeaderCell(
+              //                         'Calculation Name',
+              //                         context,
+              //                         width: 200,
+              //                       ),
+              //                       _buildHeaderCell(
+              //                         'Break Even Price',
+              //                         context,
+              //                         width: 200,
+              //                       ),
+              //                       _buildHeaderCell(
+              //                         'Status',
+              //                         context,
+              //                         width: 154,
+              //                       ),
+              //                     ],
+              //                   ),
+              //                 ),
+
+              //                 Expanded(
+              //                   child: SingleChildScrollView(
+              //                     child: Column(
+              //                       mainAxisSize: MainAxisSize.min,
+              //                       children: [
+              //                         ...widget.siteCalculationHistory.map(
+              //                           (row) => GestureDetector(
+              //                             onTap: () {
+              //                               Get.toNamed<void>(
+              //                                 AppRoutes.RESULTSOVERVIEWVIEW,
+              //                                 arguments: {
+              //                                   'type':
+              //                                       ResultsOverviewTypeExtension
+              //                                           .fromString(
+              //                                     row.type.name,
+              //                                   ),
+              //                                   'basicCalcData':
+              //                                       row.basicCalculation,
+              //                                   'advancedCalcData':
+              //                                       row.advancedCalculation,
+              //                                   'breakEvenPrice':
+              //                                       row.breakEvenPrice,
+              //                                   'isBestPractice':
+              //                                       row.isBestPractice,
+              //                                 },
+              //                               );
+              //                             },
+              //                             child: Container(
+              //                               height: 54.h,
+              //                               padding: EdgeInsets.only(left: 8.w),
+              //                               decoration: const BoxDecoration(
+              //                                 border: Border(
+              //                                   bottom: BorderSide(
+              //                                     color: AppColors.secondary,
+              //                                   ),
+              //                                 ),
+              //                               ),
+              //                               child: Row(
+              //                                 children: [
+              //                                   _buildRowCell(
+              //                                     row.type.name,
+              //                                     context,
+              //                                     width: 154,
+              //                                   ),
+              //                                   _buildRowCell(
+              //                                     DateFormat('MMM d, yyyy')
+              //                                         .format(row.createdAt),
+              //                                     context,
+              //                                     width: 200,
+              //                                   ),
+              //                                   _buildRowCell(
+              //                                     row.title,
+              //                                     context,
+              //                                     width: 200,
+              //                                   ),
+              //                                   _buildRowCell(
+              //                                     row.breakEvenPrice
+              //                                             ?.toStringAsFixed(
+              //                                           2,
+              //                                         ) ??
+              //                                         '0',
+              //                                     context,
+              //                                     width: 200,
+              //                                   ),
+              //                                   SizedBox(
+              //                                     width: 154.w,
+              //                                     child: Align(
+              //                                       alignment:
+              //                                           Alignment.centerLeft,
+              //                                       child: Text(
+              //                                         row.isBestPractice
+              //                                             ? '✅ Best Practice'
+              //                                             : '⚠️ Below Market',
+              //                                         style: Theme.of(context)
+              //                                             .textTheme
+              //                                             .labelSmall
+              //                                             ?.copyWith(
+              //                                               color:
+              //                                                   row.isBestPractice
+              //                                                       ? AppColors
+              //                                                           .success
+              //                                                       : AppColors
+              //                                                           .success,
+              //                                             ),
+              //                                       ),
+              //                                     ),
+              //                                   ),
+              //                                 ],
+              //                               ),
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ],
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 // Data rows
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+           
             ],
           );
   }
@@ -305,4 +431,5 @@ class _CalculationHistoryTableState extends State<CalculationHistoryTable> {
           ),
         ),
       );
+
 }

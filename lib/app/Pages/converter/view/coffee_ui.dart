@@ -30,6 +30,7 @@ class CoffeeView extends StatelessWidget {
               label: 'FROM'.tr, // Apply internationalization
               selectedUnitIndex: controller.selectedFromUnitIndex,
               onUnitSelected: (index) {
+                controller.updateSelectedOutputUnit(index);
                 final oldIndex = controller.selectedFromUnitIndex.value;
 
                 // Only update if the unit actually changed
@@ -59,6 +60,8 @@ class CoffeeView extends StatelessWidget {
               label: 'TO'.tr, // Apply internationalization
               selectedUnitIndex: controller.selectedToUnitIndex,
               onUnitSelected: (index) {
+                controller.updateSelectedOutputUnit(index);
+
                 final oldIndex = controller.selectedToUnitIndex.value;
 
                 // Only update if the unit actually changed
