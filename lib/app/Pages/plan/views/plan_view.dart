@@ -812,13 +812,14 @@ class _ProcessingMethodPageState extends State<ProcessingMethodPage> {
                   TextField(
                     controller: widget.controller.machineTypeController,
                     readOnly: true,
+                    
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
                       color: Color(0xFF23262F),
                     ),
                     decoration: InputDecoration(
-                      // hintText: 'Disk Pulper'.tr,
+                      hintText: 'Disk Pulper'.tr,
                       hintStyle: const TextStyle(
                         color: Color(0xFFB0B7C3),
                         fontWeight: FontWeight.w400,

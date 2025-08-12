@@ -732,7 +732,7 @@ Future<CalculationModel?> importExcelAndSaveToHive({
             subTitle =
                 'A site with this name already exists. Please choose a different name';
           } else if (e.toString().contains('LIMIT_REACHED')) {
-            title = 'You can\'t add any more sites';
+            title = "You can't add any more sites";
             subTitle =
                 'The system has reached its limit for adding new sites. Delete previous sites to add new sites.';
             isLimitReached = true;

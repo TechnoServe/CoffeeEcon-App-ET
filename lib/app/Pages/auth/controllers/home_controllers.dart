@@ -30,11 +30,23 @@ class HomeControllers extends GetxController {
   final isAmharic = true.obs;
 
  
-  final List<String> imageUrls = [
+  final List<String> amharicImageUrls = [
+    AppAssets.cherryAppAmharicLogo,
+    AppAssets.terraTracAmharicLogo,
+    AppAssets.yirgaCheffeBackgroundImage,
+  ];
+  final List<String> englishImageUrls = [
     AppAssets.cherryAppLogo,
     AppAssets.terraTracLogo,
     AppAssets.yirgaCheffeBackgroundImage,
   ];
+  
+List<String> get imageUrls {
+  if (Get.locale?.languageCode == 'am') {
+    return amharicImageUrls;
+  }
+  return englishImageUrls;
+}
 
   final List<String> linkUrls = [
     AppConstants.cherryAppUrl,

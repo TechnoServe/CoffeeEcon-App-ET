@@ -116,10 +116,12 @@ class _StockBodyState extends State<_StockBody> {
                             chipLabel: widget.controller.selectedUnit.value,
                             onUnitSelected: (value) {
                               widget.controller.selectedUnit.value =
-                                  value ?? 'FERESULA';
+                                  value ?? 'Feresula';
+                                  return null;
                             },
                             chipSvgPath: 'assets/icons/birr.svg',
                             onChipTap: () => {},
+                            selectedUnit: 'Feresula',
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -133,14 +135,20 @@ class _StockBodyState extends State<_StockBody> {
                               .map(
                                 (type) => DropdownMenuItem(
                                   value: type,
-                                  child: Text(type),
+                                  child: Text(type.tr),
                                 ),
                               )
                               .toList(),
-                          onChanged: (val) => setState(
-                            () => widget.controller.selectedCoffeeType.value =
-                                val,
-                          ),
+                             onChanged: (val) => setState(() {
+                    if (val != null) {
+                      // Update selected coffee type in controller
+                      print({'value isssjkdjksdjlksj': val});
+
+                   widget.controller.selectedCoffeeType.value =
+                                val;
+                    }
+                  }),  
+                    
                         ),
                         const SizedBox(height: 20),
                         LabeledTextField(
@@ -152,7 +160,8 @@ class _StockBodyState extends State<_StockBody> {
                           hintText: 'Amount',
                           controller: widget.controller.priceController,
                           suffixText:
-                              'Per 1 ${widget.controller.selectedUnit.value}',
+                          '${'Per'.tr} 1${' ${widget.controller.selectedUnit.value.tr}'}',
+
                           keyboardType: TextInputType.number,
                         ),
                         const SizedBox(height: 20),
@@ -162,7 +171,8 @@ class _StockBodyState extends State<_StockBody> {
                           ),
                           label: 'Coffee Volume',
                           errorText: 'Coffee Volume is required',
-                          hintText: 'Amount',
+                             hintText:
+                                'Amount in ${widget.controller.selectedUnit.value}'.tr,
                           controller: widget.controller.coffeeVolume,
                           keyboardType: TextInputType.number,
                         ),
@@ -190,6 +200,9 @@ class _StockBodyState extends State<_StockBody> {
                     final isValid =
                         widget.controller.formKey.currentState?.validate() ??
                             false;
+                      print('isValid: $isValid');
+                    // If the form is valid, trigger the calculation
+                    // This will call the onCalculate method in the controller      
                     if (isValid) {
                       widget.controller.onCalculate();
                     }

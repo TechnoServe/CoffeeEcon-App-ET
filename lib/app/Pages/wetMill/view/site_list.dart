@@ -73,7 +73,7 @@ class SiteListView extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            'Manage your coffee processing sites in one place.',
+                            'Manage your coffee processing sites in one place.'.tr,
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ),

@@ -43,6 +43,14 @@ class DropdownData {
     'Metric Ton': 1000.0, // Added metric ton (1 ton = 1000 kg)
     "Mt": 1000.0, // Added metric ton (1 ton = 1000 kg)
   };
+    static const Map<String, double> reverseToKg = {
+    'Kilograms': 1.0,
+    'Kg':1.0,
+    'Feresula': 0.0588235294 ,
+    'Quintal': 0.01,
+    'Pound': 0.45359237,
+    'Metric Ton': 0.001, 
+  };
 
   /// List of business model options.
   static const List<String> businessModels = [

@@ -31,8 +31,8 @@ Dried pod → Green coffee          1.25 : 1
   /// These represent how many kilograms of cherry are equivalent to 1 kilogram of the given coffee type.
   /// For example, 1 kg of Parchment is equivalent to 5 kg of cherry.
   final Map<String, double> conversionFactors = {
-    'Parchment': 5,
-    'Dried pod/Jenfel': 5,
+    'Parchment'.tr: 5,
+    'Dried pod/Jenfel'.tr: 5,
   };
   
   /// Global form key for form validation.
@@ -94,7 +94,7 @@ Dried pod → Green coffee          1.25 : 1
         double.tryParse(coffeeVolume.text.replaceAll(',', ''));
     // Get the selected coffee type
     final coffeeType = selectedCoffeeType.value;
-
+ 
     // Validate that all required inputs are present and valid
     if (priceInput == null ||
         otherExpensesInput == null ||
@@ -104,7 +104,7 @@ Dried pod → Green coffee          1.25 : 1
     }
 
     // Retrieve the conversion factor for the selected coffee type
-    final conversionFactor = conversionFactors[coffeeType];
+    final conversionFactor = conversionFactors[coffeeType.tr];
     if (conversionFactor == null || conversionFactor == 0.0) {
       return;
     }

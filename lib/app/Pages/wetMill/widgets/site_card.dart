@@ -113,7 +113,7 @@ class SiteCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Created on: ${DateFormat('d, MMM, yyyy').format(site.createdAt)}',
+                          '${"Created on".tr}: ${DateFormat('d, MMM, yyyy').format(site.createdAt)}',
                           style:
                               Theme.of(context).textTheme.labelMedium?.copyWith(
                                     color: AppColors.textWhite100.withOpacity(

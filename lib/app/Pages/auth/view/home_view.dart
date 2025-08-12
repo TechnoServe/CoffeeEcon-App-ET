@@ -290,89 +290,23 @@ class _HomeViewState extends State<HomeView> {
                     scale: scale,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Stack(
-                        children: [
-                          Image.asset(
-                            homeController.imageUrls[index],
-                            fit: BoxFit.fill,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
-                          // Positioned.fill(
-                          //   child: InkWell(
-                          //     onTap: () => {
-                          //      homeController.launchURL(homeController.linkUrls[index]),
-                          //     },
-                          //     child: Container(
-                          //       decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(16),
-                          //         color: Colors.black.withOpacity(0.3),
-                          //       ),
-                          //       // padding: const EdgeInsets.symmetric(
-                          //       //   vertical: 40,
-                          //       //   horizontal: 16,
-                          //       // ),
-                          //       // child: Column(
-                          //       //   crossAxisAlignment: CrossAxisAlignment.start,
-                          //       //   children: [
-                          //       //     Text(
-                          //       //       (sliderTexts[index]['title'] ?? '').tr,
-                          //       //       overflow: TextOverflow.ellipsis,
-                          //       //       style: Theme.of(context)
-                          //       //           .textTheme
-                          //       //           .titleSmall
-                          //       //           ?.copyWith(
-                          //       //             color: Colors.white,
-                          //       //             fontWeight: FontWeight.w600,
-                          //       //           ),
-                          //       //     ),
-                          //       //     const SizedBox(height: 4),
-                          //       //     Expanded(
-                          //       //       child: Text(
-                          //       //         (sliderTexts[index]['subtitle'] ?? '').tr,
-                          //       //         overflow: TextOverflow.ellipsis,
-                          //       //         style: Theme.of(context)
-                          //       //             .textTheme
-                          //       //             .labelSmall
-                          //       //             ?.copyWith(
-                          //       //               color: Colors.white70,
-                          //       //             ),
-                          //       //       ),
-                          //       //     ),
-                          //       //   ],
-                          //       // ),
-                              
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
+                      child: InkWell(
+                        onTap: () => homeController.launchURL(
+                          homeController.linkUrls[index],
+                        ),
+                        child: Image.asset(
+                          homeController.imageUrls[index],
+                          fit: BoxFit.fill,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
                       ),
                     ),
                   );
                 },
               ),
             ),
-            // const SizedBox(
-            //   height: 16,
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(
-            //     horizontal: AppSizes.pageHorizontalPadding,
-            //   ),
-            //   child: Container(
-            //     width: double.infinity,
-            //     padding: const EdgeInsets.symmetric(
-            //       vertical: 24,
-            //     ),
-            //     decoration: BoxDecoration(
-            //       color: AppColors.secondary,
-            //       borderRadius: BorderRadius.circular(24),
-            //     ),
-            //     child: const Center(
-            //       child: ComingSoon(),
-            //     ),
-            //   ),
-            // ),
+      
             const SizedBox(
               height: 16,
             ),

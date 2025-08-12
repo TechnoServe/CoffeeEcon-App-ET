@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_template/app/Pages/stock/widget/custom_checkbox.dart';
 import 'package:get/get.dart';
 
-class CustomChip extends StatelessWidget {
+class CustomChip extends StatefulWidget {
   const CustomChip({
     required this.label,
     required this.svgPath,
@@ -15,6 +15,7 @@ class CustomChip extends StatelessWidget {
     this.isCurrency = false,
     this.isUnit = false,
     this.isUploadCalculation = false,
+    this.selectedUnit,
   });
   final String label;
   final String svgPath;
@@ -23,6 +24,7 @@ class CustomChip extends StatelessWidget {
   final bool isCurrency;
   final bool isUnit;
   final bool isUploadCalculation;
+  final String? selectedUnit;
   final String? Function(String?)? onUnitSelected;
   final String? Function(String?)? onCurrencySelected;
 
@@ -30,21 +32,34 @@ class CustomChip extends StatelessWidget {
   static final RxString tempSelectedCurrency = 'ETB'.obs;
 
   @override
+  State<CustomChip> createState() => _CustomChipState();
+}
+
+class _CustomChipState extends State<CustomChip> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the selected unit if provided
+    if (widget.selectedUnit != null) {
+      CustomChip.tempSelectedUnit.value = widget.selectedUnit!;
+    }
+  }
+  @override
   Widget build(BuildContext context) => GestureDetector(
         onTap: () {
-          if (isRegion) {
+          if (widget.isRegion) {
             _showRegionBottomSheet(context);
-          } else if (isCurrency) {
+          } else if (widget.isCurrency) {
             _showCurrencyBottomSheet(
               context,
-              onCurrencySelected,
+              widget.onCurrencySelected,
             );
-          } else if (isUnit) {
+          } else if (widget.isUnit) {
             _showUnitBottomSheet(
               context,
-              onUnitSelected,
+              widget.onUnitSelected,
             );
-          } else if (isUploadCalculation) {
+          } else if (widget.isUploadCalculation) {
             _showUploadCalculationBottomSheet(
               context,
             );
@@ -61,7 +76,7 @@ class CustomChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SvgPicture.asset(
-                svgPath,
+                widget.svgPath,
                 width: 16,
                 height: 16,
                 colorFilter:
@@ -69,7 +84,7 @@ class CustomChip extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                label.tr,
+                widget.label.tr,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: Colors.grey.shade700,
@@ -241,16 +256,16 @@ class CustomChip extends StatelessWidget {
                         Expanded(
                           child: _buildRegionTile(
                             'KG',
-                            tempSelectedUnit.value == 'KG'
+                            CustomChip.tempSelectedUnit.value == 'KG'
                                 ? 'Set as Default'
                                 : '',
-                            tempSelectedUnit.value == 'KG',
+                            CustomChip.tempSelectedUnit.value == 'KG',
                             true,
                             () {
-                              tempSelectedUnit.value = 'KG';
+                              CustomChip.tempSelectedUnit.value = 'KG';
 
                               if (onUnitSelected != null) {
-                                onUnitSelected(tempSelectedUnit.value);
+                                onUnitSelected(CustomChip.tempSelectedUnit.value);
                               }
                               Navigator.of(context).pop();
                             },
@@ -260,16 +275,16 @@ class CustomChip extends StatelessWidget {
                         Expanded(
                           child: _buildRegionTile(
                             'Pound',
-                            tempSelectedUnit.value == 'Pound'
+                            CustomChip.tempSelectedUnit.value == 'Pound'
                                 ? 'Set as Default'
                                 : '',
-                            tempSelectedUnit.value == 'Pound',
+                            CustomChip.tempSelectedUnit.value == 'Pound',
                             true,
                             () {
-                              tempSelectedUnit.value = 'Pound';
+                              CustomChip.tempSelectedUnit.value = 'Pound';
 
                               if (onUnitSelected != null) {
-                                onUnitSelected(tempSelectedUnit.value);
+                                onUnitSelected(CustomChip.tempSelectedUnit.value);
                               }
                               Navigator.of(context).pop();
                             },
@@ -282,16 +297,16 @@ class CustomChip extends StatelessWidget {
                         Expanded(
                           child: _buildRegionTile(
                             'Feresula',
-                            tempSelectedUnit.value == 'Feresula'
+                            CustomChip.tempSelectedUnit.value == 'Feresula'
                                 ? 'Set as Default'
                                 : '',
-                            tempSelectedUnit.value == 'Feresula',
+                            CustomChip.tempSelectedUnit.value == 'Feresula',
                             true,
                             () {
-                              tempSelectedUnit.value = 'Feresula';
+                              CustomChip.tempSelectedUnit.value = 'Feresula';
 
                               if (onUnitSelected != null) {
-                                onUnitSelected(tempSelectedUnit.value);
+                                onUnitSelected(CustomChip.tempSelectedUnit.value);
                               }
                               Navigator.of(context).pop();
                             },
@@ -301,16 +316,16 @@ class CustomChip extends StatelessWidget {
                         Expanded(
                           child: _buildRegionTile(
                             'Quintal',
-                            tempSelectedUnit.value == 'Quintal'
+                            CustomChip.tempSelectedUnit.value == 'Quintal'
                                 ? 'Set as Default'
                                 : '',
-                            tempSelectedUnit.value == 'Quintal',
+                            CustomChip.tempSelectedUnit.value == 'Quintal',
                             true,
                             () {
-                              tempSelectedUnit.value = 'Quintal';
+                              CustomChip.tempSelectedUnit.value = 'Quintal';
 
                               if (onUnitSelected != null) {
-                                onUnitSelected(tempSelectedUnit.value);
+                                onUnitSelected(CustomChip.tempSelectedUnit.value);
                               }
                               Navigator.of(context).pop();
                             },
@@ -323,16 +338,16 @@ class CustomChip extends StatelessWidget {
                       width: double.infinity,
                       child: _buildRegionTile(
                         'Metric Ton',
-                        tempSelectedUnit.value == 'Metric Ton'
+                        CustomChip.tempSelectedUnit.value == 'Metric Ton'
                             ? 'Set as Default'
                             : '',
-                        tempSelectedUnit.value == 'Metric Ton',
+                        CustomChip.tempSelectedUnit.value == 'Metric Ton',
                         true,
                         () {
-                          tempSelectedUnit.value = 'Metric Ton';
+                          CustomChip.tempSelectedUnit.value = 'Metric Ton';
 
                           if (onUnitSelected != null) {
-                            onUnitSelected(tempSelectedUnit.value);
+                            onUnitSelected(CustomChip.tempSelectedUnit.value);
                           }
                           Navigator.of(context).pop();
                         },
@@ -456,19 +471,19 @@ class CustomChip extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               _buildCurrencyTile('🇪🇹', 'BIRR', 'Ethiopian Birr',
-                  tempSelectedCurrency.value == 'ETB', () {
-                tempSelectedCurrency.value = 'ETB';
+                  CustomChip.tempSelectedCurrency.value == 'ETB', () {
+                CustomChip.tempSelectedCurrency.value = 'ETB';
                 if (onCurrencySelected != null) {
-                  onCurrencySelected(tempSelectedCurrency.value);
+                  onCurrencySelected(CustomChip.tempSelectedCurrency.value);
                 }
 
                 Navigator.pop(context);
               }),
               _buildCurrencyTile('🇺🇸', 'USD', 'US Dollar',
-                  tempSelectedCurrency.value == 'USD', () {
-                tempSelectedCurrency.value = 'USD';
+                  CustomChip.tempSelectedCurrency.value == 'USD', () {
+                CustomChip.tempSelectedCurrency.value = 'USD';
                 if (onCurrencySelected != null) {
-                  onCurrencySelected(tempSelectedCurrency.value);
+                  onCurrencySelected(CustomChip.tempSelectedCurrency.value);
                 }
 
                 Navigator.pop(context);

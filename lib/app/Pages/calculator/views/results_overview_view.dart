@@ -480,12 +480,12 @@ class _AdvancedResultsOverviewBodyState
         .convertUnit(
           to: selectedUnit,
           input: double.tryParse(widget.entry.cherryPurchase)! *
-              double.tryParse(widget.entry.ratio)!,
+              (double.tryParse(widget.entry.ratio) ?? 0)/100,
         )
         .toInt();
 
       final double convertedPreTaxBreakEvenPrice = controller
-        .convertUnit(
+        .convertToMultiplyUnit(
           to: selectedUnit,
           input: widget.breakEvenPrice,
         );

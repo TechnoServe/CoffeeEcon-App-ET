@@ -92,7 +92,7 @@ class _ForecastTabState extends State<ForecastTab> {
                             hintText: 'Amount in birr',
                             controller: widget.controller.priceController,
                             suffixText:
-                                'Per 1 ${widget.controller.selectedUnit.value}',
+                                '${'Per'.tr} 1${' ${widget.controller.selectedUnit.value}'.tr}',
                             keyboardType: TextInputType.number,
                           ),
                           const SizedBox(height: 20),
@@ -127,12 +127,15 @@ class _ForecastTabState extends State<ForecastTab> {
                     text: 'Calculate',
                     iconPath: 'assets/icons/calc.svg',
                     onPressed: () {
-
+  
                       widget.controller.autoValidate.value = true;
 
                       final isValid =
                           widget.controller.formKey.currentState?.validate() ??
                               false;
+                       print({'is valid :': isValid}); 
+                      // If the form is valid, proceed with calculation
+                      // Otherwise, show validation errors       
                       if (isValid) {
 
                         widget.controller.onCalculate();

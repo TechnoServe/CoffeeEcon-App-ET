@@ -724,11 +724,13 @@ Natural Process (dry method):
       if (cherryBatch > dailyPulpingCapacity && selectedCoffeesellingType.value !=
                   'Dried pod/Jenfel' && sunDriedPercent.value != 1.0) {
       message = '${'Planned volume per batch exceeds daily pulping capacity. Cherry per batch should be below'.tr}$dailyPulpingCapacity ${'kg'.tr}.';
+      // ignore: inference_failure_on_function_invocation
       showBottleNeckModal(context: context,message: message);
    
     }else  if (cherryBatch < dailyPulpingCapacity  && selectedCoffeesellingType.value !=
                   'Dried pod/Jenfel' && sunDriedPercent.value != 1.0) {
       message =  '${'Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to'.tr}$dailyPulpingCapacity ${'kg'.tr}.';
+      // ignore: inference_failure_on_function_invocation
       showBottleNeckModal(context: context,message: message);  
     }else{
    Get.toNamed<void>(
@@ -979,6 +981,8 @@ Natural Process (dry method):
               'Double-check your input and ensure it aligns with industry best practices for better results.'
                   .tr,
           onContinue: () {
+            Navigator.pop(context);
+
       Get.toNamed<void>(
       AppRoutes.OPERATIONAL_SUMMARY,
       arguments: {
@@ -986,6 +990,8 @@ Natural Process (dry method):
         'isFromTable': false,
       },
     );
+
+
           },
           onEdit: () {
             currentStep.value = 0;

@@ -35,7 +35,7 @@ class SummaryRow extends StatelessWidget {
         ),
         Text(
           showCurrency
-              ? '${exchangeController.selectedCurrency} $value'
+              ? '${exchangeController.selectedCurrency.value.tr} $value'
               : value,
           style: TextStyle(
             fontSize: 12,

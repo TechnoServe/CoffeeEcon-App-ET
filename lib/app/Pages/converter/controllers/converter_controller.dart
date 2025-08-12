@@ -243,7 +243,9 @@ Dried pod → Green coffee          1.25 : 1
       return;
     }
 
-    final input = (double.tryParse(source.text)??0) * (DropdownData.unitToKg[selectedOutputUnit.value] ?? 1);
+    final input = (double.tryParse(source.text)??0) * (DropdownData.unitToKg[_getUnitName(selectedFromUnitIndex.value)] ?? 1) ;
+
+
     if (input == null) {
       target.text = '';
       return;
@@ -253,7 +255,8 @@ Dried pod → Green coffee          1.25 : 1
     final toFactor = conversionFactors[toCoffeeGrade.value] ?? 1.0;
 
     final conversionRate = toFactor / fromFactor;
-    final result = input * conversionRate;
+    double result = input * conversionRate;
+    result = result / (DropdownData.unitToKg[selectedOutputUnit.value] ?? 1);
     final roundedResult = ceilingIfAboveThreshold(result);
 final resultText = roundedResult == roundedResult.floor() 
     ? roundedResult.toStringAsFixed(0) 

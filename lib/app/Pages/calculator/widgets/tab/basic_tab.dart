@@ -82,7 +82,7 @@ class _BasicTabState extends State<BasicTab> {
                   keyboardType: TextInputType.number,
                   controller: widget.controller.purchaseVolumeController,
                   hintText: 'Amount',
-                  suffixText: 'In ${widget.controller.selectedUnit.value}',
+                  suffixText: '${'In'.tr} ${widget.controller.selectedUnit.value.tr}',
                   errorText: 'Cherry purchase volume is required',
                   minValue: '1',
                 ),

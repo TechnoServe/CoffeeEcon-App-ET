@@ -68,6 +68,10 @@
 
     "Site Detail":"Site Detail",
     "Calculation History":"Calculation History",
+    "Add Location":"Add Location",
+
+    "You can't add any more sites":"You can't add any more sites",
+    "The system has reached its limit for adding new sites. Delete previous sites to add new sites.":"The system has reached its limit for adding new sites. Delete previous sites to add new sites.",
 
     "Market Insights in Your Hands":"Market Insights in Your Hands",
     "Check real-time stock prices and make informed decisions":"Check real-time stock prices and make informed decisions.",
@@ -75,7 +79,8 @@
     "Plan your coffee business with advanced cost analysis tools":"Plan your coffee business with advanced cost analysis tools.",
     "Get insights and market trends on Ethiopian Commodity Exchange website":"Get insights and market trends on Ethiopian Commodity Exchange website.",
     "Created on":"Created on",
-
+    "Unexpected Error":"Unexpected Error",
+    "An error occurred while adding the site. Please try again.":"An error occurred while adding the site. Please try again.",
     "Edit Site":"Edit Site",
     "Add Site":"Add Site",
     "Add Site From List":"Add Site",
@@ -101,7 +106,7 @@
     "Number of Fermentation Tanks":"Number of Fermentation Tanks",
 
     "Fermentation Tank Per Batch":"Fermentation Tank Per Batch",
-    "Fermentation Cycle Total":"Fermentation Cycle Tota",
+    "Fermentation Cycle Total":"Fermentation Cycle Total",
     "Fermentation Capacity Per Cycle (kg)":"Fermentation Capacity Per Cycle (kg)",
 
     "Soaking Cycle Per Batch":"Soaking Cycle Per Batch",
@@ -171,6 +176,9 @@
     "Quickly estimate coffee pricing with essential cost factors" : "Quickly estimate coffee pricing with essential cost factors.",
 "Cherry purchase volume" : "Cherry purchase volume" , 
 "Seasonal Coffee Cherry Price" : "Seasonal Coffee Cherry Price" , 
+"Seasonal Cherry Price" : "Seasonal Cherry Price",  
+"Lump-sum":"Lump-sum",
+
 "Fuels" : "Fuels"  ,
 "Amount" : "Amount" , 
 "Cherry Transport and Commission" : "Cherry Transport and Commission" , 
@@ -249,6 +257,7 @@
 "Desired Coffee type should not be empty": "Desired Coffee type should not be empty",
 "Total Planned Volume": "Total Planned Volume",
 "Amount in KG": "Amount in KG",
+"Amount in Feresula": "Amount in Feresula",
 "Total planned volume should not be empty": "Total planned volume should not be empty",
 "Planned Volume Details": "Planned Volume Details",
 "Planned Volume of Fully Washed Coffee": "Planned Volume of Fully Washed Coffee",
@@ -300,6 +309,7 @@
 "Repairs and Maintenance in-season": "Repairs and Maintenance in-season",
 
 "Fuel and Oils": "Fuel and Oils",
+
 "Calculate Again": "Calculate Again",
 "Pricing Breakdown": "Pricing Breakdown",
 "Overview": "Overview",
@@ -426,6 +436,14 @@
 "Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to":"Planned volume per batch below the daily pulping capacity. To be economical increase cherry per batch up to",
 "Private": "Private",
 "Private With Vertical Integration": "Private With Vertical Integration",
-"Private Exporter": "Private Exporter"
+"Private Exporter": "Private Exporter",
+"ETB":"ETB",
+"per":"per",
+"In":"In",
+"to":"to",
+"Manage your coffee processing sites in one place.":"Manage your coffee processing sites in one place.",
+"Input":"Input"
+
+
   }
   

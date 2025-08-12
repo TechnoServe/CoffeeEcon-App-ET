@@ -227,13 +227,13 @@ class BasicCalculatorController extends GetxController {
         builder: (_) => BestPracticeModal(
           title: 'Value Outside Best Practices'.tr,
           message:
-              "${'The'.tr} ${camelCaseToSpacedWords(field).tr}${' you entered is outside the recommended range. This may affect your cost calculations and profit estimates.'.tr}",
+              "${'The'.tr} ${camelCaseToSpacedWords(field).tr}${'you entered is outside the recommended range. This may affect your cost calculations and profit estimates.'.tr}",
           recommendedRanges: [
             Builder(
               builder: (context) => Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 12),
                 child: Text(
-                  'Recommended Range'.tr,
+                  'Recommended Range:'.tr,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
@@ -250,8 +250,8 @@ class BasicCalculatorController extends GetxController {
                   ),
                   TextSpan(
                     text: field == 'seasonalPrice'
-                        ? ' Lump-sum Seasonal Cherry Price: '
-                        : '  ${camelCaseToSpacedWords(field)}: ',
+                        ? ' ${'Lump-sum'.tr} ${'Seasonal Cherry Price'.tr}: '
+                        : '  ${camelCaseToSpacedWords(field).tr}: ',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
@@ -259,7 +259,7 @@ class BasicCalculatorController extends GetxController {
                     ),
                   ),
                   TextSpan(
-                    text: 'ETB $minValue to ETB $maxValue',
+                    text: '${'ETB'.tr} $minValue ${'to'.tr} ${'ETB'.tr} $maxValue',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
@@ -281,8 +281,8 @@ class BasicCalculatorController extends GetxController {
                       child: Icon(Icons.circle, size: 4, color: Colors.black54),
                       alignment: PlaceholderAlignment.middle,
                     ),
-                    const TextSpan(
-                      text: ' Seasonal Cherry Price: ',
+                    TextSpan(
+                      text: ' ${'Seasonal Cherry Price'.tr}: ',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -306,9 +306,9 @@ class BasicCalculatorController extends GetxController {
                           final maxResult = maxValueNum / volumeNum;
 
                           // Format to 2 decimal places
-                          return 'ETB ${minResult.toStringAsFixed(2)} to ETB ${maxResult.toStringAsFixed(2)}';
+                          return 'ETB'.tr + ' ${minResult.toStringAsFixed(2)} ${'to'.tr} ${'ETB'.tr} ${maxResult.toStringAsFixed(2)}';
                         } else {
-                          return 'ETB ? to ETB ?'; // Fallback for invalid input
+                          return 'ETB ? ${'to'.tr} ETB ?'; // Fallback for invalid input
                         }
                       }(), // Immediately executed function for dynamic calculation
                       style: const TextStyle(
@@ -318,7 +318,7 @@ class BasicCalculatorController extends GetxController {
                       ),
                     ),
                     TextSpan(
-                      text: ' per ${selectedUnit.value}',
+                      text: ' ${'per'.tr} ${selectedUnit.value.tr}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -448,12 +448,13 @@ final fieldValue = double.tryParse(
   /// Returns the complete calculation entry model
   BasicCalculationEntryModel buildCurrentEntryWithPrice() {
     final purchaseVolume = double.tryParse(purchaseVolumeController.text) ?? 0;
-    final ratio = double.tryParse(ratioController.text) ?? 0;
+    final ratio = (double.tryParse(ratioController.text) ?? 0) / 100;
     final expectedProfit =
         double.tryParse(expectedProfitMarginController.text) ?? 0;
 
     // Calculate ratio output and break-even price
     final ratioOutput = purchaseVolume * ratio;
+
     breakEvenPrice = ratioOutput > 0 ? totalCost.value / ratioOutput : 0;
     // Calculate total selling price with profit margin
     final totalSellingPrice =

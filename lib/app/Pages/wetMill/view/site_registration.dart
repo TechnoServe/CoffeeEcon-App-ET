@@ -254,7 +254,7 @@ class SiteRegistrationView extends StatelessWidget {
                                 } else if (e
                                     .toString()
                                     .contains('LIMIT_REACHED')) {
-                                  title = 'You can’t add any more sites';
+                                  title = "You can't add any more sites";
                                   subTitle =
                                       'The system has reached its limit for adding new sites. Delete previous sites to add new sites.';
                                   isLimitReached = true;

@@ -19,6 +19,7 @@ class SectionTitle extends StatelessWidget {
     this.showChip = true,
     this.titleStyle,
     this.subtitleStyle,
+    this.selectedUnit,
   });
 
   final String title;
@@ -34,6 +35,7 @@ class SectionTitle extends StatelessWidget {
   final TextStyle? subtitleStyle;
   final String? Function(String?)? onUnitSelected;
   final String? Function(String?)? onCurrencySelected;
+  final String? selectedUnit;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -77,6 +79,7 @@ class SectionTitle extends StatelessWidget {
               isUnit: isUnit,
               onUnitSelected: onUnitSelected,
               onCurrencySelected: onCurrencySelected,
+              selectedUnit: selectedUnit,
             ),
         ],
       );

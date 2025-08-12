@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 
 /// A controller that associates a label, text controller, and focus node.
 /// This class is used to group related input field components together
@@ -41,15 +42,29 @@ class LabeledController {
 /// [camelCaseStr] - The camelCase string to convert
 /// Returns a formatted string with spaces and proper capitalization
 String camelCaseToSpacedWords(String camelCaseStr) {
-  // Insert a space before all capital letters and trim whitespace
-  // This regex matches any capital letter that follows a lowercase letter
+  // Words to always lowercase (common conjunctions, prepositions, etc.)
+  const lowerCaseWords = {'and', 'or', 'the', 'of', 'in'};
+
+  // Insert spaces before capital letters
   final spacedStr = camelCaseStr.replaceAllMapped(
     RegExp(r'(?<=[a-z])[A-Z]'),
     (match) => ' ${match.group(0)}',
   );
 
-  // Capitalize the first letter to ensure proper title case
-  return spacedStr.isNotEmpty
-      ? spacedStr[0].toUpperCase() + spacedStr.substring(1)
-      : spacedStr;
+  // Split into words and format each
+  final words = spacedStr.split(' ').mapIndexed((index, word) {
+    final lower = word.toLowerCase();
+    // First word always capitalized
+    if (index == 0) {
+      return lower[0].toUpperCase() + lower.substring(1);
+    }
+    // Middle words that are in the lowercase list
+    if (lowerCaseWords.contains(lower)) {
+      return lower;
+    }
+    // Otherwise, capitalize first letter
+    return lower[0].toUpperCase() + lower.substring(1);
+  }).join(' ');
+
+  return words;
 }

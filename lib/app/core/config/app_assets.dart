@@ -50,6 +50,8 @@ class AppAssets {
 
   static const String cherryAppLogo = 'assets/images/cherryAppLogo.png';
   static const String terraTracLogo = 'assets/images/terraTracLogo.png';
+  static const String cherryAppAmharicLogo = 'assets/images/cherryAppAmharicLogo.png';
+  static const String terraTracAmharicLogo = 'assets/images/terraTracLogoAmharic.png';
   static const String yirgaCheffeBackgroundImage = 'assets/images/yirgaCheffeBackgroundImage.png';
 
 

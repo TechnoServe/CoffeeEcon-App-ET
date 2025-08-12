@@ -281,7 +281,7 @@ class _ProcurementExpensesPageState extends State<ProcurementExpensesPage> {
                 LabeledTextField(
                   label: 'Cherry Purchase Volume',
                   hintText: 'Amount',
-                  suffixText: 'Per ${widget.controller.selectedUnit.value}',
+                  suffixText: '${'In'.tr} ${widget.controller.selectedUnit.value.tr}',
                   controller: widget.controller.cherryPurchaseController,
                   keyboardType: TextInputType.number,
                   minValue: '1',
@@ -373,7 +373,7 @@ class _ProcurementExpensesPageState extends State<ProcurementExpensesPage> {
                           final focusNode = FocusNode();
                           final labelFocusNode = FocusNode();
                           final label =
-                              'Input ${widget.controller.procurumentExpenseExtraFields.length + 1}';
+                              '${'Input'.tr} ${widget.controller.procurumentExpenseExtraFields.length + 1}';
                           final labeledController = LabeledController(
                             label: label,
                             controller: controller,
@@ -386,7 +386,7 @@ class _ProcurementExpensesPageState extends State<ProcurementExpensesPage> {
                               padding: const EdgeInsets.only(bottom: 16.0),
                               child: LabeledTextField(
                                 label: labeledController.label,
-                                hintText: 'amount',
+                                hintText: 'Amount'.tr,
                                 isRequired: false,
                                 controller: controller,
                                 isLabelEditable: true,
@@ -549,7 +549,7 @@ class _TransportAndCommissionPageState
       final focusNode = FocusNode();
       final labelFocusNode = FocusNode();
       final label =
-          'Input ${widget.controller.transportAndCommissionExtraFields.length + 1}';
+          '${'Input'.tr} ${widget.controller.transportAndCommissionExtraFields.length + 1}';
       final labeledController = LabeledController(
         label: label,
         controller: controller,
@@ -860,7 +860,7 @@ class _FuelsPageState extends State<FuelsPage> {
       final controller = TextEditingController();
       final focusNode = FocusNode();
       final labelFocusNode = FocusNode();
-      final label = 'Input ${widget.controller.fuelsExtraFields.length + 1}';
+      final label = '${'Input'.tr}  ${widget.controller.fuelsExtraFields.length + 1}';
       final labeledController = LabeledController(
         label: label,
         controller: controller,
@@ -1039,7 +1039,7 @@ class _MaintenanceEquipmentCostPageState
       final focusNode = FocusNode();
       final labelFocusNode = FocusNode();
       final label =
-          'Input ${widget.controller.maintenanceEquipmentCostExtraFields.length + 1}';
+          '${'Input'.tr}  ${widget.controller.maintenanceEquipmentCostExtraFields.length + 1}';
       final labeledController = LabeledController(
         label: label,
         controller: controller,
@@ -1246,7 +1246,7 @@ class _OtherExpensesPageState extends State<OtherExpensesPage> {
       final focusNode = FocusNode();
       final labelFocusNode = FocusNode();
       final label =
-          'Input ${widget.controller.otherExpensesExtraFields.length + 1}';
+          '${'Input'.tr}  ${widget.controller.otherExpensesExtraFields.length + 1}';
       final labeledController = LabeledController(
         label: label,
         controller: controller,

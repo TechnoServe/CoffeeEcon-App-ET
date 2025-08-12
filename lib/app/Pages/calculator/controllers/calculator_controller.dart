@@ -196,6 +196,26 @@ class CalculatorController extends GetxController
     return result;
   }
 
+    double convertToMultiplyUnit({required String to, required double input}) {
+
+    // If the target unit is KG, return the input as is
+    if (to == 'KG') {
+      return input;
+    }
+    print({
+      '################## convertToMultiplyUnit called *****************************',
+      to,
+      input,
+      DropdownData.unitToKg[to],
+      DropdownData.unitToKg['Kilograms'],
+      DropdownData.unitToKg[to],
+    });
+
+    // Convert from kilograms to the target unit
+    final result = input / (DropdownData.reverseToKg[to] ?? 1);
+    return result;
+  }
+
   /// Get the list of selected SiteInfo objects based on selectedSite maps.
   /// This method converts the selected site maps to actual SiteInfo objects
   /// by looking up each site by its ID.

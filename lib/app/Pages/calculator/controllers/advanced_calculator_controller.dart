@@ -737,10 +737,9 @@ class AdvancedCalculatorController extends GetxController {
       (variableTotal + fixedCostTotal) / variableCostTotal;
 
   /// Calculates the total variable cost (used in break-even and other calculations).
-  /// Formula: greenPriceVolume / 17
   /// This represents the variable cost per unit of output.
   double get variableCostTotal {
-    final double value = greenPriceVolume / 17;
+    final double value = greenPriceVolume;
     return value;
   }
 
@@ -748,7 +747,7 @@ class AdvancedCalculatorController extends GetxController {
   /// This represents the total volume of green coffee produced.
   double get greenPriceVolume {
     final cherryPrice = _parseDouble(cherryPurchaseController.text);
-    final ratio = _parseDouble(ratioController.text);
+    final ratio = _parseDouble(ratioController.text)/ 100;
     return cherryPrice * ratio;
   }
 
