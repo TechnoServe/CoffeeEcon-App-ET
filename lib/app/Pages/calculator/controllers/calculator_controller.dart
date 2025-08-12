@@ -131,10 +131,7 @@ class CalculatorController extends GetxController
 
     try {
       // Debug print for break even price
-      print({
-        '################## break even modl ********************************* save called *****************************',
-        savedModel.breakEvenPrice,
-      });
+  
       // Persist the calculation using the calculation service
       await _calculationService.saveBreakdown(savedModel);
       // Reload saved calculations to reflect the new addition
@@ -202,14 +199,7 @@ class CalculatorController extends GetxController
     if (to == 'KG') {
       return input;
     }
-    print({
-      '################## convertToMultiplyUnit called *****************************',
-      to,
-      input,
-      DropdownData.unitToKg[to],
-      DropdownData.unitToKg['Kilograms'],
-      DropdownData.unitToKg[to],
-    });
+
 
     // Convert from kilograms to the target unit
     final result = input / (DropdownData.reverseToKg[to] ?? 1);

@@ -15,13 +15,11 @@ class ExchangeRateService {
   /// Fetches exchange rates for the given [date] from the API.
   /// Falls back to cached rates if the API call fails.
   Future<List<ExchangeRate>> fetchRates({required String date}) async {
-    print({'date is ---------------------------------', date});
     try {
       final response = await dio.get('$_apiUrl?date=$date');
 
       if (response.statusCode == 200) {
         final data = response.data['data'] as List;
-        print({'data is ---------------------------------', data});
 
         final rates = data
             .map((e) => ExchangeRate.fromJson(e as Map<String, dynamic>))

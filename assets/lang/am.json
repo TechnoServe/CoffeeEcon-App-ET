@@ -127,17 +127,17 @@
     "Number of Fermentation Tanks":"የማቡኪያ ገንዳዎች ብዛት",
     
     "Fermentation Tank Per Batch":"በባች የማቡኪያ ገንዳ",
-    "Fermentation Cycle Total":"አጠቃላይ የማቡካት ዙር",
+    "Total Batch Needed For Fermentation":"ጠቅላላ የባች ቡኬት",
     "Fermentation Capacity Per Cycle (kg)":"በአንድ ዙር የማቡካት አቅም (ኪ.ግ)",
 
     "Soaking Cycle Per Batch":"በባች የሚያስፈልግ የመዘፍዘፍ ዙር ብዛት",
     "Soaking Cycle Total":"አጠቃላይ የመዘፍዘፍ ዙር ብዛት",
     "Soaking Capacity Per Cycle (kg)":"በአንድ ዙር የመዝፍዘፍ አቅም (ኪ.ግ)",
 
-    "Drying Beds Per Batch":"በባች የማድረቂያ አቅም",
-    "Drying Beds Total":"አጠቃላይ የማድረቂያ አቅም",
+    "Drying Beds Per Batch":"በባች የማድረቂያ አልጋ ብዛት",
+    "Drying Beds Total":"አጠቃላይ የማድረቂያ አልጋ ብዛት",
     "Labor Per Batch":"የጉልበት ሰራተኞች በባች",
-    "Total Batches Needed":"አጠቃላይ የጉልበት ሰራተኞች",
+    "Total Batches Needed":"ጠቅላላ የባች ብዛት",
     "Planned Cherries Per Batch":"በባች የታቀደው የእሸት ቡና መጠን",
 
     "if available":"ካለ",

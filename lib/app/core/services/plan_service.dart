@@ -20,20 +20,13 @@ class PlanService {
   /// Adds a new operational plan.
   Future<bool> addPlan(OperationalPlanningModel plan) async {
     try {
-      print({
-        'plane addeddddddddddddddd savedddddddddddddddddddddddddddddddddddddd',
-        plan.selectedSites,
-      });
+ 
 
       await _planBox.put(plan.id, plan);
-      print({
-        'plane savedddddddddddddddddddddddddddddddddddddd',
-        plan.selectedSites
-      });
+ 
 
       return true;
     } catch (e) {
-      print({'errrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', e});
       return false;
     }
   }
@@ -61,7 +54,6 @@ class PlanService {
         )
         .toList();
     plans.sort((a, b) => b.createdAt.compareTo(a.createdAt)); // newest first
-    print({'load plannnnnnnnnnnnnnnnnnnnnnnn', plans});
     return plans;
   }
 

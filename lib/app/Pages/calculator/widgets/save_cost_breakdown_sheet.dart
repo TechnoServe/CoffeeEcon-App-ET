@@ -388,10 +388,7 @@ class _SaveCostBreakdownSheetState extends State<SaveCostBreakdownSheet> {
                               planName: titleController.text,
                             );
                           } else {
-                            print({
-                              '********************************* save called *****************************',
-                              widget.breakEvenPrice,
-                            });
+                    
                             controller.saveCalculation(
                               basicCalcData: widget.basicCalcData,
                               advancedCalcData: widget.advancedCalcData,

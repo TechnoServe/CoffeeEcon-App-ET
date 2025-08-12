@@ -422,7 +422,6 @@ final fieldValue = double.tryParse(
   /// [data] - The previous calculation data to load
   void patchPreviousData({BasicCalculationEntryModel? data}) {
     if (data != null) {
-      print({'callllllled here-------------------------',data.purchaseVolume});
 
       // Populate all form fields with previous data
       purchaseVolumeController.text = data.purchaseVolume;
@@ -436,7 +435,6 @@ final fieldValue = double.tryParse(
       ratioController.text = data.ratio;
       expectedProfitMarginController.text = data.expectedProfit;
       selectedTCoffeesellingType.value = data.sellingType;
-      print({'callllllled here-------------------------',purchaseVolumeController.text});
       update();
     }
   }

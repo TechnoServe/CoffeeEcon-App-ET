@@ -133,7 +133,6 @@ class _ForecastTabState extends State<ForecastTab> {
                       final isValid =
                           widget.controller.formKey.currentState?.validate() ??
                               false;
-                       print({'is valid :': isValid}); 
                       // If the form is valid, proceed with calculation
                       // Otherwise, show validation errors       
                       if (isValid) {

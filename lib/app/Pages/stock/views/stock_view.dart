@@ -142,7 +142,6 @@ class _StockBodyState extends State<_StockBody> {
                              onChanged: (val) => setState(() {
                     if (val != null) {
                       // Update selected coffee type in controller
-                      print({'value isssjkdjksdjlksj': val});
 
                    widget.controller.selectedCoffeeType.value =
                                 val;
@@ -200,7 +199,6 @@ class _StockBodyState extends State<_StockBody> {
                     final isValid =
                         widget.controller.formKey.currentState?.validate() ??
                             false;
-                      print('isValid: $isValid');
                     // If the form is valid, trigger the calculation
                     // This will call the onCalculate method in the controller      
                     if (isValid) {

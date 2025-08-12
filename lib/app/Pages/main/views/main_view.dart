@@ -69,8 +69,7 @@ class MainView extends GetView<NavController> {
 
     return WillPopScope(
       onWillPop: () async {
-        print(
-            'Back button pressed, currentIndex: ${controller.currentIndex.value}');
+     
         if (controller.currentIndex.value != 0) {
           controller.currentIndex.value = 0;
           return false; // Prevent app exit

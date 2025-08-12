@@ -71,7 +71,6 @@ class ExchangeRateController extends GetxController {
       (rate) => rate.code == selectedCurrency.value,
       orElse: () => ExchangeRate(code: 'USD', buying: 1.0, selling: 1.0),
     );
-    print({'selected currency-------*****************************F',priceInETB,rate.buying,selectedCurrency.value});
     
     // Convert using the buying rate (rate at which bank buys foreign currency)
     return priceInETB / rate.buying;

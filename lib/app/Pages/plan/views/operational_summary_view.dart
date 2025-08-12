@@ -11,7 +11,6 @@ import 'package:flutter_template/app/core/config/app_color.dart';
 import 'package:flutter_template/app/data/models/operational_planning_model.dart';
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class OperationalSummary extends StatefulWidget {
   OperationalSummary({
@@ -269,7 +268,7 @@ class SummeryBodyState extends State<SummeryBody>
 
                      _SummaryGridCard(
                       icon: 'assets/icons/fermentation.svg',
-                      label: 'Fermentation Cycle Total',
+                      label: 'Total Batch Needed For Fermentation',
                       value:
                           '${widget.data.ferCycleTotal?.toString()}',
                     ),

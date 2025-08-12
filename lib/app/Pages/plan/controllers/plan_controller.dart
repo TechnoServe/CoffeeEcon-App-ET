@@ -241,7 +241,7 @@ Natural Process (dry method):
     final depth = double.tryParse(fermentationDepthController.text) ?? 0;
     const pulpToWaterRatio = 1;
     const tankUsableRatio = 0.85;
-    const cherryToWetParchment = 0.39;
+    // const cherryToWetParchment = 0.39;
 
    
     volumeOfFermentationTank =
@@ -254,14 +254,14 @@ Natural Process (dry method):
     ferTanksPerBatch =  ceilSafe((cherryBatch * 0.55) / perTankPulpCapacity);
     
   
-    final parchmentAmount = cherryBatch * cherryToWetParchment;
+    // final parchmentAmount = cherryBatch * cherryToWetParchment;
 
-    final fermentCyclesPerBatch = ceilSafe(parchmentAmount / totalFerCapacityPerCycle) * batches;
-    ferCycleTotal =  fermentCyclesPerBatch * batches;
+    // final fermentCyclesPerBatch = ceilSafe(parchmentAmount / totalFerCapacityPerCycle) * batches;
+    
+    ferCycleTotal =  batches;
 
     if (volumeOfFermentationTank == 0) {
       // Handle gracefully
-      print('Fermentation tank volume is zero');
       return;
     }
 
@@ -273,7 +273,6 @@ Natural Process (dry method):
     fermentationTank = numberOfTanksRaw.isFinite ? numberOfTanksRaw.ceil() : 0;
 
     if (numberOfDaysFermenting == 0 || fermentationTank == 0) {
-      print('Division by zero in fermentation calculation');
       return;
     }
 
@@ -286,12 +285,6 @@ Natural Process (dry method):
       return;
     }
 
-    // Calculate the number of fermentation days required
-    final fermentationDaysRaw = getWetParchmentVolume / dailyCapacity;
-    final fermentationDays =
-        fermentationDaysRaw.isFinite ? fermentationDaysRaw.ceil() : 0;
-
-    print('Fermentation days: $fermentationDays');
   }
 
   /// Calculates the soaking tank requirements and batch counts.
@@ -512,6 +505,7 @@ Natural Process (dry method):
   /// Assumes 500 kg per worker per day as industry standard.
   void calculateLaborAndBatches() {
     final cherryBatch = double.tryParse(plannedCherriesPerBatch.text) ?? 0.0;
+    // 500 because 1 worker can process 500 kg of cherry per day
     laborPerBatch = ceilSafe(cherryBatch / 500);
     batches = ceilSafe(cherryAmount / cherryBatch);
   }
@@ -603,8 +597,7 @@ Natural Process (dry method):
     // Calculate the total number of operating days between start and end date, excluding Sundays
     if (startDate.value == null || endDate.value == null) return 0;
 
-    print('START: [38;5;246m [48;5;236m${startDate.value} [0m');
-    print('END: [38;5;246m [48;5;236m${endDate.value} [0m');
+
 
     int count = 0;
     DateTime current = startDate.value!;
@@ -909,13 +902,6 @@ Natural Process (dry method):
     soakingCycleTotal = data.soakingCycleTotal?? 0; 
     totalWashedDryingBeds = data.totalWashedDryingBeds?? 0; 
     totalNatDryingBeds  = data.totalNatDryingBeds?? 0;
-    // cherryAmount = data.cherryAmount ?? 0;
-    // getTotalProcessingDaysForWashed = data.processingDaysForWashed ?? 0;
-    // getGreenCoffeeOutput = data.greenCoffeeOutput ?? 0;
-    // getDryParchmentVolume = data.dryParchmentVolume ?? 0;
-    // getDryPodVolume = data.dryPodVolume ?? 0;
-    // numberOfWorkersForNatural = data.numberOfWorkersForNatural ?? 0;
-    // numberOfWorkersForFullyWashed = data.numberOfWorkersForFullyWashed ?? 0;
   }
   
    Future<T?> showBottleNeckModal<T>({
@@ -932,51 +918,7 @@ Natural Process (dry method):
           title: 'Value Outside Best Practices'.tr,
           message:
               message,
-              recommendedRanges: [],
-          // recommendedRanges: [
-          //   Builder(
-          //     builder: (context) => Padding(
-          //       padding: const EdgeInsets.only(top: 8, bottom: 12),
-          //       child: Text(
-          //         'Recommended Range'.tr,
-          //         style: Theme.of(context)
-          //             .textTheme
-          //             .titleMedium
-          //             ?.copyWith(fontWeight: FontWeight.w500, fontSize: 16),
-          //       ),
-          //     ),
-          //   ),
-          //   Text.rich(
-          //     TextSpan(
-          //       children: [
-          //         const WidgetSpan(
-          //           child: Icon(Icons.circle, size: 4, color: Colors.black54),
-          //           alignment: PlaceholderAlignment.middle,
-          //         ),
-          //         TextSpan(
-          //           text:
-          //               ' Lump-sum Seasonal Cherry Price: ',
-                       
-          //           style: const TextStyle(
-          //             fontWeight: FontWeight.w400,
-          //             fontSize: 12,
-          //             color: Color(0xFF717680),
-          //           ),
-          //         ),
-          //         TextSpan(
-          //           text: 'ETB  to ETB ',
-          //           style: const TextStyle(
-          //             fontWeight: FontWeight.w600,
-          //             fontSize: 12,
-          //             color: Color(0xFF252B37),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          
-          // ],
-         
+              recommendedRanges: const [],
           tip:
               'Double-check your input and ensure it aligns with industry best practices for better results.'
                   .tr,
