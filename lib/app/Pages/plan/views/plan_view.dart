@@ -813,7 +813,8 @@ class _ProcessingMethodPageState extends State<ProcessingMethodPage> {
                   ),
                   const SizedBox(height: 8),
                   TextField(
-                    controller: widget.controller.machineTypeController,
+                    // controller: widget.controller.machineTypeController,
+                     controller: TextEditingController(text: 'Disk Pulper'.tr),
                     readOnly: true,
                     
                     style: const TextStyle(

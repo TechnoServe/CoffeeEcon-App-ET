@@ -767,7 +767,7 @@ class _AdvancedResultsOverviewBodyState
                           height: 2,
                         ),
                         Text(
-                          '${exchangeController.selectedCurrency} ${formatter.format(exchangeController.convertPrice(widget.entry.jutBagTotal))}',
+                          '${exchangeController.selectedCurrency.value.tr} ${formatter.format(exchangeController.convertPrice(widget.entry.jutBagTotal))}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF1AB98B),
@@ -803,7 +803,7 @@ class _AdvancedResultsOverviewBodyState
                           height: 2,
                         ),
                         Text(
-                          '${exchangeController.selectedCurrency} ${formatter.format(exchangeController.convertPrice(widget.entry.variableCostTotal))}',
+                          '${exchangeController.selectedCurrency.value.tr} ${formatter.format(exchangeController.convertPrice(widget.entry.variableCostTotal))}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF1AB98B),
