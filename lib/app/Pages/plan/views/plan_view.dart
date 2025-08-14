@@ -36,7 +36,10 @@ class PlanView extends GetView<PlanController> {
                         isUnit: true,
                         onUnitSelected: (unit) {
                           controller.selectedUnit.value = unit ?? 'KG';
+                          return null;
                         },
+                          selectedUnit: controller.selectedUnit.value,
+
                       )
                     : const SizedBox.shrink();
               }),

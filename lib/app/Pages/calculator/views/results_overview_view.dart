@@ -19,6 +19,7 @@ import 'package:flutter_template/app/data/models/basic_calculation_entry_model.d
 import 'package:flutter_template/app/data/models/results_overview_type.dart';
 import 'package:flutter_template/app/shared/controllers/exchange_rate_controller.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart' as pie_chart;
 
 class ResultsOverviewView extends StatefulWidget {
@@ -56,7 +57,15 @@ class ResultsOverviewView extends StatefulWidget {
 
 class _ResultsOverviewViewState extends State<ResultsOverviewView> {
   final controller = Get.put(CalculatorController());
+  final basicCalculatorController = Get.find<BasicCalculatorController>();
+  final advancedCalculatorController = Get.find<AdvancedCalculatorController>();
 
+
+  @override 
+  void initState() {
+
+    super.initState();
+  }
 
 
   @override
@@ -73,6 +82,7 @@ class _ResultsOverviewViewState extends State<ResultsOverviewView> {
           title: 'Results Overview',
           showBackButton: true,
           onBack: () {
+           
             Get.to<void>(
               () => MainView(
                 initialIndex:
@@ -82,6 +92,9 @@ class _ResultsOverviewViewState extends State<ResultsOverviewView> {
                 type: widget.type,
               ),
             );
+              widget.type == ResultsOverviewType.advanced ?  advancedCalculatorController.skipBestPracticeWarning = true :  widget.type == ResultsOverviewType.basic ?  basicCalculatorController.skipBestPracticeWarning = true : null;
+              print({'type': widget.type, 'basicCalcData': basicCalculatorController.skipBestPracticeWarning, 'advancedCalcData': advancedCalculatorController.skipBestPracticeWarning});
+           
           },
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -294,7 +307,7 @@ class BasicResultsOverviewBody extends StatelessWidget {
                         label: 'Break Even Price',
                         value: exchangeController
                             .convertPrice(breakEvenPrice)
-                            .toStringAsFixed(4),
+                            .toStringAsFixed(2),
                       ),
                     ),
                     const DashedDivider(
@@ -323,7 +336,7 @@ class BasicResultsOverviewBody extends StatelessWidget {
                         label: 'Recommended Selling Price',
                         value: exchangeController
                             .convertPrice(entry.totalSellingPrice)
-                            .toStringAsFixed(4),
+                            .toStringAsFixed(2),
                         valueColor: const Color(0xFF1AB98B),
                         isBold: true,
                       ),
@@ -469,6 +482,7 @@ class AdvancedResultsOverviewBody extends StatefulWidget {
 class _AdvancedResultsOverviewBodyState
     extends State<AdvancedResultsOverviewBody> {
   String selectedUnit = 'KG';
+ final formatter = NumberFormat("#,##0.00", "en_US");
 
   @override
   Widget build(BuildContext context) {
@@ -536,6 +550,7 @@ class _AdvancedResultsOverviewBodyState
                           isCurrency: false,
                           isRegion: false,
                           isUnit: true,
+                          selectedUnit: selectedUnit,
                           onUnitSelected: (unit) {
                             setState(() {
                               selectedUnit = unit ?? 'KG';
@@ -635,9 +650,8 @@ class _AdvancedResultsOverviewBodyState
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: SummaryRow(
                       label: 'Total Raw Material Cost',
-                      value: exchangeController
-                          .convertPrice(widget.entry.procurementTotal)
-                          .toStringAsFixed(4),
+                      value: formatter.format(exchangeController
+                          .convertPrice(widget.entry.procurementTotal),),
                     ),
                   ),
                   const DashedDivider(
@@ -650,9 +664,8 @@ class _AdvancedResultsOverviewBodyState
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: SummaryRow(
                       label: 'Total Transport and Commision',
-                      value: exchangeController
-                          .convertPrice(widget.entry.transportTotal)
-                          .toStringAsFixed(4),
+                      value: formatter.format(exchangeController
+                          .convertPrice(widget.entry.transportTotal),)
                     ),
                   ),
                   const DashedDivider(
@@ -665,12 +678,11 @@ class _AdvancedResultsOverviewBodyState
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: SummaryRow(
                       label: 'Total Labour Cost',
-                      value: exchangeController
+                      value: formatter.format(exchangeController
                           .convertPrice(
                             widget.entry.casualTotal +
                                 widget.entry.permanentTotal,
-                          )
-                          .toStringAsFixed(4),
+                          ),)
                     ),
                   ),
                   const DashedDivider(
@@ -683,9 +695,8 @@ class _AdvancedResultsOverviewBodyState
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: SummaryRow(
                       label: 'Total Fuel And Oils Cost',
-                      value: exchangeController
-                          .convertPrice(widget.entry.fuelTotal)
-                          .toStringAsFixed(4),
+                      value: formatter.format(exchangeController
+                          .convertPrice(widget.entry.fuelTotal),),
                     ),
                   ),
                   const DashedDivider(
@@ -698,9 +709,9 @@ class _AdvancedResultsOverviewBodyState
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: SummaryRow(
                       label: 'Total Maintenance & Equipement Cost',
-                      value: exchangeController
+                      value: formatter.format(exchangeController
                           .convertPrice(widget.entry.maintenanceTotal)
-                          .toStringAsFixed(4),
+                      )
                     ),
                   ),
                   const DashedDivider(
@@ -713,9 +724,9 @@ class _AdvancedResultsOverviewBodyState
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: SummaryRow(
                       label: 'Total Other Expenses',
-                      value: exchangeController
+                      value: formatter.format(exchangeController
                           .convertPrice(widget.entry.otherTotal)
-                          .toStringAsFixed(4),
+                      )
                     ),
                   ),
                 ],
@@ -756,7 +767,7 @@ class _AdvancedResultsOverviewBodyState
                           height: 2,
                         ),
                         Text(
-                          '${exchangeController.selectedCurrency} ${exchangeController.convertPrice(widget.entry.jutBagTotal).toStringAsFixed(4)}',
+                          '${exchangeController.selectedCurrency} ${formatter.format(exchangeController.convertPrice(widget.entry.jutBagTotal))}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF1AB98B),
@@ -792,7 +803,7 @@ class _AdvancedResultsOverviewBodyState
                           height: 2,
                         ),
                         Text(
-                          '${exchangeController.selectedCurrency} ${exchangeController.convertPrice(widget.entry.variableCostTotal).toStringAsFixed(4)}',
+                          '${exchangeController.selectedCurrency} ${formatter.format(exchangeController.convertPrice(widget.entry.variableCostTotal))}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF1AB98B),
@@ -817,7 +828,7 @@ class _AdvancedResultsOverviewBodyState
               ),
               child: SummaryRow(
                 label: 'Pre-Tax Break-even Price',
-                value: convertedPreTaxBreakEvenPrice.toStringAsFixed(2),
+                value: formatter.format(exchangeController.convertPrice(convertedPreTaxBreakEvenPrice)),
                 valueColor: const Color(0xFF1AB98B),
                 isBold: true,
               ),

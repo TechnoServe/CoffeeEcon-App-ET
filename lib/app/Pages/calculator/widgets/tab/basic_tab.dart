@@ -71,6 +71,7 @@ class _BasicTabState extends State<BasicTab> {
                     },
                     chipSvgPath: 'assets/icons/birr.svg',
                     onChipTap: () => {},
+                    selectedUnit: widget.controller.selectedUnit.value,
                   ),
                 ),
                 const SizedBox(height: 24),

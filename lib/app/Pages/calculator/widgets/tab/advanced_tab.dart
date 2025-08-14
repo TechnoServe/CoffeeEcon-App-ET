@@ -131,6 +131,7 @@ class _AdvancedTabState extends State<AdvancedTab> {
                                 value ?? 'KG';
                           },
                           svgPath: 'assets/icons/birr.svg',
+                          selectedUnit: widget.controller.selectedUnit.value,
                         ),
                       ),
                   ],

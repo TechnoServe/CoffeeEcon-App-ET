@@ -78,6 +78,7 @@ class _OperationalSummaryState extends State<OperationalSummary> {
                 isCurrency: false,
                 isRegion: false,
                 isUnit: true,
+                selectedUnit: widget.controller.selectedUnit.value,
                 onUnitSelected: (unit) {
                   setState(() {
                     widget.controller.selectedUnit.value = unit ?? 'KG';

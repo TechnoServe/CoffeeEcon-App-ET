@@ -185,21 +185,21 @@ class BasicCalculatorController extends GetxController {
   update();
   }
 
-  @override
-  void onClose() {
-    // Dispose all text controllers to prevent memory leaks
-    purchaseVolumeController.dispose();
-    seasonalCoffeePriceController.dispose();
-    cherryTransportController.dispose();
-    laborFullTimeController.dispose();
-    laborCasualController.dispose();
-    fuelAndOilController.dispose();
-    repairsAndMaintenance.dispose();
-    otherExpensesController.dispose();
-    ratioController.dispose();
-    expectedProfitMarginController.dispose();
-    super.onClose();
-  }
+  // @override
+  // void onClose() {
+  //   // Dispose all text controllers to prevent memory leaks
+  //   purchaseVolumeController.dispose();
+  //   seasonalCoffeePriceController.dispose();
+  //   cherryTransportController.dispose();
+  //   laborFullTimeController.dispose();
+  //   laborCasualController.dispose();
+  //   fuelAndOilController.dispose();
+  //   repairsAndMaintenance.dispose();
+  //   otherExpensesController.dispose();
+  //   ratioController.dispose();
+  //   expectedProfitMarginController.dispose();
+  //   super.onClose();
+  // }
 
   /// Shows a modal dialog for best practice warnings.
   /// This method displays a bottom sheet when field values are outside
@@ -283,7 +283,7 @@ class BasicCalculatorController extends GetxController {
                     ),
                     TextSpan(
                       text: ' ${'Seasonal Cherry Price'.tr}: ',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
                         color: Color(0xFF717680),

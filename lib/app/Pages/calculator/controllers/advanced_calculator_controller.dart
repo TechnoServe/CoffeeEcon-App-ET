@@ -650,9 +650,9 @@ class AdvancedCalculatorController extends GetxController {
   /// 
   /// [context] - The build context for showing modals
   void onCalculate(BuildContext context) {
-    validateCostPercentages(context);
+     if(!skipBestPracticeWarning) validateCostPercentages(context);
     final remainingIssues = fieldAlerts.entries.where((e) => e.value).length;
-    if (remainingIssues == 0) {
+    if (skipBestPracticeWarning || remainingIssues == 0) {
       Get.offNamed<void>(
         AppRoutes.RESULTSOVERVIEWVIEW,
         arguments: {
@@ -848,10 +848,4 @@ class AdvancedCalculatorController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    // Dispose all controllers when the controller is closed
-    disposeControllers();
-    super.dispose();
-  }
 }
